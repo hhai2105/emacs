@@ -1,52 +1,98 @@
-#+TITLE: Emacs Init file
+#+TITLE: Emacs Configuration File
 #+AUTHOR: Hai Nguyen
 
-* Package Installation
-** Melpa Package
-   #+begin_src emacs-lisp (require 'package)
-    (add-to-list 'package-archives '("ORG" . "http://orgmode.org/elpa/") t)
-    (add-to-list 'package-archives '("MELPA STABLE" . "http://stable.melpa.org/packages/"))
-    (add-to-list 'package-archives '("MELPA" . "http://melpa.org/packages/"))
-    (add-to-list 'package-archives '("GNU ELPA" . "http://elpa.gnu.org/packages/"))
-    (package-initialize)
-  #+end_src
+* General Configuration
+** Package Installation
+*** Melpa Package
+#+begin_src emacs-lisp (require 'package)
+(require 'package)
+(add-to-list 'package-archives '("ORG" . "http://orgmode.org/elpa/") t)
+(add-to-list 'package-archives '("MELPA STABLE" . "http://stable.melpa.org/packages/"))
+(add-to-list 'package-archives '("MELPA" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("GNU ELPA" . "http://elpa.gnu.org/packages/"))
+(package-refresh-contents)
+(package-initialize)
+#+end_src
 
-** User Package
-  #+begin_src emacs-lisp
+*** User Package
+#+begin_src emacs-lisp
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
-  #+end_src
+#+end_src
 
-* Evil Mode
+** Boot Up Optimization
+*** Reducing the frequency of garbage collection
+
+#+begin_src emacs-lisp
+;; Using garbage magic hack.
+(use-package gcmh
+    :ensure t
+    :config
+    (gcmh-mode 1))
+;; Setting garbage collection threshold
+(setq gc-cons-threshold 402653184
+    gc-cons-percentage 0.6)
+
+;; Profile emacs startup
+(add-hook 'emacs-startup-hook
+	(lambda ()
+	    (message "*** Emacs loaded in %s with %d garbage collections."
+		    (format "%.2f seconds"
+			    (float-time
+			    (time-subtract after-init-time before-init-time)))
+		    gcs-done)))
+
+  ;; Silence compiler warnings as they can be pretty disruptive (setq comp-async-report-warnings-errors nil)
+#+end_src
+
+** Backup Files
+*** Move All Backup Files to a designated location instead of within the same folder
+
+#+begin_src emacs-lisp
+(setq backup-directory-alist '(("." . "~/.emacs.d/saves/")))
+#+end_src
+
+** Evil Mode
   #+begin_src emacs-lisp
 (use-package evil
-	     :ensure t
-	     :init
-	     (setq evil-want-integration t)
-	     (setq evil-want-keybinding nil)
-	     (setq evil-vsplit-window-right t)
-	     (setq evil-split-window-below t)
-	     (evil-mode))
+    :ensure t
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-vsplit-window-right t)
+    (setq evil-split-window-below t)
+    (evil-mode))
 (use-package evil-collection
-	     :after evil
-	     :ensure t
-	     :config
-	     (evil-collection-init))
+    :after evil
+    :ensure t
+    :config
+    (evil-collection-init))
   #+end_src
 
-* Which Key
+** Which Key
   #+begin_src emacs-lisp
-	    (use-package which-key
+(use-package which-key
 	:ensure t)
-    (which-key-mode)
+(which-key-mode)
   #+end_src
+
+** General
+
+#+begin_src emacs-lisp
+(use-package general
+     :ensure t
+     :config
+(general-evil-setup t))
+;; (nvmap :prefix "SPC"
+
+#+end_src
 
 * User Interface Settings
 ** Menu Bar
 
    #+begin_src emacs-lisp
-	  (menu-bar-mode -1)
-     (tool-bar-mode -1)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
 (scroll-bar-mode -1)
    #+end_src 
 
@@ -54,60 +100,118 @@
 
 
   #+begin_src emacs-lisp
-    (use-package doom-themes
-	    :ensure t)
-    (setq doom-themes-enable-bold t
-	doom-themes-enable-italics t)
-    (load-theme 'doom-outrun-electric t)
+(use-package doom-themes
+    :ensure t)
+(setq doom-themes-enable-bold t
+    doom-themes-enable-italics t)
+(load-theme 'doom-outrun-electric t)
   #+end_src
+
+** All The Icons
+All the Icons dependencies needed for other packages (modeline,...)
+#+begin_src emacs-lisp
+(use-package all-the-icons
+    :ensure t)
+#+end_src
 
 ** Modeline
    
    #+begin_src emacs-lisp
-    (use-package doom-modeline
+(use-package doom-modeline
      :ensure t)
-    (doom-modeline-mode 1)
+(doom-modeline-mode 1)
    #+end_src
 
 ** Line Numbers and Truncated Lines
+show absolute line numbers
    #+begin_src emacs-lisp
-     (global-display-line-numbers-mode 1)
+(global-display-line-numbers-mode 1)
 (global-visual-line-mode t)
    #+end_src
+   
 ** Fonts 
 
 #+begin_src emacs-lisp
-    (set-face-attribute 'default nil
+(set-face-attribute 'default nil
+    :font "Noto Sans Mono 15"
+    :weight 'medium)
+(set-face-attribute 'variable-pitch nil
 	:font "Noto Sans Mono 15"
-      :weight 'medium)
-    (set-face-attribute 'variable-pitch nil
-	:font "Noto Sans Mono 15"
-      :weight 'medium)
-    (set-face-attribute 'fixed-pitch nil
-	:font "Noto Sans Mono 15"
-      :weight 'medium)
-  ;;(setq-default line-spacing 0.10)
+    :weight 'medium)
+(set-face-attribute 'fixed-pitch nil
+    :font "Noto Sans Mono 15"
+    :weight 'medium)
+;;(setq-default line-spacing 0.10)
 (add-to-list 'default-frame-alist '(font . "Noto Sans Mono 15"))
 #+end_src
 
-* Keybindings
-** General
+* Dashboard
+* Org Mode
+** Configuration
 
-   #+begin_src emacs-lisp
-     (use-package general
-     :ensure t
-     :config
-     (general-evil-setup t))
-     ;; (nvmap :prefix "SPC"
-
-   #+end_src
-
-** Zooming in/out
-   
 #+begin_src emacs-lisp
-  (global-set-key (kbd "C-=") 'text-scale-increase)
-  (global-set-key (kbd "C--") 'text-scale-decrease)
+(add-hook 'org-mode-hook 'org-indent-mode)
+(setq org-edit-src-content-indentation 0
+    org-src-tab-acts-natively t
+    org-src-preserve-indentation nil)
 #+end_src
 
+** Org Bullets
+Beautify your org bullets
+#+begin_src emacs-lisp
+(use-package org-bullets
+  :ensure t)
+(add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+#+end_src
 
-* Org Mode
+collapsed all org bullets globally
+#+begin_src emacs-lisp
+(setq org-startup-folded t)
+#+end_src
+
+** Generate Table of Contents
+
+#+begin_src emacs-lisp
+(use-package toc-org
+    :ensure t
+    :commands toc-org-enable
+    :init (add-hook 'org-mode-hook 'toc-org-enable))
+#+end_src
+
+* Yasnippet
+
+Template system for Emacs
+#+begin_src emacs-lisp
+(use-package yasnippet
+    :ensure t)
+#+end_src
+
+*** Yasnippet Snippets
+#+begin_src emacs-lisp
+(use-package yasnippet-snippets
+
+#+end_src
+* Language Support
+** Programming Languages
+
+#+begin_src
+(use-package haskell-mode)
+(use-package latex-mode)
+(use-package java-mode)
+(use-package 
+#+end_src
+
+** Emojis
+Display Emoji in Emacs
+#+begin_src emacs-lisp
+(use-package emojify
+    :ensure t
+    :hook (after-init . global-emojify-mode))
+#+end_src 
+
+* Runtime Optimization
+** lower GC Threshold gc happens more frquqently in less time
+#+begin_src emacs-lisp
+(setq gc-cons-threshold (* 2 1000 1000))
+#+end_src
+
