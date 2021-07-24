@@ -6,18 +6,15 @@
 *** Melpa Package
 #+begin_src emacs-lisp (require 'package)
 (require 'package)
-(add-to-list 'package-archives '("ORG" . "http://orgmode.org/elpa/") t)
-(add-to-list 'package-archives '("MELPA STABLE" . "http://stable.melpa.org/packages/"))
-(add-to-list 'package-archives '("MELPA" . "http://melpa.org/packages/"))
-(add-to-list 'package-archives '("GNU ELPA" . "http://elpa.gnu.org/packages/"))
-(package-refresh-contents)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
 #+end_src
 
-*** User Package
+*** User Package #+begin_src emacs-lisp (unless (package-installed-p 'use-package) (package-install 'use-package)) #+end_src
+** Always ensure package
+
 #+begin_src emacs-lisp
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+(setq use-package-always-ensure t)
 #+end_src
 
 ** Boot Up Optimization
@@ -26,7 +23,6 @@
 #+begin_src emacs-lisp
 ;; Using garbage magic hack.
 (use-package gcmh
-    :ensure t
     :config
     (gcmh-mode 1))
 ;; Setting garbage collection threshold
@@ -49,45 +45,16 @@
 *** Move All Backup Files to a designated location instead of within the same folder
 
 #+begin_src emacs-lisp
-(setq backup-directory-alist '(("." . "~/.emacs.d/saves/")))
-#+end_src
-
-** Evil Mode
-  #+begin_src emacs-lisp
-(use-package evil
-    :ensure t
-    :init
-    (setq evil-want-integration t)
-    (setq evil-want-keybinding nil)
-    (setq evil-vsplit-window-right t)
-    (setq evil-split-window-below t)
-    (evil-mode))
-(use-package evil-collection
-    :after evil
-    :ensure t
-    :config
-    (evil-collection-init))
-  #+end_src
-
-** Which Key
-  #+begin_src emacs-lisp
-(use-package which-key
-	:ensure t)
-(which-key-mode)
-  #+end_src
-
-** General
-
-#+begin_src emacs-lisp
-(use-package general
-     :ensure t
-     :config
-(general-evil-setup t))
-;; (nvmap :prefix "SPC"
-
+(setq backup-directory-alist '(("." . "~/.config/emacs/saves/")))
 #+end_src
 
 * User Interface Settings
+** Make ESC quit promps
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+#+end_src
+
 ** Menu Bar
 
    #+begin_src emacs-lisp
@@ -98,37 +65,43 @@
 
 ** Theme
 
-
   #+begin_src emacs-lisp
-(use-package doom-themes
-    :ensure t)
+(use-package doom-themes)
 (setq doom-themes-enable-bold t
     doom-themes-enable-italics t)
 (load-theme 'doom-outrun-electric t)
   #+end_src
 
-** All The Icons
-All the Icons dependencies needed for other packages (modeline,...)
-#+begin_src emacs-lisp
-(use-package all-the-icons
-    :ensure t)
-#+end_src
-
 ** Modeline
    
    #+begin_src emacs-lisp
-(use-package doom-modeline
-     :ensure t)
+(use-package doom-modeline)
 (doom-modeline-mode 1)
    #+end_src
 
 ** Line Numbers and Truncated Lines
 show absolute line numbers
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
+(column-number-mode)
 (global-display-line-numbers-mode 1)
 (global-visual-line-mode t)
-   #+end_src
+#+end_src
    
+disable line numbers for some modes
+#+begin_src emacs-lisp
+(dolist (mode '(term-mode-hook
+        eshell-mode-hook))
+    (add-hook mode (lambda() (display-line-numbers-mode 0))))
+
+#+end_src
+
+** Rainbow Delimiter
+color (),[],{} as pair
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+:hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
 ** Fonts 
 
 #+begin_src emacs-lisp
@@ -145,22 +118,123 @@ show absolute line numbers
 (add-to-list 'default-frame-alist '(font . "Noto Sans Mono 15"))
 #+end_src
 
-* Dashboard
-* Org Mode
-** Configuration
+* General Packages
+** keybinding packages
+*** Evil Mode
+  #+begin_src emacs-lisp
+(use-package evil
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-vsplit-window-right t)
+    (setq evil-split-window-below t)
+    (evil-mode))
+(use-package evil-collection
+    :after evil
+    :config
+    (evil-collection-init))
+  #+end_src
+
+*** Which Key
+display key functions
+  #+begin_src emacs-lisp
+(use-package which-key)
+(which-key-mode)
+  #+end_src
+
+*** General
+
+#+begin_src emacs-lisp
+(use-package general
+     :config
+(general-evil-setup t))
+#+end_src
+
+** Auto Completion Engines
+*** Ivy
+
+#+begin_src emacs-lisp
+(use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+            :map ivy-minibuffer-map
+            ("TAB" . ivy-alt-done)
+            ("C-l" . ivy-alt-done)
+            ("C-j" . ivy-next-line)
+            ("C-k" . ivy-previous-line)
+            :map ivy-switch-buffer-map
+            ("C-k" . ivy-previous-line)
+            ("C-l" . ivy-done)
+            ("C-d" . ivy-switch-buffer-kill)
+            :map ivy-reverse-i-search-map
+            ("C-k" . ivy-previous-line)
+            ("C-d" . ivy-reverse-i-search-kill))
+    :config
+    (ivy-mode 1))
+#+end_src
+
+*** Counsel 
+
+#+begin_src emacs-lisp
+(use-package counsel)
+#+end_src
+
+** Projectile
+
+#+begin_src emacs-lisp
+(use-package projectile) 
+#+end_src
+
+** All The Icons
+
+#+begin_src emacs-lisp
+(use-package all-the-icons)
+#+end_src
+
+** Sudo Edit
+
+#+begin_src emacs-lisp
+(use-package sudo-edit)
+#+end_src
+
+** Dashboard
+
+#+begin_src emacs-lisp
+(use-package dashboard)
+#+end_src
+
+** Files
+*** Keybindings
+
+#+begin_src emacs-lisp
+(nvmap :states '(normal visual) :keymaps 'override :prefix "SPC"
+    "."     '(find-file :which-key "Find file")
+    "f f"   '(find-file :which-key "Find file")
+    "f r"   '(counsel-recentf :which-key "Recent files")
+    "f s"   '(save-buffer :which-key "Save file")
+    "f u"   '(sudo-edit-find-file :which-key "Sudo find file")
+    "f y"   '(dt/show-and-copy-buffer-path :which-key "Yank file path")
+    "f C"   '(copy-file :which-key "Copy file")
+    "f D"   '(delete-file :which-key "Delete file")
+    "f R"   '(rename-file :which-key "Rename file")
+    "f S"   '(write-file :which-key "Save file as...")
+    "f U"   '(sudo-edit :which-key "Sudo edit file"))
+#+end_src
+
+** Org Mode
+*** Configuration
 
 #+begin_src emacs-lisp
 (add-hook 'org-mode-hook 'org-indent-mode)
-(setq org-edit-src-content-indentation 0
-    org-src-tab-acts-natively t
-    org-src-preserve-indentation nil)
+(setq org-src-tab-acts-natively t
+    org-src-preserve-indentation nil
+    org-edit-src-content-indentation 0)
 #+end_src
 
-** Org Bullets
+*** Org Bullets
 Beautify your org bullets
 #+begin_src emacs-lisp
-(use-package org-bullets
-  :ensure t)
+(use-package org-bullets)
 (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
 #+end_src
 
@@ -169,43 +243,43 @@ collapsed all org bullets globally
 (setq org-startup-folded t)
 #+end_src
 
-** Generate Table of Contents
+*** Org Source Code Block
+
+#+begin_src emacs-lisp
+(setq org-src-fontify-natively t
+    org-confirm-babel-evaluate nil)
+#+end_src
+*** Generate Table of Contents
 
 #+begin_src emacs-lisp
 (use-package toc-org
-    :ensure t
     :commands toc-org-enable
     :init (add-hook 'org-mode-hook 'toc-org-enable))
 #+end_src
 
-* Yasnippet
-
+** Yasnippet
 Template system for Emacs
 #+begin_src emacs-lisp
-(use-package yasnippet
-    :ensure t)
+(use-package yasnippet)
+(yas-global-mode 1)
 #+end_src
 
 *** Yasnippet Snippets
 #+begin_src emacs-lisp
-(use-package yasnippet-snippets
-
+(use-package yasnippet-snippets)
 #+end_src
-* Language Support
-** Programming Languages
 
-#+begin_src
+** Language Support
+*** Programming Languages
+
+#+begin_src emacs-lisp
 (use-package haskell-mode)
-(use-package latex-mode)
-(use-package java-mode)
-(use-package 
 #+end_src
 
 ** Emojis
-Display Emoji in Emacs
+Display Emoji in Emacs 
 #+begin_src emacs-lisp
 (use-package emojify
-    :ensure t
     :hook (after-init . global-emojify-mode))
 #+end_src 
 
