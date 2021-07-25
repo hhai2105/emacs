@@ -60,6 +60,9 @@
 (use-package rainbow-delimiters
 :hook (prog-mode . rainbow-delimiters-mode))
 
+(setq scroll-conservatively 10000)
+(setq scroll-margin 10)
+
 (set-face-attribute 'default nil
     :font "Noto Sans Mono 15"
     :weight 'medium)
@@ -108,7 +111,12 @@
     :global-prefix "C-SPC"
 )
 
-(use-package pdf-tools)
+(use-package pdf-tools
+    :defer t
+    :config
+    (pdf-tools-install)
+    (setq-default pdf-view-display-size 'fit-page)
+)
 
 (use-package ivy
     :diminish
@@ -142,6 +150,8 @@
 (use-package projectile)
 
 (use-package all-the-icons)
+
+(use-package emacs-everywhere)
 
 (use-package sudo-edit)
 
@@ -186,5 +196,3 @@
     :hook (after-init . global-emojify-mode))
 
 (setq gc-cons-threshold (* 2 1000 1000))
-
-

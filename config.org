@@ -1,5 +1,8 @@
 #+title: Emacs Configuration File
 #+author: Hai Nguyen
+
+* Description
+This is my Emacs Configuration
 * General Configuration
 ** Package Installation
 *** Melpa Package
@@ -123,6 +126,13 @@ color (),[],{} as pair
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
 :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+** Scrolling
+
+#+begin_src emacs-lisp
+(setq scroll-conservatively 10000)
+(setq scroll-margin 10)
 #+end_src
 
 ** Fonts 
@@ -269,6 +279,12 @@ better pdf reader
 (use-package all-the-icons)
 #+end_src
 
+** Emacs Everywhere
+
+#+begin_src emacs-lisp
+(use-package emacs-everywhere)
+#+end_src
+
 ** Sudo Edit
 
 #+begin_src emacs-lisp
@@ -360,8 +376,4 @@ Display Emoji in Emacs
 ** lower GC Threshold gc happens more frquqently in less time
 #+begin_src emacs-lisp
 (setq gc-cons-threshold (* 2 1000 1000))
-#+end_src
-
-
-#+begin_src emacs-lisp
 #+end_src
