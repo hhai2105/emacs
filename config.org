@@ -1,6 +1,5 @@
-#+TITLE: Emacs Configuration File
-#+AUTHOR: Hai Nguyen
-
+#+title: Emacs Configuration File
+#+author: Hai Nguyen
 * General Configuration
 ** Package Installation
 *** Melpa Package
@@ -10,10 +9,16 @@
 (package-initialize)
 #+end_src
 
-*** User Package #+begin_src emacs-lisp (unless (package-installed-p 'use-package) (package-install 'use-package)) #+end_src
+*** User Package 
+
+#+begin_src emacs-lisp 
+(unless (package-installed-p 'use-package) (package-install 'use-package)) 
+#+end_src
+
 ** Always ensure package
 
 #+begin_src emacs-lisp
+(require 'use-package-ensure)
 (setq use-package-always-ensure t)
 #+end_src
 
@@ -45,7 +50,25 @@
 *** Move All Backup Files to a designated location instead of within the same folder
 
 #+begin_src emacs-lisp
-(setq backup-directory-alist '(("." . "~/.config/emacs/saves/")))
+(setq backup-directory-alist '(("." . "~/.config/emacs/.saves/")))
+#+end_src
+
+*** Auto Save 
+
+#+begin_src emacs-lisp
+(setq auto-save-file-name-transforms
+`((".*" "~/.config/emacs/.saves" t)))
+#+end_src
+
+*** Recentf
+#+begin_src emacs-lisp
+(setq recentf-save-file (expand-file-name "~/.config/emacs/.saves/recentf"))
+#+end_src
+
+** Silence ad-handle-redefinition
+
+#+begin_src emacs-lisp
+(setq ad-redefinition-action 'accept)
 #+end_src
 
 * User Interface Settings
@@ -57,27 +80,27 @@
 
 ** Menu Bar
 
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
-   #+end_src 
+#+end_src 
 
 ** Theme
 
-  #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 (use-package doom-themes)
 (setq doom-themes-enable-bold t
     doom-themes-enable-italics t)
 (load-theme 'doom-outrun-electric t)
-  #+end_src
+#+end_src
 
 ** Modeline
    
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 (use-package doom-modeline)
 (doom-modeline-mode 1)
-   #+end_src
+#+end_src
 
 ** Line Numbers and Truncated Lines
 show absolute line numbers
@@ -118,8 +141,22 @@ color (),[],{} as pair
 (add-to-list 'default-frame-alist '(font . "Noto Sans Mono 15"))
 #+end_src
 
+*** Zooming in/out keybindings
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-=") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
+(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+#+end_src
+
 * General Packages
 ** keybinding packages
+*** key-chord
+#+begin_src emacs-lisp
+(use-package key-chord)
+#+end_src
+
 *** Evil Mode
   #+begin_src emacs-lisp
 (use-package evil
@@ -135,6 +172,13 @@ color (),[],{} as pair
     (evil-collection-init))
   #+end_src
 
+add keybindings to go back to normal state
+#+begin_src emacs-lisp
+(setq key-chord-two-keys-delay 0.3)
+(key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
+(key-chord-mode 1)
+#+end_src
+
 *** Which Key
 display key functions
   #+begin_src emacs-lisp
@@ -148,6 +192,27 @@ display key functions
 (use-package general
      :config
 (general-evil-setup t))
+#+end_src
+
+set space and C-SPC as global prefix
+
+#+begin_src emacs-lisp
+(general-create-definer rune/leader-keys
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC"
+)
+#+end_src
+
+** PDF
+better pdf reader
+#+begin_src emacs-lisp
+(use-package pdf-tools
+    :defer t
+    :config
+    (pdf-tools-install)
+    (setq-default pdf-view-display-size 'fit-page)
+)
 #+end_src
 
 ** Auto Completion Engines
@@ -173,10 +238,23 @@ display key functions
     (ivy-mode 1))
 #+end_src
 
+*** Ivy Rich 
+
+#+begin_src emacs-lisp
+(use-package ivy-rich
+    :init
+    (ivy-rich-mode 1))
+#+end_src
+
 *** Counsel 
 
 #+begin_src emacs-lisp
-(use-package counsel)
+(use-package counsel
+:bind (("M-x" . counsel-M-x)
+        ("C-x b" . counsel-ibuffer)
+        ("C-x C-f" . counsel-find-file)
+        :map minibuffer-local-map
+        ("C-r" . 'counsel-minibuffer-history)))
 #+end_src
 
 ** Projectile
@@ -264,11 +342,6 @@ Template system for Emacs
 (yas-global-mode 1)
 #+end_src
 
-*** Yasnippet Snippets
-#+begin_src emacs-lisp
-(use-package yasnippet-snippets)
-#+end_src
-
 ** Language Support
 *** Programming Languages
 
@@ -289,3 +362,6 @@ Display Emoji in Emacs
 (setq gc-cons-threshold (* 2 1000 1000))
 #+end_src
 
+
+#+begin_src emacs-lisp
+#+end_src

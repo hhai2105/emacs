@@ -2,6 +2,9 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
 
+(unless (package-installed-p 'use-package) (package-install 'use-package))
+
+(require 'use-package-ensure)
 (setq use-package-always-ensure t)
 
 ;; Using garbage magic hack.
@@ -23,7 +26,14 @@
 
   ;; Silence compiler warnings as they can be pretty disruptive (setq comp-async-report-warnings-errors nil)
 
-(setq backup-directory-alist '(("." . "~/.config/emacs/saves/")))
+(setq backup-directory-alist '(("." . "~/.config/emacs/.saves/")))
+
+(setq auto-save-file-name-transforms
+`((".*" "~/.config/emacs/.saves" t)))
+
+(setq recentf-save-file (expand-file-name "~/.config/emacs/.saves/recentf"))
+
+(setq ad-redefinition-action 'accept)
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -62,6 +72,13 @@
 ;;(setq-default line-spacing 0.10)
 (add-to-list 'default-frame-alist '(font . "Noto Sans Mono 15"))
 
+(global-set-key (kbd "C-=") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
+(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+
+(use-package key-chord)
+
 (use-package evil
     :init
     (setq evil-want-integration t)
@@ -74,12 +91,24 @@
     :config
     (evil-collection-init))
 
+(setq key-chord-two-keys-delay 0.3)
+(key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
+(key-chord-mode 1)
+
 (use-package which-key)
 (which-key-mode)
 
 (use-package general
      :config
 (general-evil-setup t))
+
+(general-create-definer rune/leader-keys
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC"
+)
+
+(use-package pdf-tools)
 
 (use-package ivy
     :diminish
@@ -99,7 +128,16 @@
     :config
     (ivy-mode 1))
 
-(use-package counsel)
+(use-package ivy-rich
+    :init
+    (ivy-rich-mode 1))
+
+(use-package counsel
+:bind (("M-x" . counsel-M-x)
+        ("C-x b" . counsel-ibuffer)
+        ("C-x C-f" . counsel-find-file)
+        :map minibuffer-local-map
+        ("C-r" . 'counsel-minibuffer-history)))
 
 (use-package projectile)
 
@@ -142,11 +180,11 @@
 (use-package yasnippet)
 (yas-global-mode 1)
 
-(use-package yasnippet-snippets)
-
 (use-package haskell-mode)
 
 (use-package emojify
     :hook (after-init . global-emojify-mode))
 
 (setq gc-cons-threshold (* 2 1000 1000))
+
+
