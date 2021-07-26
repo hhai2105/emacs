@@ -1,8 +1,6 @@
 #+title: Emacs Configuration File
 #+author: Hai Nguyen
-
-* Description
-This is my Emacs Configuration
+#+description: This is my Emacs Configuration
 * General Configuration
 ** Package Installation
 *** Melpa Package
@@ -204,24 +202,14 @@ display key functions
 (general-evil-setup t))
 #+end_src
 
-set space and C-SPC as global prefix
+**** set space and C-SPC as global prefix
 
 #+begin_src emacs-lisp
-(general-create-definer rune/leader-keys
-    :keymaps '(normal insert visual emacs)
+(general-create-definer space-leader
+    :states '(normal visual emacs)
+    :keymaps 'override
     :prefix "SPC"
     :global-prefix "C-SPC"
-)
-#+end_src
-
-** PDF
-better pdf reader
-#+begin_src emacs-lisp
-(use-package pdf-tools
-    :defer t
-    :config
-    (pdf-tools-install)
-    (setq-default pdf-view-display-size 'fit-page)
 )
 #+end_src
 
@@ -267,6 +255,94 @@ better pdf reader
         ("C-r" . 'counsel-minibuffer-history)))
 #+end_src
 
+*** Company
+
+#+begin_src emacs-lisp
+(use-package company)
+(add-hook 'after-init-hook 'global-company-mode)
+#+end_src
+
+*** Electric
+**** Indentation
+
+#+begin_src emacs-lisp
+(add-hook 'after-init-hook 'electric-indent-mode)
+
+#+end_src
+
+**** parenthesis
+
+#+begin_src emacs-lisp
+(add-hook 'after-init-hook 'electric-pair-mode)
+(setq electric-pair-preserve t)
+(show-paren-mode 1)
+(setq show-paren-delay 0)
+#+end_src
+
+** Dashboard
+
+*** Configuration
+#+begin_src emacs-lisp
+(use-package dashboard
+  :init      ;; tweak dashboard config before loading it
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
+  ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as bannerj
+  (setq dashboard-startup-banner "~/.config/emacs/emacs-dash.png")  ;; use custom image as banner
+  (setq dashboard-center-content nil) ;; set to 't' for centered content
+  (setq dashboard-items '((recents . 5)
+                          (agenda . 5 )
+                          (bookmarks . 3)
+                          (projects . 3)
+                          (registers . 3)))
+  :config
+  (dashboard-setup-startup-hook)
+  (dashboard-modify-heading-icons '((recents . "file-text")
+			      (bookmarks . "book"))))
+#+end_src
+
+
+*** Dashboard in Emacsclient
+
+#+begin_src emacs-lisp
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+#+end_src
+
+** Perspective
+
+#+begin_src emacs-lisp
+(use-package perspective
+:bind
+("C-x C-b" . persp-list-buffers)
+:config
+(persp-mode)
+)
+#+end_src
+
+** Dired
+instantly update dired
+#+begin_src emacs-lisp
+(add-hook 'dired-mode-hook 'auto-revert-mode)
+#+end_src
+
+** PDF
+better pdf reader
+#+begin_src emacs-lisp
+(use-package pdf-tools
+    :defer t
+    :config
+    (pdf-tools-install)
+    (setq-default pdf-view-display-size 'fit-page)
+)
+#+end_src
+
+** Centaur tab
+
+#+begin_src emacs-lisp
+
+#+end_src
+
 ** Projectile
 
 #+begin_src emacs-lisp
@@ -291,17 +367,11 @@ better pdf reader
 (use-package sudo-edit)
 #+end_src
 
-** Dashboard
-
-#+begin_src emacs-lisp
-(use-package dashboard)
-#+end_src
-
 ** Files
 *** Keybindings
 
 #+begin_src emacs-lisp
-(nvmap :states '(normal visual) :keymaps 'override :prefix "SPC"
+(space-leader
     "."     '(find-file :which-key "Find file")
     "f f"   '(find-file :which-key "Find file")
     "f r"   '(counsel-recentf :which-key "Recent files")
@@ -313,6 +383,16 @@ better pdf reader
     "f R"   '(rename-file :which-key "Rename file")
     "f S"   '(write-file :which-key "Save file as...")
     "f U"   '(sudo-edit :which-key "Sudo edit file"))
+#+end_src
+
+*** Opening specific file/folder
+
+#+begin_src emacs-lisp
+(space-leader
+  "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Org agenda")
+  "- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
+  "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
+)
 #+end_src
 
 ** Org Mode
@@ -343,6 +423,7 @@ collapsed all org bullets globally
 (setq org-src-fontify-natively t
     org-confirm-babel-evaluate nil)
 #+end_src
+
 *** Generate Table of Contents
 
 #+begin_src emacs-lisp
@@ -371,6 +452,40 @@ Display Emoji in Emacs
 (use-package emojify
     :hook (after-init . global-emojify-mode))
 #+end_src 
+
+* Configuration
+** Windows control
+*** Split buffer side by side
+
+#+begin_src emacs-lisp
+(setq split-height-threshold nil)
+(setq split-width-threshold 0)
+#+end_src
+
+*** Keybindings
+#+begin_src emacs-lisp
+(winner-mode 1)
+(space-leader 
+       ;; Window splits
+       "w c"   '(evil-window-delete :which-key "Close window")
+       "w d"   '(evil-window-delete :which-key "Close window")
+       "w o"   '(delete-other-windows :which-key "Delete other windows")
+       "w n"   '(evil-window-new :which-key "New window")
+       "w s"   '(evil-window-split :which-key "Horizontal split window")
+       "w v"   '(evil-window-vsplit :which-key "Vertical split window")
+       "w _"   '(evil-window-set-height :which-key "evil-window-set-height")
+       "w |"   '(evil-window-set-width :which-key "evil-window-set-width")
+
+       ;; Window motions
+       "w h"   '(evil-window-left :which-key "Window left")
+       "w j"   '(evil-window-down :which-key "Window down")
+       "w k"   '(evil-window-up :which-key "Window up")
+       "w l"   '(evil-window-right :which-key "Window right")
+       "w w"   '(evil-window-next :which-key "Goto next window")
+       ;; winner mode
+       "w <left>"  '(winner-undo :which-key "Winner undo")
+       "w <right>" '(winner-redo :which-key "Winner redo"))
+#+end_src
 
 * Runtime Optimization
 ** lower GC Threshold gc happens more frquqently in less time

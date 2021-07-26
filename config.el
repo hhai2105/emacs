@@ -105,17 +105,11 @@
      :config
 (general-evil-setup t))
 
-(general-create-definer rune/leader-keys
-    :keymaps '(normal insert visual emacs)
+(general-create-definer space-leader
+    :states '(normal visual emacs)
+    :keymaps 'override
     :prefix "SPC"
     :global-prefix "C-SPC"
-)
-
-(use-package pdf-tools
-    :defer t
-    :config
-    (pdf-tools-install)
-    (setq-default pdf-view-display-size 'fit-page)
 )
 
 (use-package ivy
@@ -147,6 +141,54 @@
         :map minibuffer-local-map
         ("C-r" . 'counsel-minibuffer-history)))
 
+(use-package company)
+(add-hook 'after-init-hook 'global-company-mode)
+
+(add-hook 'after-init-hook 'electric-indent-mode)
+
+(add-hook 'after-init-hook 'electric-pair-mode)
+(setq electric-pair-preserve t)
+(show-paren-mode 1)
+(setq show-paren-delay 0)
+
+(use-package dashboard
+  :init      ;; tweak dashboard config before loading it
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
+  ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as bannerj
+  (setq dashboard-startup-banner "~/.config/emacs/emacs-dash.png")  ;; use custom image as banner
+  (setq dashboard-center-content nil) ;; set to 't' for centered content
+  (setq dashboard-items '((recents . 5)
+                          (agenda . 5 )
+                          (bookmarks . 3)
+                          (projects . 3)
+                          (registers . 3)))
+  :config
+  (dashboard-setup-startup-hook)
+  (dashboard-modify-heading-icons '((recents . "file-text")
+			      (bookmarks . "book"))))
+
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+
+(use-package perspective
+:bind
+("C-x C-b" . persp-list-buffers)
+:config
+(persp-mode)
+)
+
+(add-hook 'dired-mode-hook 'auto-revert-mode)
+
+(use-package pdf-tools
+    :defer t
+    :config
+    (pdf-tools-install)
+    (setq-default pdf-view-display-size 'fit-page)
+)
+
+
+
 (use-package projectile)
 
 (use-package all-the-icons)
@@ -155,9 +197,7 @@
 
 (use-package sudo-edit)
 
-(use-package dashboard)
-
-(nvmap :states '(normal visual) :keymaps 'override :prefix "SPC"
+(space-leader
     "."     '(find-file :which-key "Find file")
     "f f"   '(find-file :which-key "Find file")
     "f r"   '(counsel-recentf :which-key "Recent files")
@@ -169,6 +209,12 @@
     "f R"   '(rename-file :which-key "Rename file")
     "f S"   '(write-file :which-key "Save file as...")
     "f U"   '(sudo-edit :which-key "Sudo edit file"))
+
+(space-leader
+  "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Org agenda")
+  "- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
+  "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
+)
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (setq org-src-tab-acts-natively t
@@ -194,5 +240,30 @@
 
 (use-package emojify
     :hook (after-init . global-emojify-mode))
+
+(setq split-height-threshold nil)
+(setq split-width-threshold 0)
+
+(winner-mode 1)
+(space-leader 
+       ;; Window splits
+       "w c"   '(evil-window-delete :which-key "Close window")
+       "w d"   '(evil-window-delete :which-key "Close window")
+       "w o"   '(delete-other-windows :which-key "Delete other windows")
+       "w n"   '(evil-window-new :which-key "New window")
+       "w s"   '(evil-window-split :which-key "Horizontal split window")
+       "w v"   '(evil-window-vsplit :which-key "Vertical split window")
+       "w _"   '(evil-window-set-height :which-key "evil-window-set-height")
+       "w |"   '(evil-window-set-width :which-key "evil-window-set-width")
+
+       ;; Window motions
+       "w h"   '(evil-window-left :which-key "Window left")
+       "w j"   '(evil-window-down :which-key "Window down")
+       "w k"   '(evil-window-up :which-key "Window up")
+       "w l"   '(evil-window-right :which-key "Window right")
+       "w w"   '(evil-window-next :which-key "Goto next window")
+       ;; winner mode
+       "w <left>"  '(winner-undo :which-key "Winner undo")
+       "w <right>" '(winner-redo :which-key "Winner redo"))
 
 (setq gc-cons-threshold (* 2 1000 1000))
