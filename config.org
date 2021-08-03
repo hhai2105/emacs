@@ -326,6 +326,51 @@ instantly update dired
 (add-hook 'dired-mode-hook 'auto-revert-mode)
 #+end_src
 
+#+begin_src emacs-lisp
+(use-package all-the-icons-dired)
+(use-package dired-open)
+(use-package peep-dired)
+
+(space-leader
+    "d d" '(dired :which-key "Open dired")
+    "d j" '(dired-jump :which-key "Dired jump to current")
+    "d p" '(peep-dired :which-key "Peep-dired"))
+
+(defun fix-peep-dired-next-file()
+(interactive)
+(delete-other-windows)
+(peep-dired-next-file))
+
+(defun fix-peep-dired-prev-file()
+(interactive)
+(delete-other-windows)
+(peep-dired-prev-file))
+
+(with-eval-after-load 'dired
+(general-define-key
+:states '(normal, visual)
+:keymaps 'dired-mode-map
+"h" 'dired-up-directory
+"l" 'dired-find-file)
+
+(general-define-key
+:states '(normal, visual)
+:keymaps 'peep-dired-mode-map
+"j" 'fix-peep-dired-next-file
+"k" 'fix-peep-dired-prev-file))
+
+(add-hook 'peep-dired-hook 'evil-normalize-keymaps)
+;; Get file icons in dired
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+;; With dired-open plugin, you can launch external programs for certain extensions
+;; For example, I set all .png files to open in 'sxiv' and all .mp4 files to open in 'mpv'
+(setq dired-open-extensions '(("gif" . "sxiv")
+                              ("jpg" . "sxiv")
+                              ("png" . "sxiv")
+                              ("mkv" . "mpv")
+                              ("mp4" . "mpv")))
+#+end_src
+
 ** PDF
 better pdf reader
 #+begin_src emacs-lisp
@@ -335,12 +380,6 @@ better pdf reader
     (pdf-tools-install)
     (setq-default pdf-view-display-size 'fit-page)
 )
-#+end_src
-
-** Centaur tab
-
-#+begin_src emacs-lisp
-
 #+end_src
 
 ** Projectile
@@ -432,6 +471,27 @@ collapsed all org bullets globally
     :init (add-hook 'org-mode-hook 'toc-org-enable))
 #+end_src
 
+*** keybindings
+#+begin_src emacs-lisp
+(space-leader
+       "m *"   '(org-ctrl-c-star :which-key "Org-ctrl-c-star")
+       "m +"   '(org-ctrl-c-minus :which-key "Org-ctrl-c-minus")
+       "m ."   '(counsel-org-goto :which-key "Counsel org goto")
+       "m e"   '(org-export-dispatch :which-key "Org export dispatch")
+       "m f"   '(org-footnote-new :which-key "Org footnote new")
+       "m h"   '(org-toggle-heading :which-key "Org toggle heading")
+       "m i"   '(org-toggle-item :which-key "Org toggle item")
+       "m n"   '(org-store-link :which-key "Org store link")
+       "m o"   '(org-set-property :which-key "Org set property")
+       "m t"   '(org-todo :which-key "Org todo")
+       "m x"   '(org-toggle-checkbox :which-key "Org toggle checkbox")
+       "m B"   '(org-babel-tangle :which-key "Org babel tangle")
+       "m I"   '(org-toggle-inline-images :which-key "Org toggle inline imager")
+       "m T"   '(org-todo-list :which-key "Org todo list")
+       "o a"   '(org-agenda :which-key "Org agenda")
+       )
+#+end_src
+  
 ** Yasnippet
 Template system for Emacs
 #+begin_src emacs-lisp
@@ -487,6 +547,33 @@ Display Emoji in Emacs
        "w <right>" '(winner-redo :which-key "Winner redo"))
 #+end_src
 
+** Registers
+
+#+begin_src emacs-lisp
+(space-leader
+       "r c"   '(copy-to-register :which-key "Copy to register")
+       "r f"   '(frameset-to-register :which-key "Frameset to register")
+       "r i"   '(insert-register :which-key "Insert register")
+       "r j"   '(jump-to-register :which-key "Jump to register")
+       "r l"   '(list-registers :which-key "List registers")
+       "r n"   '(number-to-register :which-key "Number to register")
+       "r r"   '(counsel-register :which-key "Choose a register")
+       "r v"   '(view-register :which-key "View a register")
+       "r w"   '(window-configuration-to-register :which-key "Window configuration to register")
+       "r +"   '(increment-register :which-key "Increment register")
+       "r SPC" '(point-to-register :which-key "Point to register"))
+#+end_src
+  
+** general Keybindings
+
+#+begin_src emacs-lisp
+(space-leader
+  "SPC"   '(counsel-M-x :which-key "M-x")
+  "c c"   '(compile :which-key "Compile")
+  "c C"   '(recompile :which-key "Recompile")
+  "h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :which-key "Reload emacs config")
+  "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines"))
+#+end_src
 * Runtime Optimization
 ** lower GC Threshold gc happens more frquqently in less time
 #+begin_src emacs-lisp
