@@ -97,7 +97,7 @@
 #+end_src
 
 ** Modeline
-   
+
 #+begin_src emacs-lisp
 (use-package doom-modeline)
 (doom-modeline-mode 1)
@@ -107,8 +107,8 @@
 show absolute line numbers
 #+begin_src emacs-lisp
 (column-number-mode)
-(global-display-line-numbers-mode 1)
-(global-visual-line-mode t)
+(add-hook 'prog-mode-hook 'linum-on)
+(visual-line-mode 1)
 #+end_src
    
 disable line numbers for some modes
@@ -117,6 +117,12 @@ disable line numbers for some modes
         eshell-mode-hook))
     (add-hook mode (lambda() (display-line-numbers-mode 0))))
 
+#+end_src
+
+** Truncate lines
+remove emacs' default line wrap
+#+begin_src emacs-lisp
+(set-default 'truncate-lines t)
 #+end_src
 
 ** Rainbow Delimiter
@@ -129,24 +135,24 @@ color (),[],{} as pair
 ** Scrolling
 
 #+begin_src emacs-lisp
+(setq scroll-step 1)
 (setq scroll-conservatively 10000)
-(setq scroll-margin 10)
 #+end_src
 
 ** Fonts 
 
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-    :font "Noto Sans Mono 15"
+    :font "Noto Sans Mono 12"
     :weight 'medium)
 (set-face-attribute 'variable-pitch nil
-	:font "Noto Sans Mono 15"
+	:font "Noto Sans Mono 12"
     :weight 'medium)
 (set-face-attribute 'fixed-pitch nil
-    :font "Noto Sans Mono 15"
+    :font "Noto Sans Mono 12"
     :weight 'medium)
 ;;(setq-default line-spacing 0.10)
-(add-to-list 'default-frame-alist '(font . "Noto Sans Mono 15"))
+(add-to-list 'default-frame-alist '(font . "Noto Sans Mono 12"))
 #+end_src
 
 *** Zooming in/out keybindings
@@ -156,6 +162,12 @@ color (),[],{} as pair
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+#+end_src
+
+** Pretty Math Symbol
+
+#+begin_src emacs-lisp
+(setq org-pretty-entities t)
 #+end_src
 
 * General Packages
@@ -368,7 +380,22 @@ instantly update dired
                               ("jpg" . "sxiv")
                               ("png" . "sxiv")
                               ("mkv" . "mpv")
+                              ("pdf" . "zathura")
                               ("mp4" . "mpv")))
+#+end_src
+
+** Flycheck
+
+#+begin_src emacs-lisp
+(use-package flycheck)
+(use-package flycheck-haskell)
+#+end_src
+
+** Rainbow mode
+
+show rgb color in emacs
+#+begin_src emacs-lisp
+(use-package rainbow-mode)
 #+end_src
 
 ** PDF
@@ -431,6 +458,7 @@ better pdf reader
   "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Org agenda")
   "- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
   "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
+  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2021/fall/") :which-key "current class folder")
 )
 #+end_src
 
@@ -492,6 +520,40 @@ collapsed all org bullets globally
        )
 #+end_src
   
+*** Latex Preview
+
+#+begin_src emacs-lisp
+(require 'org)
+(setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
+#+end_src
+
+*** Visual Fill Mode
+
+#+begin_src emacs-lisp
+(defun efs/org-mode-visual-fill ()
+(setq visual-fill-column-width 100
+visual-fill-column-center-text t)
+(visual-fill-column-mode 1))
+
+(
+use-package visual-fill-column
+:hook (org-mode . efs/org-mode-visual-fill)
+)
+#+end_src
+
+*** Inline image
+
+#+begin_src emacs-lisp
+(setq org-startup-with-inline-images t)
+#+end_src
+
+** MU4E
+MU4E is an emacs email client
+
+#+begin_src emacs-lisp
+
+#+end_src
+
 ** Yasnippet
 Template system for Emacs
 #+begin_src emacs-lisp
@@ -499,11 +561,24 @@ Template system for Emacs
 (yas-global-mode 1)
 #+end_src
 
+*** Indent
+#+begin_src emacs-lisp
+(setq yas-indent-line nil)
+
+#+end_src
+
 ** Language Support
 *** Programming Languages
 
 #+begin_src emacs-lisp
 (use-package haskell-mode)
+#+end_src
+
+** Latex
+
+#+begin_src emacs-lisp
+(use-package auctex
+:defer t)
 #+end_src
 
 ** Emojis
@@ -574,6 +649,7 @@ Display Emoji in Emacs
   "h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :which-key "Reload emacs config")
   "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines"))
 #+end_src
+
 * Runtime Optimization
 ** lower GC Threshold gc happens more frquqently in less time
 #+begin_src emacs-lisp
