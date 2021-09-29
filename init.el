@@ -9,7 +9,7 @@
  ;; If there is more than one, they won't work right.
  '(electric-indent-mode nil)
  '(package-selected-packages
-   '(perspective company emacs-everywhere smooth-scroll key-chord ivy-rich xwwp-follow-link-ivy dashboard sudo-edit rainbow-delimiters projectile auctex yasnippet toc-org org-bullets all-the-icons-dired ## doom-modeline doom-modelines evil))
+   '(dired-git-info frontside-javascript flycheck-haskell openwith visual-fill-column org-noter-pdftools org-noter rainbow-mode perspective company emacs-everywhere smooth-scroll key-chord ivy-rich xwwp-follow-link-ivy dashboard sudo-edit rainbow-delimiters projectile auctex yasnippet toc-org org-bullets all-the-icons-dired ## doom-modeline doom-modelines evil))
  '(pixel-scroll-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
