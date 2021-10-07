@@ -1,0 +1,62 @@
+# -*- mode: snippet -*-
+# name: template_math
+# key: template_math 
+# --
+\documentclass[letter]{amsart}
+\renewcommand{\thesubsection}{\Alph{subsection}}
+\def\doubleunderline#1{\underline{\underline{#1}}}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\usepackage{titlesec}
+\usepackage{textcomp}
+\titleformat{\subsection}[frame]
+{\normalfont} {} {2pt} {\normalsize\bfseries\filright\thesubsection.\quad}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{enumerate}
+\usepackage{amsmath,amsfonts, amssymb}
+\usepackage{graphicx}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes,arrows}
+\usepackage[margin=1in]{geometry}
+\titleformat {\section}
+    {\normalfont \Large \bfseries \centering}{\thesection}{1em}{}
+\usepackage{enumitem}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage[fontsize=12pt]{scrextend}
+\restylefloat{table}
+\usepackage{mathtools}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\newcommand{\rr}{\mathbb{R}}
+\newcommand{\nn}{\mathbb{N}}
+\newcommand{\qq}{\mathbb{Q}}
+\newcommand{\dd}{$D$ }
+\newcommand{\intt}{int \text{ }}
+\newcommand{\bd}{bd \text{ }}
+\newcommand{\nbd}{nbd \text{ }}
+\newcommand{\cl}{cl \text{ }}
+\newcommand{\me}{\mathrm{e}}
+\newcommand\mypound{\protect\scalebox{0.8}{\protect\raisebox{0.4ex}{\#}}}
+\definecolor{UMassMaroon}{RGB}{136,28,28}
+\setcounter{MaxMatrixCols}{20}
+
+\newcommand{\Class}{${1: Class}}
+\newcommand{\HomeworkNumber}{${2: Homework Number}}
+\newcommand{\StudentName}{${3: Student Name}}
+\newcommand{\StudentIDNumber}{${4: Student id}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+% DO NOT CHANGE HERE
+%%%%%%%%%%%%%%%%%%%%%%%%
+\title[\Class $\mid$ Homework \mypound$\HomeworkNumber$]{\Class \\\\ Homework \mypound$\HomeworkNumber$}
+\author[\StudentName]{\StudentName \\\\ \StudentIDNumber}
+
+\begin{document}
+\maketitle
+$0
+\end{document}
