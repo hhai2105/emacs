@@ -472,13 +472,6 @@ instantly update dired
                               ("mp4" . "mpv")))
 #+end_src
 
-*** Dired-k
-#+begin_src emacs-lisp
-(use-package dired-k)
-(add-hook 'dired-initial-position-hook 'dired-k)
-(add-hook 'dired-after-readin-hook #'dired-k-no-revert)
-#+end_src
-
 ** Flycheck
 
 #+begin_src emacs-lisp
@@ -562,6 +555,18 @@ better pdf reader
 #+begin_src emacs-lisp
 (use-package evil-anzu)
 (global-anzu-mode)	
+#+end_src
+
+** Diff Hl (git)
+
+#+begin_src emacs-lisp
+(use-package diff-hl)
+(global-diff-hl-mode)
+#+end_src
+
+#+begin_src emacs-lisp
+(add-hook 'dired-initial-position-hook 'diff-hl-dired-mode)
+(add-hook 'dired-initial-position-hook 'diff-hl-margin-mode)
 #+end_src
 
 ** Org Mode
@@ -686,11 +691,11 @@ Template system for Emacs
 #+end_src
 
 ** Emojis
-Display Emoji in Emacs 
+Display Emoji in Emacs
 #+begin_src emacs-lisp
 (use-package emojify
     :hook (after-init . global-emojify-mode))
-#+end_src 
+#+end_src
 
 * Configuration
 ** Windows control

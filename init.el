@@ -12,7 +12,7 @@
  '(electric-indent-mode nil)
  '(global-hl-line-mode t)
  '(package-selected-packages
-   '(dired-k undo-tree evil-anzu phps-mode hlinum auctex-latexmk flycheck dired-git-info frontside-javascript flycheck-haskell openwith visual-fill-column org-noter-pdftools org-noter rainbow-mode perspective company emacs-everywhere smooth-scroll key-chord ivy-rich xwwp-follow-link-ivy dashboard sudo-edit rainbow-delimiters projectile auctex yasnippet toc-org org-bullets all-the-icons-dired ## doom-modeline doom-modelines evil))
+   '(diff-hl undo-tree evil-anzu phps-mode hlinum auctex-latexmk flycheck dired-git-info frontside-javascript flycheck-haskell openwith visual-fill-column org-noter-pdftools org-noter rainbow-mode perspective company emacs-everywhere smooth-scroll key-chord ivy-rich xwwp-follow-link-ivy dashboard sudo-edit rainbow-delimiters projectile auctex yasnippet toc-org org-bullets all-the-icons-dired ## doom-modeline doom-modelines evil))
  '(pixel-scroll-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

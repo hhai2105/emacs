@@ -292,10 +292,6 @@
                               ("pdf" . "zathura")
                               ("mp4" . "mpv")))
 
-(use-package dired-k)
-(add-hook 'dired-initial-position-hook 'dired-k)
-(add-hook 'dired-after-readin-hook #'dired-k-no-revert)
-
 (use-package flycheck)
 (use-package flycheck-haskell)
 
@@ -338,6 +334,12 @@
 
 (use-package evil-anzu)
 (global-anzu-mode)
+
+(use-package diff-hl)
+(global-diff-hl-mode)
+
+(add-hook 'dired-initial-position-hook 'diff-hl-dired-mode)
+(add-hook 'dired-initial-position-hook 'diff-hl-margin-mode)
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (setq org-src-tab-acts-natively t
