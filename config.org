@@ -72,6 +72,21 @@
 (setq ad-redefinition-action 'accept)
 #+end_src
 
+** Set default coding system to utf-8
+#+begin_src emacs-lisp
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+;; backwards compatibility as default-buffer-file-coding-system
+;; is deprecated in 23.2.
+(if (boundp 'buffer-file-coding-system)
+    (setq-default buffer-file-coding-system 'utf-8)
+  (setq default-buffer-file-coding-system 'utf-8))
+
+;; Treat clipboard input as UTF-8 string first; compound text next, etc.
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+#+end_src
 * User Interface Settings
 ** Make ESC quit promps
 
@@ -104,12 +119,13 @@
 #+end_src
 
 ** Line Numbers and Truncated Lines
-show absolute line numbers
+show absolute line numbers and highlight current line number
 #+begin_src emacs-lisp
-(column-number-mode)
-(add-hook 'prog-mode-hook 'linum-on)
-(visual-line-mode 1)
+(global-display-line-numbers-mode)
 #+end_src
+
+#+RESULTS:
+: t
    
 disable line numbers for some modes
 #+begin_src emacs-lisp
@@ -123,6 +139,24 @@ disable line numbers for some modes
 remove emacs' default line wrap
 #+begin_src emacs-lisp
 (set-default 'truncate-lines t)
+#+end_src
+
+** Indentation
+#+begin_src emacs-lisp
+(setq indent-tabs-mode t)
+(setq tab-stop-list (number-sequence 8 200 8))
+(setq tab-width 4)
+(setq indent-line-function 'insert-tab)
+#+end_src
+
+
+** Tab 
+** Line Highlighting
+remove emacs' default line wrap
+#+begin_src emacs-lisp
+(global-hl-line-mode +1)
+(use-package hlinum)
+(hlinum-activate)
 #+end_src
 
 ** Rainbow Delimiter
@@ -143,16 +177,16 @@ color (),[],{} as pair
 
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-    :font "Noto Sans Mono 12"
+    :font "Noto Sans Mono 11"
     :weight 'medium)
 (set-face-attribute 'variable-pitch nil
-	:font "Noto Sans Mono 12"
+	:font "Noto Sans Mono 11"
     :weight 'medium)
 (set-face-attribute 'fixed-pitch nil
-    :font "Noto Sans Mono 12"
+    :font "Noto Sans Mono 11"
     :weight 'medium)
 ;;(setq-default line-spacing 0.10)
-(add-to-list 'default-frame-alist '(font . "Noto Sans Mono 12"))
+(add-to-list 'default-frame-alist '(font . "Noto Sans Mono 11"))
 #+end_src
 
 *** Zooming in/out keybindings
@@ -530,16 +564,18 @@ collapsed all org bullets globally
 *** Visual Fill Mode
 
 #+begin_src emacs-lisp
-(defun efs/org-mode-visual-fill ()
-(setq visual-fill-column-width 100
-visual-fill-column-center-text t)
-(visual-fill-column-mode 1))
+;; (defun efs/org-mode-visual-fill ()
+;; (setq visual-fill-column-width 100
+;; visual-fill-column-center-text t)
+;; (visual-fill-column-mode 1))
 
-(
-use-package visual-fill-column
-:hook (org-mode . efs/org-mode-visual-fill)
-)
+;; (
+;; use-package visual-fill-column
+;; :hook (org-mode . efs/org-mode-visual-fill)
+;; )
 #+end_src
+
+#+RESULTS:
 
 *** Inline image
 
