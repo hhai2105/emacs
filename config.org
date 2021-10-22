@@ -287,7 +287,7 @@ add keybindings to go back to normal state
 (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
 (key-chord-mode 1)
 #+end_src
-		
+
 *** Which Key
 display key functions
   #+begin_src emacs-lisp
@@ -304,7 +304,7 @@ display key functions
 #+end_src
 
 **** set space and C-SPC as global prefix
-	
+
 #+begin_src emacs-lisp
 (general-create-definer space-leader
     :states '(normal visual emacs)
@@ -313,7 +313,7 @@ display key functions
     :global-prefix "C-SPC"
 )
 #+end_src
-	 
+
 ** Auto Completion Engines
 *** Ivy
 
@@ -470,6 +470,13 @@ instantly update dired
                               ("mkv" . "mpv")
                               ("pdf" . "zathura")
                               ("mp4" . "mpv")))
+#+end_src
+
+*** Dired-k
+#+begin_src emacs-lisp
+(use-package dired-k)
+(add-hook 'dired-initial-position-hook 'dired-k)
+(add-hook 'dired-after-readin-hook #'dired-k-no-revert)
 #+end_src
 
 ** Flycheck

@@ -35,6 +35,19 @@
 
 (setq ad-redefinition-action 'accept)
 
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+;; backwards compatibility as default-buffer-file-coding-system
+;; is deprecated in 23.2.
+(if (boundp 'buffer-file-coding-system)
+    (setq-default buffer-file-coding-system 'utf-8)
+  (setq default-buffer-file-coding-system 'utf-8))
+
+;; Treat clipboard input as UTF-8 string first; compound text next, etc.
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (menu-bar-mode -1)
@@ -49,36 +62,91 @@
 (use-package doom-modeline)
 (doom-modeline-mode 1)
 
-(column-number-mode)
-(global-display-line-numbers-mode 1)
-(global-visual-line-mode t)
+(global-display-line-numbers-mode)
 
 (dolist (mode '(term-mode-hook
         eshell-mode-hook))
     (add-hook mode (lambda() (display-line-numbers-mode 0))))
 
+(set-default 'truncate-lines t)
+
+;; Create a variable for our preferred tab width
+(setq custom-tab-width 4)
+
+;; Two callable functions for enabling/disabling tabs in Emacs
+(defun disable-tabs () (setq indent-tabs-mode nil))
+(defun enable-tabs  ()
+  (local-set-key (kbd "TAB") 'tab-to-tab-stop)
+  (setq indent-tabs-mode t)
+  (setq tab-width custom-tab-width))
+
+;; Hooks to Enable Tabs
+(add-hook 'prog-mode-hook 'enable-tabs)
+;; Hooks to Disable Tabs
+(add-hook 'lisp-mode-hook 'disable-tabs)
+(add-hook 'emacs-lisp-mode-hook 'disable-tabs)
+
+;; Making electric-indent behave sanely
+(setq-default electric-indent-inhibit t)
+
+;; Make the backspace properly erase the tab instead of
+;; removing 1 space at a time.
+(setq backward-delete-char-untabify-method 'hungry)
+
+;; (OPTIONAL) Shift width for evil-mode users
+;; For the vim-like motions of ">>" and "<<".
+(setq-default evil-shift-width custom-tab-width)
+
+;; WARNING: This will change your life
+;; (OPTIONAL) Visualize tabs as a pipe character - "|"
+;; This will also show trailing characters as they are useful to spot.
+(setq whitespace-style '(face tabs tab-mark trailing))
+(custom-set-faces
+ '(whitespace-tab ((t (:foreground "#636363")))))
+(setq whitespace-display-mappings
+  ;; '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
+  '((tab-mark 9 [9] [92 9]))) ; 124 is the ascii ID for '\|'
+(global-whitespace-mode) ; Enable whitespace mode everywhere
+; END TABS CONFIG
+
+;; Language-Specific Tweaks
+(setq-default python-indent-offset custom-tab-width) ;; Python
+(setq-default js-indent-level custom-tab-width)      ;; Javascript
+(setq-default c-basic-offset 4)                      ;; C/C++/Java
+
+(use-package undo-tree)
+(global-undo-tree-mode)
+(setq evil-undo-system 'undo-tree)
+(add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
+
+(global-hl-line-mode +1)
+(use-package hlinum)
+(hlinum-activate)
+
 (use-package rainbow-delimiters
 :hook (prog-mode . rainbow-delimiters-mode))
 
+(setq scroll-step 1)
 (setq scroll-conservatively 10000)
-(setq scroll-margin 10)
 
 (set-face-attribute 'default nil
-    :font "Noto Sans Mono 15"
+    :font "Noto Sans Mono 11"
     :weight 'medium)
 (set-face-attribute 'variable-pitch nil
-	:font "Noto Sans Mono 15"
+	:font "Noto Sans Mono 11"
     :weight 'medium)
 (set-face-attribute 'fixed-pitch nil
-    :font "Noto Sans Mono 15"
+    :font "Noto Sans Mono 11"
     :weight 'medium)
 ;;(setq-default line-spacing 0.10)
-(add-to-list 'default-frame-alist '(font . "Noto Sans Mono 15"))
+(add-to-list 'default-frame-alist '(font . "Noto Sans Mono 11"))
 
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+
+(setq org-pretty-entities t)
 
 (use-package key-chord)
 
@@ -221,7 +289,17 @@
                               ("jpg" . "sxiv")
                               ("png" . "sxiv")
                               ("mkv" . "mpv")
+                              ("pdf" . "zathura")
                               ("mp4" . "mpv")))
+
+(use-package dired-k)
+(add-hook 'dired-initial-position-hook 'dired-k)
+(add-hook 'dired-after-readin-hook #'dired-k-no-revert)
+
+(use-package flycheck)
+(use-package flycheck-haskell)
+
+(use-package rainbow-mode)
 
 (use-package pdf-tools
     :defer t
@@ -255,7 +333,11 @@
   "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Org agenda")
   "- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
   "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
+  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2021/fall/") :which-key "current class folder")
 )
+
+(use-package evil-anzu)
+(global-anzu-mode)
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (setq org-src-tab-acts-natively t
@@ -292,10 +374,32 @@
        "o a"   '(org-agenda :which-key "Org agenda")
        )
 
+(require 'org)
+(setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
+
+;; (defun efs/org-mode-visual-fill ()
+;; (setq visual-fill-column-width 100
+;; visual-fill-column-center-text t)
+;; (visual-fill-column-mode 1))
+
+;; (
+;; use-package visual-fill-column
+;; :hook (org-mode . efs/org-mode-visual-fill)
+;; )
+
+(setq org-startup-with-inline-images t)
+
+
+
 (use-package yasnippet)
 (yas-global-mode 1)
 
+(setq yas-indent-line nil)
+
 (use-package haskell-mode)
+
+(use-package auctex
+:defer t)
 
 (use-package emojify
     :hook (after-init . global-emojify-mode))
