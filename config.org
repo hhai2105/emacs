@@ -73,6 +73,7 @@
 #+end_src
 
 ** Set default coding system to utf-8
+
 #+begin_src emacs-lisp
 (prefer-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
@@ -87,6 +88,7 @@
 ;; Treat clipboard input as UTF-8 string first; compound text next, etc.
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 #+end_src
+
 * User Interface Settings
 ** Make ESC quit promps
 
@@ -142,15 +144,68 @@ remove emacs' default line wrap
 #+end_src
 
 ** Indentation
+ [[https://dougie.io/emacs/indentation/][Guide]]
+*** Basic setup
+
 #+begin_src emacs-lisp
-(setq indent-tabs-mode t)
-(setq tab-stop-list (number-sequence 8 200 8))
-(setq tab-width 4)
-(setq indent-line-function 'insert-tab)
+;; Create a variable for our preferred tab width
+(setq custom-tab-width 4)
+
+;; Two callable functions for enabling/disabling tabs in Emacs
+(defun disable-tabs () (setq indent-tabs-mode nil))
+(defun enable-tabs  ()
+  (local-set-key (kbd "TAB") 'tab-to-tab-stop)
+  (setq indent-tabs-mode t)
+  (setq tab-width custom-tab-width))
+
+;; Hooks to Enable Tabs
+(add-hook 'prog-mode-hook 'enable-tabs)
+;; Hooks to Disable Tabs
+(add-hook 'lisp-mode-hook 'disable-tabs)
+(add-hook 'emacs-lisp-mode-hook 'disable-tabs)
+
+;; Making electric-indent behave sanely
+(setq-default electric-indent-inhibit t)
+
+;; Make the backspace properly erase the tab instead of
+;; removing 1 space at a time.
+(setq backward-delete-char-untabify-method 'hungry)
+
+;; (OPTIONAL) Shift width for evil-mode users
+;; For the vim-like motions of ">>" and "<<".
+(setq-default evil-shift-width custom-tab-width)
+
+;; WARNING: This will change your life
+;; (OPTIONAL) Visualize tabs as a pipe character - "|"
+;; This will also show trailing characters as they are useful to spot.
+(setq whitespace-style '(face tabs tab-mark trailing))
+(custom-set-faces
+ '(whitespace-tab ((t (:foreground "#636363")))))
+(setq whitespace-display-mappings
+  ;; '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
+  '((tab-mark 9 [9] [92 9]))) ; 124 is the ascii ID for '\|'
+(global-whitespace-mode) ; Enable whitespace mode everywhere
+; END TABS CONFIG
 #+end_src
 
+*** Language-specific tweaks
 
-** Tab 
+#+begin_src emacs-lisp
+;; Language-Specific Tweaks
+(setq-default python-indent-offset custom-tab-width) ;; Python
+(setq-default js-indent-level custom-tab-width)      ;; Javascript
+(setq-default c-basic-offset 4)                      ;; C/C++/Java
+#+end_src
+
+** Undo
+
+#+begin_src emacs-lisp
+(use-package undo-tree)
+(global-undo-tree-mode)
+(setq evil-undo-system 'undo-tree)
+(add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)	
+#+end_src
+
 ** Line Highlighting
 remove emacs' default line wrap
 #+begin_src emacs-lisp
@@ -173,7 +228,7 @@ color (),[],{} as pair
 (setq scroll-conservatively 10000)
 #+end_src
 
-** Fonts 
+** Fonts
 
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
@@ -232,7 +287,7 @@ add keybindings to go back to normal state
 (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
 (key-chord-mode 1)
 #+end_src
-
+		
 *** Which Key
 display key functions
   #+begin_src emacs-lisp
@@ -249,7 +304,7 @@ display key functions
 #+end_src
 
 **** set space and C-SPC as global prefix
-
+	
 #+begin_src emacs-lisp
 (general-create-definer space-leader
     :states '(normal visual emacs)
@@ -258,7 +313,7 @@ display key functions
     :global-prefix "C-SPC"
 )
 #+end_src
-
+	 
 ** Auto Completion Engines
 *** Ivy
 
@@ -282,7 +337,7 @@ display key functions
     (ivy-mode 1))
 #+end_src
 
-*** Ivy Rich 
+*** Ivy Rich
 
 #+begin_src emacs-lisp
 (use-package ivy-rich
@@ -290,7 +345,7 @@ display key functions
     (ivy-rich-mode 1))
 #+end_src
 
-*** Counsel 
+*** Counsel
 
 #+begin_src emacs-lisp
 (use-package counsel
@@ -313,7 +368,6 @@ display key functions
 
 #+begin_src emacs-lisp
 (add-hook 'after-init-hook 'electric-indent-mode)
-
 #+end_src
 
 **** parenthesis
@@ -496,6 +550,13 @@ better pdf reader
 )
 #+end_src
 
+** Anzu
+
+#+begin_src emacs-lisp
+(use-package evil-anzu)
+(global-anzu-mode)	
+#+end_src
+
 ** Org Mode
 *** Configuration
 
@@ -517,7 +578,7 @@ collapsed all org bullets globally
 #+begin_src emacs-lisp
 (setq org-startup-folded t)
 #+end_src
-
+	
 *** Org Source Code Block
 
 #+begin_src emacs-lisp
@@ -691,3 +752,4 @@ Display Emoji in Emacs
 #+begin_src emacs-lisp
 (setq gc-cons-threshold (* 2 1000 1000))
 #+end_src
+
