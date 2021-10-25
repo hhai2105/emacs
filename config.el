@@ -113,6 +113,15 @@
 (setq-default python-indent-offset custom-tab-width) ;; Python
 (setq-default js-indent-level custom-tab-width)      ;; Javascript
 (setq-default c-basic-offset 4)                      ;; C/C++/Java
+(add-hook 'html-mode-hook                            ;; html
+    (lambda ()
+    ;; Default indentation is usually 2 spaces, changing to 4.
+        (set (make-local-variable 'sgml-basic-offset) 4)))
+(add-hook 'sgml-mode-hook                            ;; html
+    (lambda ()
+        ;; Default indentation to 2, but let SGML mode guess, too.
+        (set (make-local-variable 'sgml-basic-offset) 2)
+        (sgml-guess-indent)))
 
 (use-package undo-tree)
 (global-undo-tree-mode)
@@ -147,6 +156,8 @@
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 
 (setq org-pretty-entities t)
+
+(fset 'yes-or-no.p 'y-or-n-p)
 
 (use-package key-chord)
 
@@ -289,6 +300,7 @@
                               ("jpg" . "sxiv")
                               ("png" . "sxiv")
                               ("mkv" . "mpv")
+                              ("html" . "brave")
                               ("pdf" . "zathura")
                               ("mp4" . "mpv")))
 

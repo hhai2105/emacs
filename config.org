@@ -269,6 +269,10 @@ color (),[],{} as pair
 (setq org-pretty-entities t)
 #+end_src
 
+** Yes or No Prompt
+#+begin_src emacs-lisp
+  (fset 'yes-or-no.p 'y-or-n-p)
+#+end_src
 * General Packages
 ** keybinding packages
 *** key-chord
@@ -478,6 +482,7 @@ instantly update dired
                               ("jpg" . "sxiv")
                               ("png" . "sxiv")
                               ("mkv" . "mpv")
+                              ("html" . "brave")
                               ("pdf" . "zathura")
                               ("mp4" . "mpv")))
 #+end_src
@@ -707,7 +712,6 @@ Display Emoji in Emacs
     :hook (after-init . global-emojify-mode))
 #+end_src
 
-
 * Configuration
 ** Windows control
 *** Split buffer side by side
@@ -758,7 +762,7 @@ Display Emoji in Emacs
        "r +"   '(increment-register :which-key "Increment register")
        "r SPC" '(point-to-register :which-key "Point to register"))
 #+end_src
-  
+
 ** general Keybindings
 
 #+begin_src emacs-lisp
