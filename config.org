@@ -207,6 +207,11 @@ remove emacs' default line wrap
 
 #+end_src
 
+*** Agressive indentation
+#+begin_src emacs-lisp
+(use-package aggressive-indent)
+(global-aggressive-indent-mode)
+#+end_src
 ** Undo
 
 #+begin_src emacs-lisp
@@ -269,10 +274,6 @@ color (),[],{} as pair
 (setq org-pretty-entities t)
 #+end_src
 
-** Yes or No Prompt
-#+begin_src emacs-lisp
-  (fset 'yes-or-no.p 'y-or-n-p)
-#+end_src
 * General Packages
 ** keybinding packages
 *** key-chord
@@ -482,7 +483,6 @@ instantly update dired
                               ("jpg" . "sxiv")
                               ("png" . "sxiv")
                               ("mkv" . "mpv")
-                              ("html" . "brave")
                               ("pdf" . "zathura")
                               ("mp4" . "mpv")))
 #+end_src
@@ -569,7 +569,7 @@ better pdf reader
 
 #+begin_src emacs-lisp
 (use-package evil-anzu)
-(global-anzu-mode)	
+(global-anzu-mode)
 #+end_src
 
 ** Diff Hl (git)
@@ -696,6 +696,16 @@ Template system for Emacs
 
 #+begin_src emacs-lisp
 (use-package haskell-mode)
+(use-package typescript-mode)
+#+end_src
+
+*** html
+
+#+begin_src emacs-lisp
+(use-package ac-html)
+(use-package ac-html-angular)
+(use-package ac-html-csswatcher)
+(use-package ac-html-bootstrap)
 #+end_src
 
 ** Latex
@@ -771,6 +781,7 @@ Display Emoji in Emacs
   "c c"   '(compile :which-key "Compile")
   "c C"   '(recompile :which-key "Recompile")
   "h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :which-key "Reload emacs config")
+  "h t t" '(load-theme :which-key "Reload emacs config")
   "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines"))
 #+end_src
 
