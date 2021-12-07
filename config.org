@@ -144,7 +144,7 @@ remove emacs' default line wrap
 #+end_src
 
 ** Indentation
- [[https://dougie.io/emacs/indentation/][Guide]]
+[[https://dougie.io/emacs/indentation/][Guide]]
 *** Basic setup
 
 #+begin_src emacs-lisp
@@ -481,6 +481,7 @@ instantly update dired
 ;; For example, I set all .png files to open in 'sxiv' and all .mp4 files to open in 'mpv'
 (setq dired-open-extensions '(("gif" . "sxiv")
                               ("jpg" . "sxiv")
+                              ("jpeg" . "sxiv")
                               ("png" . "sxiv")
                               ("mkv" . "mpv")
                               ("pdf" . "zathura")
@@ -718,8 +719,7 @@ Template system for Emacs
 ** Emojis
 Display Emoji in Emacs
 #+begin_src emacs-lisp
-(use-package emojify
-    :hook (after-init . global-emojify-mode))
+(use-package emojify)
 #+end_src
 
 * Configuration
@@ -785,6 +785,15 @@ Display Emoji in Emacs
   "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines"))
 #+end_src
 
+** Copy directory to keyring
+#+begin_src emacs-lisp
+(defun my/dired-copy-dirname-as-kill ()
+  "Copy the current directory into the kill ring."
+  (interactive)
+  (kill-new default-directory))
+(space-leader
+"y y" 'my/dired-copy-dirname-as-kill)
+#+end_src
 * Runtime Optimization
 ** lower GC Threshold gc happens more frquqently in less time
 #+begin_src emacs-lisp
