@@ -123,6 +123,9 @@
         (set (make-local-variable 'sgml-basic-offset) 2)
         (sgml-guess-indent)))
 
+(use-package aggressive-indent)
+(global-aggressive-indent-mode)
+
 (use-package undo-tree)
 (global-undo-tree-mode)
 (setq evil-undo-system 'undo-tree)
@@ -156,8 +159,6 @@
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 
 (setq org-pretty-entities t)
-
-(fset 'yes-or-no.p 'y-or-n-p)
 
 (use-package key-chord)
 
@@ -298,9 +299,9 @@
 ;; For example, I set all .png files to open in 'sxiv' and all .mp4 files to open in 'mpv'
 (setq dired-open-extensions '(("gif" . "sxiv")
                               ("jpg" . "sxiv")
+                              ("jpeg" . "sxiv")
                               ("png" . "sxiv")
                               ("mkv" . "mpv")
-                              ("html" . "brave")
                               ("pdf" . "zathura")
                               ("mp4" . "mpv")))
 
@@ -411,6 +412,12 @@
 (setq yas-indent-line nil)
 
 (use-package haskell-mode)
+(use-package typescript-mode)
+
+(use-package ac-html)
+(use-package ac-html-angular)
+(use-package ac-html-csswatcher)
+(use-package ac-html-bootstrap)
 
 (use-package auctex
 :defer t)
@@ -461,6 +468,14 @@
   "c c"   '(compile :which-key "Compile")
   "c C"   '(recompile :which-key "Recompile")
   "h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :which-key "Reload emacs config")
+  "h t t" '(load-theme :which-key "Reload emacs config")
   "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines"))
+
+(defun my/dired-copy-dirname-as-kill ()
+  "Copy the current directory into the kill ring."
+  (interactive)
+  (kill-new default-directory))
+(space-leader
+"y y" 'my/dired-copy-dirname-as-kill)
 
 (setq gc-cons-threshold (* 2 1000 1000))
