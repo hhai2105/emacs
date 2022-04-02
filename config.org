@@ -124,6 +124,7 @@
 show absolute line numbers and highlight current line number
 #+begin_src emacs-lisp
 (global-display-line-numbers-mode)
+(setq display-line-numbers-type 'relative)
 #+end_src
 
 #+RESULTS:
@@ -159,7 +160,7 @@ remove emacs' default line wrap
   (setq tab-width custom-tab-width))
 
 ;; Hooks to Enable Tabs
-(add-hook 'prog-mode-hook 'enable-tabs)
+(add-hook 'prog-mode-hook 'disable-tabs)
 ;; Hooks to Disable Tabs
 (add-hook 'lisp-mode-hook 'disable-tabs)
 (add-hook 'emacs-lisp-mode-hook 'disable-tabs)
@@ -184,7 +185,7 @@ remove emacs' default line wrap
 (setq whitespace-display-mappings
   ;; '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
   '((tab-mark 9 [9] [92 9]))) ; 124 is the ascii ID for '\|'
-(global-whitespace-mode) ; Enable whitespace mode everywhere
+;; (global-whitespace-mode) ; Enable whitespace mode everywhere
 ; END TABS CONFIG
 #+end_src
 
@@ -193,6 +194,7 @@ remove emacs' default line wrap
 #+begin_src emacs-lisp
 ;; Language-Specific Tweaks
 (setq-default python-indent-offset custom-tab-width) ;; Python
+(setq-default python-indent-guess-indent-offset nil) ;; Python
 (setq-default js-indent-level custom-tab-width)      ;; Javascript
 (setq-default c-basic-offset 4)                      ;; C/C++/Java
 (add-hook 'html-mode-hook                            ;; html
@@ -488,12 +490,59 @@ instantly update dired
                               ("mp4" . "mpv")))
 #+end_src
 
+#+begin_src emacs-lisp
+ 
+(eval-after-load  "dired-x" '(defun dired-clean-up-after-deletion (fn)
+  "My Clean up after a deleted file or directory FN.
+Remove expanded subdir of deleted dir, if any."
+  (save-excursion (and (cdr dired-subdir-alist)
+                       (dired-goto-subdir fn)
+                       (dired-kill-subdir)))
+
+  ;; Offer to kill buffer of deleted file FN.
+  (if dired-clean-up-buffers-too
+      (progn
+        (let ((buf (get-file-buffer fn)))
+          (and buf
+               (save-excursion ; you never know where kill-buffer leaves you
+                 (kill-buffer buf))))
+        (let ((buf-list (dired-buffers-for-dir (expand-file-name fn)))
+              (buf nil))
+          (and buf-list
+               (while buf-list
+                 (save-excursion (kill-buffer (car buf-list)))
+                 (setq buf-list (cdr buf-list)))))))
+  ;; Anything else?
+  )) 
+#+end_src
+
+*** Dired group file and folder together
+#+begin_src emacs-lisp
+ (defun mydired-sort ()
+  "Sort dired listings with directories first."
+  (save-excursion
+    (let (buffer-read-only)
+      (forward-line 2) ;; beyond dir. header 
+      (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
+    (set-buffer-modified-p nil)))
+
+(defadvice dired-readin
+  (after dired-after-updating-hook first () activate)
+  "Sort dired listings with directories first before adding marks."
+  (mydired-sort)) 
+#+end_src
+
 ** Flycheck
 
 #+begin_src emacs-lisp
 (use-package flycheck)
 (use-package flycheck-haskell)
+(global-flycheck-mode)
+(setq flycheck-check-syntax-automatically '(mode-enabled save))
 #+end_src
+
+#+RESULTS:
+: t
 
 ** Rainbow mode
 
@@ -562,7 +611,7 @@ better pdf reader
   "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Org agenda")
   "- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
   "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
-  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2021/fall/") :which-key "current class folder")
+  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2022/spring/") :which-key "current class folder")
 )
 #+end_src
 
@@ -720,6 +769,13 @@ Template system for Emacs
 Display Emoji in Emacs
 #+begin_src emacs-lisp
 (use-package emojify)
+#+end_src
+
+** Atomic Chrome
+a package to edit text on a browser
+#+begin_src emacs-lisp
+(use-package atomic-chrome)
+(atomic-chrome-start-server)
 #+end_src
 
 * Configuration
