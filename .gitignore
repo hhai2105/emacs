@@ -1,0 +1,8 @@
+*
+
+!.gitignore
+!config.el
+!config.org
+!init.el
+!splash.png
+!snippets/

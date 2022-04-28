@@ -110,21 +110,32 @@
 (use-package doom-themes)
 (setq doom-themes-enable-bold t
     doom-themes-enable-italics t)
-(load-theme 'doom-outrun-electric t)
+(load-theme 'doom-dracula t)
 #+end_src
+
+#+RESULTS:
+: t
 
 ** Modeline
 
 #+begin_src emacs-lisp
 (use-package doom-modeline)
 (doom-modeline-mode 1)
+(setq find-file-visit-truename t)
+;; built-in `project' on 26+
+(setq doom-modeline-project-detection 'project)
+;; or `find-in-project' if it's installed
+(setq doom-modeline-project-detection 'ffip)
 #+end_src
+
+#+RESULTS:
+: ffip
 
 ** Line Numbers and Truncated Lines
 show absolute line numbers and highlight current line number
 #+begin_src emacs-lisp
 (global-display-line-numbers-mode)
-(setq display-line-numbers-type 'relative)
+;; (setq display-line-numbers-type 'relative)
 #+end_src
 
 #+RESULTS:
@@ -406,7 +417,7 @@ display key functions
   (setq dashboard-set-file-icons t)
   (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
   ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as bannerj
-  (setq dashboard-startup-banner "~/.config/emacs/emacs-dash.png")  ;; use custom image as banner
+  (setq dashboard-startup-banner "~/.config/emacs/splash.png")  ;; use custom image as banner
   (setq dashboard-center-content nil) ;; set to 't' for centered content
   (setq dashboard-items '((recents . 5)
                           (agenda . 5 )
@@ -418,7 +429,6 @@ display key functions
   (dashboard-modify-heading-icons '((recents . "file-text")
 			      (bookmarks . "book"))))
 #+end_src
-
 
 *** Dashboard in Emacsclient
 
@@ -485,6 +495,7 @@ instantly update dired
                               ("jpg" . "sxiv")
                               ("jpeg" . "sxiv")
                               ("png" . "sxiv")
+                              ("svg" . "sxiv")
                               ("mkv" . "mpv")
                               ("pdf" . "zathura")
                               ("mp4" . "mpv")))
@@ -629,11 +640,6 @@ better pdf reader
 (global-diff-hl-mode)
 #+end_src
 
-#+begin_src emacs-lisp
-(add-hook 'dired-initial-position-hook 'diff-hl-dired-mode)
-(add-hook 'dired-initial-position-hook 'diff-hl-margin-mode)
-#+end_src
-
 ** Org Mode
 *** Configuration
 
@@ -679,8 +685,7 @@ collapsed all org bullets globally
        "m ."   '(counsel-org-goto :which-key "Counsel org goto")
        "m e"   '(org-export-dispatch :which-key "Org export dispatch")
        "m f"   '(org-footnote-new :which-key "Org footnote new")
-       "m h"   '(org-toggle-heading :which-key "Org toggle heading")
-       "m i"   '(org-toggle-item :which-key "Org toggle item")
+       "m h"   '(org-toggle-heading :which-key "Org toggle heading") "m i"   '(org-toggle-item :which-key "Org toggle item")
        "m n"   '(org-store-link :which-key "Org store link")
        "m o"   '(org-set-property :which-key "Org set property")
        "m t"   '(org-todo :which-key "Org todo")
@@ -778,6 +783,24 @@ a package to edit text on a browser
 (atomic-chrome-start-server)
 #+end_src
 
+** Quickrun
+Let you run code in current buffer quickly
+#+begin_src emacs-lisp
+(use-package quickrun)
+(space-leader
+       "x x"   '(quickrun :which-key "quickrun")
+)
+#+end_src
+
+** eyebrowse
+eyebrowse is a global minor mode for Emacs that allows you to manage your window configurations in a simple manner, just like tiling window managers like i3wm with their workspaces do. It displays their current state in the modeline by default. The behaviour is modeled after ranger, a file manager written in Python.
+
+#+begin_src emacs-lisp
+(use-package eyebrowse)
+(eyebrowse-mode t) 
+(eyebrowse-setup-opinionated-keys) 
+#+end_src
+
 * Configuration
 ** Windows control
 *** Split buffer side by side
@@ -842,6 +865,7 @@ a package to edit text on a browser
 #+end_src
 
 ** Copy directory to keyring
+
 #+begin_src emacs-lisp
 (defun my/dired-copy-dirname-as-kill ()
   "Copy the current directory into the kill ring."

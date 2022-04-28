@@ -57,12 +57,18 @@
 (use-package doom-themes)
 (setq doom-themes-enable-bold t
     doom-themes-enable-italics t)
-(load-theme 'doom-outrun-electric t)
+(load-theme 'doom-dracula t)
 
 (use-package doom-modeline)
 (doom-modeline-mode 1)
+(setq find-file-visit-truename t)
+;; built-in `project' on 26+
+(setq doom-modeline-project-detection 'project)
+;; or `find-in-project' if it's installed
+(setq doom-modeline-project-detection 'ffip)
 
 (global-display-line-numbers-mode)
+;; (setq display-line-numbers-type 'relative)
 
 (dolist (mode '(term-mode-hook
         eshell-mode-hook))
@@ -81,7 +87,7 @@
   (setq tab-width custom-tab-width))
 
 ;; Hooks to Enable Tabs
-(add-hook 'prog-mode-hook 'enable-tabs)
+(add-hook 'prog-mode-hook 'disable-tabs)
 ;; Hooks to Disable Tabs
 (add-hook 'lisp-mode-hook 'disable-tabs)
 (add-hook 'emacs-lisp-mode-hook 'disable-tabs)
@@ -106,11 +112,12 @@
 (setq whitespace-display-mappings
   ;; '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
   '((tab-mark 9 [9] [92 9]))) ; 124 is the ascii ID for '\|'
-(global-whitespace-mode) ; Enable whitespace mode everywhere
+;; (global-whitespace-mode) ; Enable whitespace mode everywhere
 ; END TABS CONFIG
 
 ;; Language-Specific Tweaks
 (setq-default python-indent-offset custom-tab-width) ;; Python
+(setq-default python-indent-guess-indent-offset nil) ;; Python
 (setq-default js-indent-level custom-tab-width)      ;; Javascript
 (setq-default c-basic-offset 4)                      ;; C/C++/Java
 (add-hook 'html-mode-hook                            ;; html
@@ -237,7 +244,7 @@
   (setq dashboard-set-file-icons t)
   (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
   ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as bannerj
-  (setq dashboard-startup-banner "~/.config/emacs/emacs-dash.png")  ;; use custom image as banner
+  (setq dashboard-startup-banner "~/.config/emacs/splash.png")  ;; use custom image as banner
   (setq dashboard-center-content nil) ;; set to 't' for centered content
   (setq dashboard-items '((recents . 5)
                           (agenda . 5 )
@@ -301,12 +308,51 @@
                               ("jpg" . "sxiv")
                               ("jpeg" . "sxiv")
                               ("png" . "sxiv")
+                              ("svg" . "sxiv")
                               ("mkv" . "mpv")
                               ("pdf" . "zathura")
                               ("mp4" . "mpv")))
 
+(eval-after-load  "dired-x" '(defun dired-clean-up-after-deletion (fn)
+  "My Clean up after a deleted file or directory FN.
+Remove expanded subdir of deleted dir, if any."
+  (save-excursion (and (cdr dired-subdir-alist)
+                       (dired-goto-subdir fn)
+                       (dired-kill-subdir)))
+
+  ;; Offer to kill buffer of deleted file FN.
+  (if dired-clean-up-buffers-too
+      (progn
+        (let ((buf (get-file-buffer fn)))
+          (and buf
+               (save-excursion ; you never know where kill-buffer leaves you
+                 (kill-buffer buf))))
+        (let ((buf-list (dired-buffers-for-dir (expand-file-name fn)))
+              (buf nil))
+          (and buf-list
+               (while buf-list
+                 (save-excursion (kill-buffer (car buf-list)))
+                 (setq buf-list (cdr buf-list)))))))
+  ;; Anything else?
+  ))
+
+(defun mydired-sort ()
+  "Sort dired listings with directories first."
+  (save-excursion
+    (let (buffer-read-only)
+      (forward-line 2) ;; beyond dir. header 
+      (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
+    (set-buffer-modified-p nil)))
+
+(defadvice dired-readin
+  (after dired-after-updating-hook first () activate)
+  "Sort dired listings with directories first before adding marks."
+  (mydired-sort))
+
 (use-package flycheck)
 (use-package flycheck-haskell)
+(global-flycheck-mode)
+(setq flycheck-check-syntax-automatically '(mode-enabled save))
 
 (use-package rainbow-mode)
 
@@ -342,7 +388,7 @@
   "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Org agenda")
   "- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
   "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
-  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2021/fall/") :which-key "current class folder")
+  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2022/spring/") :which-key "current class folder")
 )
 
 (use-package evil-anzu)
@@ -350,9 +396,6 @@
 
 (use-package diff-hl)
 (global-diff-hl-mode)
-
-(add-hook 'dired-initial-position-hook 'diff-hl-dired-mode)
-(add-hook 'dired-initial-position-hook 'diff-hl-margin-mode)
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (setq org-src-tab-acts-natively t
@@ -377,8 +420,7 @@
        "m ."   '(counsel-org-goto :which-key "Counsel org goto")
        "m e"   '(org-export-dispatch :which-key "Org export dispatch")
        "m f"   '(org-footnote-new :which-key "Org footnote new")
-       "m h"   '(org-toggle-heading :which-key "Org toggle heading")
-       "m i"   '(org-toggle-item :which-key "Org toggle item")
+       "m h"   '(org-toggle-heading :which-key "Org toggle heading") "m i"   '(org-toggle-item :which-key "Org toggle item")
        "m n"   '(org-store-link :which-key "Org store link")
        "m o"   '(org-set-property :which-key "Org set property")
        "m t"   '(org-todo :which-key "Org todo")
@@ -422,8 +464,19 @@
 (use-package auctex
 :defer t)
 
-(use-package emojify
-    :hook (after-init . global-emojify-mode))
+(use-package emojify)
+
+(use-package atomic-chrome)
+(atomic-chrome-start-server)
+
+(use-package quickrun)
+(space-leader
+       "x x"   '(quickrun :which-key "quickrun")
+)
+
+(use-package eyebrowse)
+(eyebrowse-mode t) 
+(eyebrowse-setup-opinionated-keys)
 
 (setq split-height-threshold nil)
 (setq split-width-threshold 0)
