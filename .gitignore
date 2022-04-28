@@ -1,8 +1,7 @@
-*
-
-!.gitignore
-!config.el
-!config.org
-!init.el
-!splash.png
-!snippets/
+\#*\#
+.*
+auto-save-list
+elpa
+emojis
+projectile-bookmarks.eld
+tramp
