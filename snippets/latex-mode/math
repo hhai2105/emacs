@@ -53,7 +53,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%
 % DO NOT CHANGE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%
-\title[\Class $\mid$ Homework \mypound$\HomeworkNumber$]{\Class \\\\ Homework \mypound$\HomeworkNumber$}
+\title[\Class{} $\mid$ Homework \mypound$\HomeworkNumber$]{\Class{} \\\\ Homework \mypound$\HomeworkNumber$}
 \author[\StudentName]{\StudentName \\\\ \StudentIDNumber}
 
 \begin{document}

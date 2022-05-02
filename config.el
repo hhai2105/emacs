@@ -62,10 +62,6 @@
 (use-package doom-modeline)
 (doom-modeline-mode 1)
 (setq find-file-visit-truename t)
-;; built-in `project' on 26+
-(setq doom-modeline-project-detection 'project)
-;; or `find-in-project' if it's installed
-(setq doom-modeline-project-detection 'ffip)
 
 (global-display-line-numbers-mode)
 ;; (setq display-line-numbers-type 'relative)
