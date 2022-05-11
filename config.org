@@ -204,6 +204,8 @@ remove emacs' default line wrap
 (setq-default python-indent-guess-indent-offset nil) ;; Python
 (setq-default js-indent-level custom-tab-width)      ;; Javascript
 (setq-default c-basic-offset 4)                      ;; C/C++/Java
+(setq LaTeX-item-indent 0)                           ;; LaTeX
+(setq LaTeX-indent-level 4)                          ;; LaTeX
 (add-hook 'html-mode-hook                            ;; html
     (lambda ()
     ;; Default indentation is usually 2 spaces, changing to 4.
@@ -216,18 +218,20 @@ remove emacs' default line wrap
 
 #+end_src
 
+#+RESULTS:
+| lambda | nil | (set (make-local-variable 'sgml-basic-offset) 2) | (sgml-guess-indent) |
+
 *** Agressive indentation
 #+begin_src emacs-lisp
 (use-package aggressive-indent)
 (global-aggressive-indent-mode)
 #+end_src
-** Undo
+** Undo Tree
 
 #+begin_src emacs-lisp
-(use-package undo-tree)
-(global-undo-tree-mode)
-(setq evil-undo-system 'undo-tree)
-(add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)	
+(use-package undo-fu)
+(use-package undo-fu-session)
+(setq evil-undo-system 'undo-fu)
 #+end_src
 
 ** Line Highlighting
@@ -292,18 +296,21 @@ color (),[],{} as pair
 
 *** Evil Mode
   #+begin_src emacs-lisp
-(use-package evil
-    :init
-    (setq evil-want-integration t)
-    (setq evil-want-keybinding nil)
-    (setq evil-vsplit-window-right t)
-    (setq evil-split-window-below t)
-    (evil-mode))
-(use-package evil-collection
-    :after evil
-    :config
-    (evil-collection-init))
+  (use-package evil
+      :init
+      (setq evil-want-integration t)
+      (setq evil-want-keybinding nil)
+      (setq evil-vsplit-window-right t)
+      (setq evil-split-window-below t)
+      (evil-mode))
+  (use-package evil-collection
+      :after evil
+      :config
+      (evil-collection-init))
   #+end_src
+
+  #+RESULTS:
+  : t
 
 add keybindings to go back to normal state
 #+begin_src emacs-lisp
@@ -450,7 +457,10 @@ instantly update dired
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package all-the-icons-dired)
+(use-package all-the-icons-dired
+  :init (setq all-the-icons-dired-monochrome nil)
+)
+
 (use-package dired-open)
 (use-package peep-dired)
 
@@ -700,20 +710,6 @@ collapsed all org bullets globally
 (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
 #+end_src
 
-*** Visual Fill Mode
-
-#+begin_src emacs-lisp
-;; (defun efs/org-mode-visual-fill ()
-;; (setq visual-fill-column-width 100
-;; visual-fill-column-center-text t)
-;; (visual-fill-column-mode 1))
-
-;; (
-;; use-package visual-fill-column
-;; :hook (org-mode . efs/org-mode-visual-fill)
-;; )
-#+end_src
-
 #+RESULTS:
 
 *** Inline image
@@ -722,6 +718,17 @@ collapsed all org bullets globally
 (setq org-startup-with-inline-images t)
 #+end_src
 
+*** Evil Mode
+#+begin_src emacs-lisp
+(use-package evil-org
+  :ensure t
+  :after org
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+(add-hook 'org-mode-hook 'evil-org-mode)
+
+#+end_src
 ** MU4E
 MU4E is an emacs email client
 

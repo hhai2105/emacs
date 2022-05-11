@@ -116,6 +116,8 @@
 (setq-default python-indent-guess-indent-offset nil) ;; Python
 (setq-default js-indent-level custom-tab-width)      ;; Javascript
 (setq-default c-basic-offset 4)                      ;; C/C++/Java
+(setq LaTeX-item-indent 0)                           ;; LaTeX
+(setq LaTeX-indent-level 4)                          ;; LaTeX
 (add-hook 'html-mode-hook                            ;; html
     (lambda ()
     ;; Default indentation is usually 2 spaces, changing to 4.
@@ -129,10 +131,9 @@
 (use-package aggressive-indent)
 (global-aggressive-indent-mode)
 
-(use-package undo-tree)
-(global-undo-tree-mode)
-(setq evil-undo-system 'undo-tree)
-(add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
+(use-package undo-fu)
+(use-package undo-fu-session)
+(setq evil-undo-system 'undo-fu)
 
 (global-hl-line-mode +1)
 (use-package hlinum)
@@ -263,7 +264,10 @@
 
 (add-hook 'dired-mode-hook 'auto-revert-mode)
 
-(use-package all-the-icons-dired)
+(use-package all-the-icons-dired
+  :init (setq all-the-icons-dired-monochrome nil)
+)
+
 (use-package dired-open)
 (use-package peep-dired)
 
@@ -430,17 +434,15 @@ Remove expanded subdir of deleted dir, if any."
 (require 'org)
 (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
 
-;; (defun efs/org-mode-visual-fill ()
-;; (setq visual-fill-column-width 100
-;; visual-fill-column-center-text t)
-;; (visual-fill-column-mode 1))
-
-;; (
-;; use-package visual-fill-column
-;; :hook (org-mode . efs/org-mode-visual-fill)
-;; )
-
 (setq org-startup-with-inline-images t)
+
+(use-package evil-org
+  :ensure t
+  :after org
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+(add-hook 'org-mode-hook 'evil-org-mode)
 
 
 
