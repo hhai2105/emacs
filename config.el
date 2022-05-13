@@ -177,6 +177,8 @@
     :after evil
     :config
     (evil-collection-init))
+(with-eval-after-load 'evil-maps
+(define-key evil-motion-state-map (kbd "RET") nil))
 
 (setq key-chord-two-keys-delay 0.3)
 (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
@@ -241,7 +243,7 @@
   (setq dashboard-set-file-icons t)
   (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
   ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as bannerj
-  (setq dashboard-startup-banner "~/.config/emacs/splash.png")  ;; use custom image as banner
+  (setq dashboard-startup-banner "~/.config/emacs/emacs.txt") ;; use standard emacs logo as bannerj
   (setq dashboard-center-content nil) ;; set to 't' for centered content
   (setq dashboard-items '((recents . 5)
                           (agenda . 5 )
@@ -311,6 +313,7 @@
                               ("svg" . "sxiv")
                               ("mkv" . "mpv")
                               ("pdf" . "zathura")
+                              ("pptx" . "zathura")
                               ("mp4" . "mpv")))
 
 (eval-after-load  "dired-x" '(defun dired-clean-up-after-deletion (fn)
@@ -399,16 +402,49 @@ Remove expanded subdir of deleted dir, if any."
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (setq org-src-tab-acts-natively t
+    org-return-follows-link t
     org-src-preserve-indentation nil
-    org-edit-src-content-indentation 0)
+    org-edit-src-content-indentation 0
+    org-src-fontify-natively t
+    org-confirm-babel-evaluate nil)
 
 (use-package org-bullets)
 (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
 
 (setq org-startup-folded t)
 
-(setq org-src-fontify-natively t
-    org-confirm-babel-evaluate nil)
+(setq org-todo-keywords        ; This overwrites the default Doom org-todo-keywords
+        '((sequence
+           "TODO(t)"           ; A task that is ready to be tackled
+           "[ ](T)"           ; A checkbox
+           "|"                 ; The pipe necessary to separate "active" states and "inactive" states
+           "[X](D)"           ; A checkbox
+           "DONE(d)"           ; Task has been completed
+           "CANCELLED(c)" )))  ; Task has been cancelled
+
+(defun org-toggle-todo ()
+  (interactive)
+  (save-excursion
+    (org-back-to-heading t) ;; Make sure command works even if point is
+                            ;; below target heading
+    (cond ((looking-at "\*+ TODO")
+           (org-todo "DONE"))
+          ((looking-at "\*+ DONE")
+           (org-todo "TODO"))
+          ((looking-at "\*+ \\[ \\]")
+           (org-todo "[X]"))
+          ((looking-at "\*+ \\[X\\]")
+           (org-todo "[ ]"))
+          (t (message "org toggle")))))
+
+(define-key org-mode-map (kbd "C-c C-d") 'org-toggle-todo)
+
+(define-key org-read-date-minibuffer-local-map (kbd "C-h") (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-day 1))))
+(define-key org-read-date-minibuffer-local-map (kbd "C-l") (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-day 1))))
+(define-key org-read-date-minibuffer-local-map (kbd "C-k") (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-week 1))))
+(define-key org-read-date-minibuffer-local-map (kbd "C-j") (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-week 1))))
+(define-key org-read-date-minibuffer-local-map (kbd "C-.") (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-month 1))))
+(define-key org-read-date-minibuffer-local-map (kbd "C-,") (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-month 1))))
 
 (use-package toc-org
     :commands toc-org-enable
@@ -420,7 +456,8 @@ Remove expanded subdir of deleted dir, if any."
        "m ."   '(counsel-org-goto :which-key "Counsel org goto")
        "m e"   '(org-export-dispatch :which-key "Org export dispatch")
        "m f"   '(org-footnote-new :which-key "Org footnote new")
-       "m h"   '(org-toggle-heading :which-key "Org toggle heading") "m i"   '(org-toggle-item :which-key "Org toggle item")
+       "m h"   '(org-toggle-heading :which-key "Org toggle heading") 
+       "m i"   '(org-toggle-item :which-key "Org toggle item")
        "m n"   '(org-store-link :which-key "Org store link")
        "m o"   '(org-set-property :which-key "Org set property")
        "m t"   '(org-todo :which-key "Org todo")
@@ -429,6 +466,7 @@ Remove expanded subdir of deleted dir, if any."
        "m I"   '(org-toggle-inline-images :which-key "Org toggle inline imager")
        "m T"   '(org-todo-list :which-key "Org todo list")
        "o a"   '(org-agenda :which-key "Org agenda")
+       "m s"   '(org-schedule :which-key "Org schedule")
        )
 
 (require 'org)
@@ -443,6 +481,21 @@ Remove expanded subdir of deleted dir, if any."
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 (add-hook 'org-mode-hook 'evil-org-mode)
+
+(use-package org-roam
+:init
+(setq org-roam-v2-ack t)
+:custom
+(org-roam-directory "~/orgfiles/roam")
+:config
+(org-roam-setup)
+)
+
+(space-leader
+"n f" '(org-roam-node-find :which-key "find node")
+"n i" '(org-roam-node-insert :which-key "insert node")
+"n l" '(org-roam-buffer-toggle :which-key "toggle buffer")
+)
 
 
 

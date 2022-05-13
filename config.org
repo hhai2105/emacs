@@ -307,6 +307,8 @@ color (),[],{} as pair
       :after evil
       :config
       (evil-collection-init))
+  (with-eval-after-load 'evil-maps
+  (define-key evil-motion-state-map (kbd "RET") nil))
   #+end_src
 
   #+RESULTS:
@@ -411,7 +413,6 @@ display key functions
 #+end_src
 
 ** Dashboard
-
 *** Configuration
 #+begin_src emacs-lisp
 (use-package dashboard
@@ -420,7 +421,7 @@ display key functions
   (setq dashboard-set-file-icons t)
   (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
   ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as bannerj
-  (setq dashboard-startup-banner "~/.config/emacs/splash.png")  ;; use custom image as banner
+  (setq dashboard-startup-banner "~/.config/emacs/emacs.txt") ;; use standard emacs logo as bannerj
   (setq dashboard-center-content nil) ;; set to 't' for centered content
   (setq dashboard-items '((recents . 5)
                           (agenda . 5 )
@@ -432,6 +433,9 @@ display key functions
   (dashboard-modify-heading-icons '((recents . "file-text")
 			      (bookmarks . "book"))))
 #+end_src
+
+#+RESULTS:
+: t
 
 *** Dashboard in Emacsclient
 
@@ -504,6 +508,7 @@ instantly update dired
                               ("svg" . "sxiv")
                               ("mkv" . "mpv")
                               ("pdf" . "zathura")
+                              ("pptx" . "zathura")
                               ("mp4" . "mpv")))
 #+end_src
 
@@ -639,7 +644,7 @@ better pdf reader
 (global-anzu-mode)
 #+end_src
 
-** Diff Hl (git)
+** Diff Highlight (git)
 
 #+begin_src emacs-lisp
 (use-package diff-hl)
@@ -647,13 +652,17 @@ better pdf reader
 #+end_src
 
 ** Org Mode
+
 *** Configuration
 
 #+begin_src emacs-lisp
 (add-hook 'org-mode-hook 'org-indent-mode)
 (setq org-src-tab-acts-natively t
+    org-return-follows-link t
     org-src-preserve-indentation nil
-    org-edit-src-content-indentation 0)
+    org-edit-src-content-indentation 0
+    org-src-fontify-natively t
+    org-confirm-babel-evaluate nil)
 #+end_src
 
 *** Org Bullets
@@ -668,12 +677,52 @@ collapsed all org bullets globally
 (setq org-startup-folded t)
 #+end_src
 	
-*** Org Source Code Block
+*** Org Todo keywords
 
 #+begin_src emacs-lisp
-(setq org-src-fontify-natively t
-    org-confirm-babel-evaluate nil)
+  (setq org-todo-keywords        ; This overwrites the default Doom org-todo-keywords
+          '((sequence
+             "TODO(t)"           ; A task that is ready to be tackled
+             "[ ](T)"           ; A checkbox
+             "|"                 ; The pipe necessary to separate "active" states and "inactive" states
+             "[X](D)"           ; A checkbox
+             "DONE(d)"           ; Task has been completed
+             "CANCELLED(c)" )))  ; Task has been cancelled
 #+end_src
+
+*** Org Todo toggle
+Org toggle todo
+#+begin_src emacs-lisp
+(defun org-toggle-todo ()
+  (interactive)
+  (save-excursion
+    (org-back-to-heading t) ;; Make sure command works even if point is
+                            ;; below target heading
+    (cond ((looking-at "\*+ TODO")
+           (org-todo "DONE"))
+          ((looking-at "\*+ DONE")
+           (org-todo "TODO"))
+          ((looking-at "\*+ \\[ \\]")
+           (org-todo "[X]"))
+          ((looking-at "\*+ \\[X\\]")
+           (org-todo "[ ]"))
+          (t (message "org toggle")))))
+
+(define-key org-mode-map (kbd "C-c C-d") 'org-toggle-todo)
+  
+#+end_src
+*** Org calenda
+#+begin_src emacs-lisp
+(define-key org-read-date-minibuffer-local-map (kbd "C-h") (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-day 1))))
+(define-key org-read-date-minibuffer-local-map (kbd "C-l") (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-day 1))))
+(define-key org-read-date-minibuffer-local-map (kbd "C-k") (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-week 1))))
+(define-key org-read-date-minibuffer-local-map (kbd "C-j") (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-week 1))))
+(define-key org-read-date-minibuffer-local-map (kbd "C-.") (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-month 1))))
+(define-key org-read-date-minibuffer-local-map (kbd "C-,") (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-month 1))))
+#+end_src
+
+#+RESULTS:
+: calendar-forward-day
 
 *** Generate Table of Contents
 
@@ -691,7 +740,8 @@ collapsed all org bullets globally
        "m ."   '(counsel-org-goto :which-key "Counsel org goto")
        "m e"   '(org-export-dispatch :which-key "Org export dispatch")
        "m f"   '(org-footnote-new :which-key "Org footnote new")
-       "m h"   '(org-toggle-heading :which-key "Org toggle heading") "m i"   '(org-toggle-item :which-key "Org toggle item")
+       "m h"   '(org-toggle-heading :which-key "Org toggle heading") 
+       "m i"   '(org-toggle-item :which-key "Org toggle item")
        "m n"   '(org-store-link :which-key "Org store link")
        "m o"   '(org-set-property :which-key "Org set property")
        "m t"   '(org-todo :which-key "Org todo")
@@ -700,6 +750,7 @@ collapsed all org bullets globally
        "m I"   '(org-toggle-inline-images :which-key "Org toggle inline imager")
        "m T"   '(org-todo-list :which-key "Org todo list")
        "o a"   '(org-agenda :which-key "Org agenda")
+       "m s"   '(org-schedule :which-key "Org schedule")
        )
 #+end_src
   
@@ -719,6 +770,7 @@ collapsed all org bullets globally
 #+end_src
 
 *** Evil Mode
+Enable evil keybindings for org mode
 #+begin_src emacs-lisp
 (use-package evil-org
   :ensure t
@@ -729,6 +781,26 @@ collapsed all org bullets globally
 (add-hook 'org-mode-hook 'evil-org-mode)
 
 #+end_src
+
+** Org Roam
+Org Roam is a note taking tools for emacs
+#+begin_src emacs-lisp
+(use-package org-roam
+:init
+(setq org-roam-v2-ack t)
+:custom
+(org-roam-directory "~/orgfiles/roam")
+:config
+(org-roam-setup)
+)
+
+(space-leader
+"n f" '(org-roam-node-find :which-key "find node")
+"n i" '(org-roam-node-insert :which-key "insert node")
+"n l" '(org-roam-buffer-toggle :which-key "toggle buffer")
+)
+#+end_src
+
 ** MU4E
 MU4E is an emacs email client
 
@@ -747,6 +819,12 @@ Template system for Emacs
 #+begin_src emacs-lisp
 (setq yas-indent-line nil)
 
+#+end_src
+
+** Language Server
+Language server
+#+begin_src emacs-lisp
+  
 #+end_src
 
 ** Language Support
