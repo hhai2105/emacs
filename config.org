@@ -821,12 +821,6 @@ Template system for Emacs
 
 #+end_src
 
-** Language Server
-Language server
-#+begin_src emacs-lisp
-  
-#+end_src
-
 ** Language Support
 *** Programming Languages
 
@@ -844,6 +838,7 @@ Language server
 (use-package ac-html-bootstrap)
 #+end_src
 
+** Language server, debugger
 ** Latex
 
 #+begin_src emacs-lisp
@@ -880,6 +875,26 @@ eyebrowse is a global minor mode for Emacs that allows you to manage your window
 (use-package eyebrowse)
 (eyebrowse-mode t) 
 (eyebrowse-setup-opinionated-keys) 
+#+end_src
+
+** LSP mode
+*** Initialize lsp package
+#+begin_src emacs-lisp
+(use-package lsp-mode
+:init
+(setq lsp-keymap-prefix "C-l")
+:hook
+(prog-mode . lsp-deferred)
+:config
+(lsp-enable-which-key-integration t)
+:commands
+(lsp lsp-deferred)
+)
+#+end_src
+
+*** Setup lsp with other package
+#+begin_src emacs-lisp
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 #+end_src
 
 * Configuration

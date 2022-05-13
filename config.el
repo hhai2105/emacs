@@ -529,6 +529,19 @@ Remove expanded subdir of deleted dir, if any."
 (eyebrowse-mode t) 
 (eyebrowse-setup-opinionated-keys)
 
+(use-package lsp-mode
+:init
+(setq lsp-keymap-prefix "C-l")
+:hook
+(prog-mode . lsp-deferred)
+:config
+(lsp-enable-which-key-integration t)
+:commands
+(lsp lsp-deferred)
+)
+
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+
 (setq split-height-threshold nil)
 (setq split-width-threshold 0)
 
