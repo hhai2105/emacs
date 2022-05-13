@@ -878,23 +878,76 @@ eyebrowse is a global minor mode for Emacs that allows you to manage your window
 #+end_src
 
 ** LSP mode
+Language server protocol turns emacs into an ide
 *** Initialize lsp package
 #+begin_src emacs-lisp
 (use-package lsp-mode
 :init
 (setq lsp-keymap-prefix "C-l")
-:hook
-(prog-mode . lsp-deferred)
 :config
 (lsp-enable-which-key-integration t)
 :commands
 (lsp lsp-deferred)
 )
+(setq lsp-enable-indentation nil)
 #+end_src
 
 *** Setup lsp with other package
 #+begin_src emacs-lisp
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-ui :commands lsp-ui-mode)
+#+end_src
+
+*** Language support
+**** Java
+
+#+begin_src emacs-lisp
+(use-package lsp-java)
+(add-hook 'java-mode-hook 'lsp-deferred)
+#+end_src
+
+**** C/C++
+
+#+begin_src emacs-lisp
+(add-hook 'c++-mode-hook 'lsp-deferred)
+(add-hook 'c-mode-hook 'lsp-deferred)
+#+end_src
+
+**** JSX/Javascript/Typescript
+
+#+begin_src emacs-lisp
+(add-hook 'javascript-mode-hook 'lsp-deferred)
+(add-hook 'js-mode-hook 'lsp-deferred)
+(add-hook 'typescript-mode-hook 'lsp-deferred)
+(add-hook 'ts-mode-hook 'lsp-deferred)
+(add-hook 'js-jsx-mode-hook 'lsp-deferred)
+#+end_src
+
+** DAP mode
+DAP mode is a debugging package
+*** Installation
+
+#+begin_src emacs-lisp
+(use-package dap-mode)  
+(setq dap-auto-configure-features '(sessions locals controls tooltip))
+#+end_src
+
+*** hooks
+
+#+begin_src emacs-lisp
+(add-hook 'dap-stopped-hook
+    (lambda (arg) (call-interactively #'dap-hydra)))
+#+end_src
+
+*** Languages
+
+#+begin_src emacs-lisp
+;; java
+(require 'dap-java)
+;; python 
+(require 'dap-python)
+;; c/c++
+(require 'dap-gdb-lldb)
 #+end_src
 
 * Configuration
@@ -970,6 +1023,7 @@ eyebrowse is a global minor mode for Emacs that allows you to manage your window
 (space-leader
 "y y" 'my/dired-copy-dirname-as-kill)
 #+end_src
+
 * Runtime Optimization
 ** lower GC Threshold gc happens more frquqently in less time
 #+begin_src emacs-lisp

@@ -532,15 +532,40 @@ Remove expanded subdir of deleted dir, if any."
 (use-package lsp-mode
 :init
 (setq lsp-keymap-prefix "C-l")
-:hook
-(prog-mode . lsp-deferred)
 :config
 (lsp-enable-which-key-integration t)
 :commands
 (lsp lsp-deferred)
 )
+(setq lsp-enable-indentation nil)
 
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-ui :commands lsp-ui-mode)
+
+(use-package lsp-java)
+(add-hook 'java-mode-hook 'lsp-deferred)
+
+(add-hook 'c++-mode-hook 'lsp-deferred)
+(add-hook 'c-mode-hook 'lsp-deferred)
+
+(add-hook 'javascript-mode-hook 'lsp-deferred)
+(add-hook 'js-mode-hook 'lsp-deferred)
+(add-hook 'typescript-mode-hook 'lsp-deferred)
+(add-hook 'ts-mode-hook 'lsp-deferred)
+(add-hook 'js-jsx-mode-hook 'lsp-deferred)
+
+(use-package dap-mode)  
+(setq dap-auto-configure-features '(sessions locals controls tooltip))
+
+(add-hook 'dap-stopped-hook
+    (lambda (arg) (call-interactively #'dap-hydra)))
+
+;; java
+(require 'dap-java)
+;; python 
+(require 'dap-python)
+;; c/c++
+(require 'dap-gdb-lldb)
 
 (setq split-height-threshold nil)
 (setq split-width-threshold 0)
