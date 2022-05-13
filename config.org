@@ -629,8 +629,6 @@ better pdf reader
 *** Opening specific file/folder
 
 #+begin_src emacs-lisp
-(space-leader
-  "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Org agenda")
   "- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
   "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
   "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2022/spring/") :which-key "current class folder")
@@ -783,6 +781,7 @@ Enable evil keybindings for org mode
 #+end_src
 
 ** Org Roam
+*** Setup
 Org Roam is a note taking tools for emacs
 #+begin_src emacs-lisp
 (use-package org-roam
@@ -792,12 +791,38 @@ Org Roam is a note taking tools for emacs
 (org-roam-directory "~/orgfiles/roam")
 :config
 (org-roam-setup)
+:bind (
+    :map org-roam-dailies-map
+    ("Y" . org-roam-dailies-capture-yesterday)
+    ("T" . org-roam-dailies-capture-tomorrow)
+))
+(org-roam-db-autosync-mode)
+(setq org-agenda-files '("~/orgfiles/roam/daily/"))
+#+end_src
+
+#+RESULTS:
+: t
+
+*** Capture templates
+#+begin_src emacs-lisp
+(setq org-roam-dailies-capture-templates
+'(("d" "default" entry "* [ ] %<%I:%M %p>: %? \nSCHEDULED: \<%<%Y-%m-%d  %a>\> "
+:if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n")))
 )
 
+#+end_src
+
+#+RESULTS:
+| d | default | entry | * [ ] %<%I:%M %p>: %? |
+
+
+*** Keybinding
+#+begin_src emacs-lisp
 (space-leader
 "n f" '(org-roam-node-find :which-key "find node")
 "n i" '(org-roam-node-insert :which-key "insert node")
 "n l" '(org-roam-buffer-toggle :which-key "toggle buffer")
+"n d" '(org-roam-dailies-map :which-keyh "org roam dailies")
 )
 #+end_src
 

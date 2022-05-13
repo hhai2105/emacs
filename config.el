@@ -387,9 +387,7 @@ Remove expanded subdir of deleted dir, if any."
     "f S"   '(write-file :which-key "Save file as...")
     "f U"   '(sudo-edit :which-key "Sudo edit file"))
 
-(space-leader
-  "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Org agenda")
-  "- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
+"- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
   "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
   "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2022/spring/") :which-key "current class folder")
 )
@@ -489,12 +487,24 @@ Remove expanded subdir of deleted dir, if any."
 (org-roam-directory "~/orgfiles/roam")
 :config
 (org-roam-setup)
+:bind (
+    :map org-roam-dailies-map
+    ("Y" . org-roam-dailies-capture-yesterday)
+    ("T" . org-roam-dailies-capture-tomorrow)
+))
+(org-roam-db-autosync-mode)
+(setq org-agenda-files '("~/orgfiles/roam/daily/"))
+
+(setq org-roam-dailies-capture-templates
+'(("d" "default" entry "* [ ] %<%I:%M %p>: %? \nSCHEDULED: \<%<%Y-%m-%d  %a>\> "
+:if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n")))
 )
 
 (space-leader
 "n f" '(org-roam-node-find :which-key "find node")
 "n i" '(org-roam-node-insert :which-key "insert node")
 "n l" '(org-roam-buffer-toggle :which-key "toggle buffer")
+"n d" '(org-roam-dailies-map :which-keyh "org roam dailies")
 )
 
 
