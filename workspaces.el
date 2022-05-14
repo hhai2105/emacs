@@ -438,3 +438,22 @@ created."
     (let ((frame-persp (frame-parameter frame 'workspace)))
       (when (string= frame-persp (+workspace-current-name))
         (+workspace/delete frame-persp)))))
+
+;;;###autoload
+(defun +workspace-new (name)
+  "Create a new workspace named NAME. If one already exists, return nil.
+Otherwise return t on success, nil otherwise."
+  (when (+workspace--protected-p name)
+    (error "Can't create a new '%s' workspace" name))
+  (when (+workspace-exists-p name)
+    (error "A workspace named '%s' already exists" name))
+  (let ((persp (persp-add-new name))
+        (+popup--inhibit-transient t))
+    (save-window-excursion
+      (let ((ignore-window-parameters t)
+            (+popup--inhibit-transient t))
+        (persp-delete-other-windows))
+      (switch-to-buffer "*dashboard*")
+      (setf (persp-window-conf persp)
+            (funcall persp-window-state-get-function (selected-frame))))
+    persp))
