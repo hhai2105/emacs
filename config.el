@@ -387,7 +387,8 @@ Remove expanded subdir of deleted dir, if any."
     "f S"   '(write-file :which-key "Save file as...")
     "f U"   '(sudo-edit :which-key "Sudo edit file"))
 
-"- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
+(space-leader
+  "- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
   "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
   "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2022/spring/") :which-key "current class folder")
 )
@@ -487,12 +488,7 @@ Remove expanded subdir of deleted dir, if any."
 (org-roam-directory "~/orgfiles/roam")
 :config
 (org-roam-setup)
-:bind (
-    :map org-roam-dailies-map
-    ("Y" . org-roam-dailies-capture-yesterday)
-    ("T" . org-roam-dailies-capture-tomorrow)
-))
-(org-roam-db-autosync-mode)
+(org-roam-db-autosync-mode))
 (setq org-agenda-files '("~/orgfiles/roam/daily/"))
 
 (setq org-roam-dailies-capture-templates
@@ -504,7 +500,12 @@ Remove expanded subdir of deleted dir, if any."
 "n f" '(org-roam-node-find :which-key "find node")
 "n i" '(org-roam-node-insert :which-key "insert node")
 "n l" '(org-roam-buffer-toggle :which-key "toggle buffer")
-"n d" '(org-roam-dailies-map :which-keyh "org roam dailies")
+"n d n" '(org-roam-dailies-capture-today :which-keyh "capture today")
+"n d T" '(org-roam-dailies-capture-tomorrow :which-keyh "capture tomorrow")
+"n d Y" '(org-roam-dailies-capture-yesterday :which-keyh "capture yesterday")
+"n d c" '(org-roam-dailies-goto-today :which-keyh "go to today")
+"n d t" '(org-roam-dailies-goto-tomorrow :which-keyh "go to tomorrow")
+"n d y" '(org-roam-dailies-goto-yesterday :which-keyh "go to yesterday")
 )
 
 
@@ -513,14 +514,6 @@ Remove expanded subdir of deleted dir, if any."
 (yas-global-mode 1)
 
 (setq yas-indent-line nil)
-
-(use-package haskell-mode)
-(use-package typescript-mode)
-
-(use-package ac-html)
-(use-package ac-html-angular)
-(use-package ac-html-csswatcher)
-(use-package ac-html-bootstrap)
 
 (use-package auctex
 :defer t)
@@ -538,6 +531,14 @@ Remove expanded subdir of deleted dir, if any."
 (use-package eyebrowse)
 (eyebrowse-mode t) 
 (eyebrowse-setup-opinionated-keys)
+
+(use-package haskell-mode)
+(use-package typescript-mode)
+
+(use-package ac-html)
+(use-package ac-html-angular)
+(use-package ac-html-csswatcher)
+(use-package ac-html-bootstrap)
 
 (use-package lsp-mode
 :init

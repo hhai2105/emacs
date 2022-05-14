@@ -629,6 +629,7 @@ better pdf reader
 *** Opening specific file/folder
 
 #+begin_src emacs-lisp
+(space-leader
   "- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
   "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
   "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2022/spring/") :which-key "current class folder")
@@ -791,12 +792,7 @@ Org Roam is a note taking tools for emacs
 (org-roam-directory "~/orgfiles/roam")
 :config
 (org-roam-setup)
-:bind (
-    :map org-roam-dailies-map
-    ("Y" . org-roam-dailies-capture-yesterday)
-    ("T" . org-roam-dailies-capture-tomorrow)
-))
-(org-roam-db-autosync-mode)
+(org-roam-db-autosync-mode))
 (setq org-agenda-files '("~/orgfiles/roam/daily/"))
 #+end_src
 
@@ -822,7 +818,12 @@ Org Roam is a note taking tools for emacs
 "n f" '(org-roam-node-find :which-key "find node")
 "n i" '(org-roam-node-insert :which-key "insert node")
 "n l" '(org-roam-buffer-toggle :which-key "toggle buffer")
-"n d" '(org-roam-dailies-map :which-keyh "org roam dailies")
+"n d n" '(org-roam-dailies-capture-today :which-keyh "capture today")
+"n d T" '(org-roam-dailies-capture-tomorrow :which-keyh "capture tomorrow")
+"n d Y" '(org-roam-dailies-capture-yesterday :which-keyh "capture yesterday")
+"n d c" '(org-roam-dailies-goto-today :which-keyh "go to today")
+"n d t" '(org-roam-dailies-goto-tomorrow :which-keyh "go to tomorrow")
+"n d y" '(org-roam-dailies-goto-yesterday :which-keyh "go to yesterday")
 )
 #+end_src
 
@@ -846,24 +847,6 @@ Template system for Emacs
 
 #+end_src
 
-** Language Support
-*** Programming Languages
-
-#+begin_src emacs-lisp
-(use-package haskell-mode)
-(use-package typescript-mode)
-#+end_src
-
-*** html
-
-#+begin_src emacs-lisp
-(use-package ac-html)
-(use-package ac-html-angular)
-(use-package ac-html-csswatcher)
-(use-package ac-html-bootstrap)
-#+end_src
-
-** Language server, debugger
 ** Latex
 
 #+begin_src emacs-lisp
@@ -900,6 +883,23 @@ eyebrowse is a global minor mode for Emacs that allows you to manage your window
 (use-package eyebrowse)
 (eyebrowse-mode t) 
 (eyebrowse-setup-opinionated-keys) 
+#+end_src
+
+** Language Support
+*** Programming Languages
+
+#+begin_src emacs-lisp
+(use-package haskell-mode)
+(use-package typescript-mode)
+#+end_src
+
+*** html
+
+#+begin_src emacs-lisp
+(use-package ac-html)
+(use-package ac-html-angular)
+(use-package ac-html-csswatcher)
+(use-package ac-html-bootstrap)
 #+end_src
 
 ** LSP mode
