@@ -1,5 +1,8 @@
 ;;; ui/workspaces/autoload/workspaces.el -*- lexical-binding: t; -*-
 
+(defvar +workspaces-main "main"
+  "The name of the primary and initial workspace, which cannot be deleted.")
+
 (defvar +workspace--last nil)
 (defvar +workspace--index 0)
 
