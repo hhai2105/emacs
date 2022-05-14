@@ -590,6 +590,7 @@ Remove expanded subdir of deleted dir, if any."
 "TAB n" '(+workspace/new :which-key "new workspace")
 "TAB d" '(+workspace/delete :which-key "delete workspace")
 "TAB r" '(+workspace/rename :which-key "rename workspace")
+"TAB TAB" '(+workspace/display :which-key "display workspaces")
 
 )
 

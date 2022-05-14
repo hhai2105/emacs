@@ -126,25 +126,6 @@ Returns t on success, nil otherwise."
          t)))
 
 ;;;###autoload
-(defun +workspace-new (name)
-  "Create a new workspace named NAME. If one already exists, return nil.
-Otherwise return t on success, nil otherwise."
-  (when (+workspace--protected-p name)
-    (error "Can't create a new '%s' workspace" name))
-  (when (+workspace-exists-p name)
-    (error "A workspace named '%s' already exists" name))
-  (let ((persp (persp-add-new name))
-        (+popup--inhibit-transient t))
-    (save-window-excursion
-      (let ((ignore-window-parameters t)
-            (+popup--inhibit-transient t))
-        (persp-delete-other-windows))
-      (switch-to-buffer (doom-fallback-buffer))
-      (setf (persp-window-conf persp)
-            (funcall persp-window-state-get-function (selected-frame))))
-    persp))
-
-;;;###autoload
 (defun +workspace-rename (name new-name)
   "Rename the current workspace named NAME to NEW-NAME. Returns old name on
 success, nil otherwise."
@@ -187,9 +168,6 @@ throws an error."
 
 ;;
 ;;; Commands
-
-;;;###autoload
-(defalias '+workspace/restore-last-session #'doom/quickload-session)
 
 ;;;###autoload
 (defun +workspace/load (name)
@@ -260,31 +238,14 @@ workspace to delete."
                   (if (+workspace-exists-p +workspace--last)
                       +workspace--last
                     (car (+workspace-list-names))))
-                 (unless (doom-buffer-frame-predicate (window-buffer))
-                   (switch-to-buffer (doom-fallback-buffer))))
+                 )
                 (t
                  (+workspace-switch +workspaces-main t)
                  (unless (string= (car workspaces) +workspaces-main)
                    (+workspace-delete name))
-                 (doom/kill-all-buffers (doom-buffer-list))))
+                 ))
           (+workspace-message (format "Deleted '%s' workspace" name) 'success)))
     ('error (+workspace-error ex t))))
-
-;;;###autoload
-(defun +workspace/kill-session (&optional interactive)
-  "Delete the current session, all workspaces, windows and their buffers."
-  (interactive (list t))
-  (let ((windows (length (window-list)))
-        (persps (length (+workspace-list-names)))
-        (buffers 0))
-    (let ((persp-autokill-buffer-on-remove t))
-      (unless (cl-every #'+workspace-delete (+workspace-list-names))
-        (+workspace-error "Could not clear session")))
-    (+workspace-switch +workspaces-main t)
-    (setq buffers (doom/kill-all-buffers (buffer-list)))
-    (when interactive
-      (message "Killed %d workspace(s), %d window(s) & %d buffer(s)"
-               persps windows buffers))))
 
 ;;;###autoload
 (defun +workspace/kill-session-and-quit ()
@@ -392,28 +353,6 @@ end of the workspace list."
 (defun +workspace/switch-right () (interactive) (+workspace/cycle +1))
 
 ;;;###autoload
-(defun +workspace/close-window-or-workspace ()
-  "Close the selected window. If it's the last window in the workspace, either
-close the workspace (as well as its associated frame, if one exists) and move to
-the next."
-  (interactive)
-  (let ((delete-window-fn (if (featurep 'evil) #'evil-window-delete #'delete-window)))
-    (if (window-dedicated-p)
-        (funcall delete-window-fn)
-      (let ((current-persp-name (+workspace-current-name)))
-        (cond ((or (+workspace--protected-p current-persp-name)
-                   (cdr (doom-visible-windows)))
-               (funcall delete-window-fn))
-
-              ((cdr (+workspace-list-names))
-               (let ((frame-persp (frame-parameter nil 'workspace)))
-                 (if (string= frame-persp (+workspace-current-name))
-                     (delete-frame)
-                   (+workspace/delete current-persp-name))))
-
-              ((+workspace-error "Can't delete last workspace" t)))))))
-
-;;;###autoload
 (defun +workspace/swap-left (&optional count)
   "Swap the current workspace with the COUNTth workspace on its left."
   (interactive "p")
@@ -499,89 +438,3 @@ created."
     (let ((frame-persp (frame-parameter frame 'workspace)))
       (when (string= frame-persp (+workspace-current-name))
         (+workspace/delete frame-persp)))))
-
-;;;###autoload
-(defun +workspaces-associate-frame-fn (frame &optional _new-frame-p)
-  "Create a blank, new perspective and associate it with FRAME."
-  (when persp-mode
-    (if (not (persp-frame-list-without-daemon))
-        (+workspace-switch +workspaces-main t)
-      (with-selected-frame frame
-        (+workspace-switch (format "#%s" (+workspace--generate-id)) t)
-        (unless (doom-real-buffer-p (current-buffer))
-          (switch-to-buffer (doom-fallback-buffer)))
-        (set-frame-parameter frame 'workspace (+workspace-current-name))
-        ;; ensure every buffer has a buffer-predicate
-        (persp-set-frame-buffer-predicate frame))
-      (run-at-time 0.1 nil #'+workspace/display))))
-
-(defvar +workspaces--project-dir nil)
-;;;###autoload
-(defun +workspaces-set-project-action-fn ()
-  "A `projectile-switch-project-action' that sets the project directory for
-`+workspaces-switch-to-project-h'."
-  (setq +workspaces--project-dir default-directory))
-
-;;;###autoload
-(defun +workspaces-switch-to-project-h (&optional dir)
-  "Creates a workspace dedicated to a new project. If one already exists, switch
-to it. If in the main workspace and it's empty, recycle that workspace, without
-renaming it.
-
-Afterwords, runs `+workspaces-switch-project-function'. By default, this prompts
-the user to open a file in the new project.
-
-This be hooked to `projectile-after-switch-project-hook'."
-  (when dir
-    (setq +workspaces--project-dir dir))
-  ;; HACK Clear projectile-project-root, otherwise cached roots may interfere
-  ;;      with project switch (see #3166)
-  (let (projectile-project-root)
-    (when (and persp-mode +workspaces--project-dir)
-      (when projectile-before-switch-project-hook
-        (with-temp-buffer
-          ;; Load the project dir-local variables into the switch buffer, so the
-          ;; action can make use of them
-          (setq default-directory +workspaces--project-dir)
-          (hack-dir-local-variables-non-file-buffer)
-          (run-hooks 'projectile-before-switch-project-hook)))
-      (unwind-protect
-          (if (and (not (null +workspaces-on-switch-project-behavior))
-                   (or (eq +workspaces-on-switch-project-behavior t)
-                       (equal (safe-persp-name (get-current-persp)) persp-nil-name)
-                       (+workspace-buffer-list)))
-              (let* ((persp
-                      (let ((project-name (doom-project-name +workspaces--project-dir)))
-                        (or (+workspace-get project-name t)
-                            (+workspace-new project-name))))
-                     (new-name (persp-name persp)))
-                (+workspace-switch new-name)
-                (with-current-buffer (doom-fallback-buffer)
-                  (setq default-directory +workspaces--project-dir)
-                  (hack-dir-local-variables-non-file-buffer))
-                (unless current-prefix-arg
-                  (funcall +workspaces-switch-project-function +workspaces--project-dir))
-                (+workspace-message
-                 (format "Switched to '%s' in new workspace" new-name)
-                 'success))
-            (with-current-buffer (doom-fallback-buffer)
-              (setq default-directory +workspaces--project-dir)
-              (hack-dir-local-variables-non-file-buffer)
-              (message "Switched to '%s'" (doom-project-name +workspaces--project-dir)))
-            (with-demoted-errors "Workspace error: %s"
-              (+workspace-rename (+workspace-current-name) (doom-project-name +workspaces--project-dir)))
-            (unless current-prefix-arg
-              (funcall +workspaces-switch-project-function +workspaces--project-dir)))
-        (run-hooks 'projectile-after-switch-project-hook)
-        (setq +workspaces--project-dir nil)))))
-
-
-;;
-;;; Advice
-
-;;;###autoload
-(defun +workspaces-autosave-real-buffers-a (fn &rest args)
-  "Don't autosave if no real buffers are open."
-  (when (doom-real-buffer-list)
-    (apply fn args))
-  t)
