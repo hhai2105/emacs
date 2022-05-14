@@ -180,6 +180,10 @@
 (with-eval-after-load 'evil-maps
 (define-key evil-motion-state-map (kbd "RET") nil))
 
+(use-package evil-numbers)
+(define-key evil-normal-state-map (kbd "C-c +") 'evil-numbers/inc-at-pt)
+(define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt)
+
 (setq key-chord-two-keys-delay 0.3)
 (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
 (key-chord-mode 1)
@@ -196,6 +200,12 @@
     :keymaps 'override
     :prefix "SPC"
     :global-prefix "C-SPC"
+)
+
+(general-create-definer no-leader
+    :states '(normal visual emacs)
+    :keymaps 'override
+    :prefix ""
 )
 
 (use-package ivy
@@ -528,9 +538,60 @@ Remove expanded subdir of deleted dir, if any."
        "x x"   '(quickrun :which-key "quickrun")
 )
 
-(use-package eyebrowse)
-(eyebrowse-mode t) 
-(eyebrowse-setup-opinionated-keys)
+;; (use-package eyebrowse)
+;; (eyebrowse-mode t) 
+;; (eyebrowse-setup-opinionated-keys)
+
+(use-package persp-mode
+  :init
+  (add-hook 'after-init-hook #'persp-mode)
+  :config
+  (setq persp-autokill-buffer-on-remove 'kill-weak
+        persp-reset-windows-on-nil-window-conf nil
+        persp-nil-hidden t
+        persp-auto-save-fname "autosave"
+        persp-save-dir (concat user-emacs-directory "workspaces/")
+        persp-set-last-persp-for-new-frames t
+        persp-switch-to-added-buffer nil
+        persp-kill-foreign-buffer-behaviour 'kill
+        persp-remove-buffers-from-nil-persp-behaviour nil
+        persp-auto-resume-time -1 ; Don't auto-load on startup
+        persp-auto-save-opt (if noninteractive 0 1)) ; auto-save on kill
+)
+
+(load
+(expand-file-name
+  "workspaces.el"
+  user-emacs-directory))
+
+(no-leader 
+"M-0" '(+workspace/switch-to-9 :which-key "workspace 0")
+"M-1" '(+workspace/switch-to-0 :which-key "workspace 1")
+"M-2" '(+workspace/switch-to-1 :which-key "workspace 2")
+"M-3" '(+workspace/switch-to-2 :which-key "workspace 3")
+"M-4" '(+workspace/switch-to-3 :which-key "workspace 4")
+"M-5" '(+workspace/switch-to-4 :which-key "workspace 5")
+"M-6" '(+workspace/switch-to-5 :which-key "workspace 6")
+"M-7" '(+workspace/switch-to-6 :which-key "workspace 7")
+"M-8" '(+workspace/switch-to-7 :which-key "workspace 8")
+"M-9" '(+workspace/switch-to-8 :which-key "workspace 9")
+)
+(space-leader 
+"TAB 0" '(+workspace/switch-to-9 :which-key "workspace 0")
+"TAB 1" '(+workspace/switch-to-0 :which-key "workspace 1")
+"TAB 2" '(+workspace/switch-to-1 :which-key "workspace 2")
+"TAB 3" '(+workspace/switch-to-2 :which-key "workspace 3")
+"TAB 4" '(+workspace/switch-to-3 :which-key "workspace 4")
+"TAB 5" '(+workspace/switch-to-4 :which-key "workspace 5")
+"TAB 6" '(+workspace/switch-to-5 :which-key "workspace 6")
+"TAB 7" '(+workspace/switch-to-6 :which-key "workspace 7")
+"TAB 8" '(+workspace/switch-to-7 :which-key "workspace 8")
+"TAB 9" '(+workspace/switch-to-8 :which-key "workspace 9")
+"TAB n" '(+workspace/new :which-key "new workspace")
+"TAB d" '(+workspace/delete :which-key "delete workspace")
+"TAB r" '(+workspace/rename :which-key "rename workspace")
+
+)
 
 (use-package haskell-mode)
 (use-package typescript-mode)

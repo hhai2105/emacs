@@ -13,8 +13,10 @@
  '(global-aggressive-indent-mode t)
  '(global-hl-line-mode t)
  '(package-selected-packages
-   '(lsp-java lsp-ui lsp-ivy lsp-mode emojify pdf-tools peep-dired dired-open counsel ivy general which-key evil-collection doom-themes gcmh use-package spacemacs-theme org-roam evil-org svg-clock undo-fu-session undo-fu eyebrowse quickrun cuda-mode highlight-indentation markdown-mode flymake-eslint eslint-fix atomic-chrome ssh-agency ssh-deploy ssh-tunnels ssh leetcode ac-html-bootstrap ac-html-csswatcher ac-html-angular ac-html aggressive-indent typescript-mode diff-hl evil-anzu phps-mode hlinum auctex-latexmk flycheck dired-git-info frontside-javascript flycheck-haskell openwith visual-fill-column org-noter-pdftools org-noter rainbow-mode perspective company emacs-everywhere smooth-scroll key-chord ivy-rich xwwp-follow-link-ivy dashboard sudo-edit rainbow-delimiters projectile auctex yasnippet toc-org org-bullets all-the-icons-dired ## doom-modeline doom-modelines evil))
- '(pixel-scroll-mode nil))
+   '(eyebrowse persp-mode lsp-java lsp-ui lsp-ivy lsp-mode emojify pdf-tools peep-dired dired-open counsel ivy general which-key evil-collection doom-themes gcmh use-package spacemacs-theme org-roam evil-org svg-clock undo-fu-session undo-fu quickrun cuda-mode highlight-indentation markdown-mode flymake-eslint eslint-fix atomic-chrome ssh-agency ssh-deploy ssh-tunnels ssh leetcode ac-html-bootstrap ac-html-csswatcher ac-html-angular ac-html aggressive-indent typescript-mode diff-hl evil-anzu phps-mode hlinum auctex-latexmk flycheck dired-git-info frontside-javascript flycheck-haskell openwith visual-fill-column org-noter-pdftools org-noter rainbow-mode perspective company emacs-everywhere smooth-scroll key-chord ivy-rich xwwp-follow-link-ivy dashboard sudo-edit rainbow-delimiters projectile auctex yasnippet toc-org org-bullets all-the-icons-dired ## doom-modeline doom-modelines evil))
+ '(pixel-scroll-mode nil)
+ '(safe-local-variable-values '((git-commit-major-mode . git-commit-elisp-text-mode)))
+ '(warning-suppress-types '((use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
