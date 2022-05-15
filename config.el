@@ -48,6 +48,20 @@
 ;; Treat clipboard input as UTF-8 string first; compound text next, etc.
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
+(setq use-dialog-box nil)
+
+(setq use-short-answers t)
+(setq confirm-nonexistent-file-or-buffer nil)
+
+(setq ido-create-new-buffer 'always)
+
+(setq inhibit-startup-message t
+      inhibit-startup-echo-area-message t)
+
+(setq kill-buffer-query-functions
+  (remq 'process-kill-buffer-query-function
+         kill-buffer-query-functions))
+
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (menu-bar-mode -1)
@@ -206,6 +220,12 @@
     :states '(normal visual emacs)
     :keymaps 'override
     :prefix ""
+)
+
+(general-create-definer dap-leader
+    :states '(normal visual emacs)
+    :keymaps 'override
+    :prefix "C-c d"
 )
 
 (use-package ivy
@@ -398,6 +418,7 @@ Remove expanded subdir of deleted dir, if any."
     "f U"   '(sudo-edit :which-key "Sudo edit file"))
 
 (space-leader
+  "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Emacs Configuration")
   "- e" '(lambda () (interactive)(find-file "~/.config/emacs/config.org") :which-key "Emacs Configuration")
   "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
   "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2022/spring/") :which-key "current class folder")
@@ -502,7 +523,7 @@ Remove expanded subdir of deleted dir, if any."
 (setq org-agenda-files '("~/orgfiles/roam/daily/"))
 
 (setq org-roam-dailies-capture-templates
-'(("d" "default" entry "* [ ] %<%I:%M %p>: %? \nSCHEDULED: \<%<%Y-%m-%d  %a>\> "
+'(("d" "default" entry "* TODO %<%I:%M %p>: %? \nSCHEDULED: \<%<%Y-%m-%d  %a>\> "
 :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n")))
 )
 
@@ -629,6 +650,13 @@ Remove expanded subdir of deleted dir, if any."
 
 (use-package dap-mode)  
 (setq dap-auto-configure-features '(sessions locals controls tooltip))
+(no-leader
+"<f5>" '(dap-debug :which-key "debug mode"))
+(dap-leader
+"d" '(dap-debug :which-key "debug-mode")
+"b a" '(dap-breakpoint-add :which-key "add breakpoint")
+"b d" '(dap-breakpoint-delete :which-key "delete breakpoint")
+)
 
 (add-hook 'dap-stopped-hook
     (lambda (arg) (call-interactively #'dap-hydra)))
@@ -639,6 +667,8 @@ Remove expanded subdir of deleted dir, if any."
 (require 'dap-python)
 ;; c/c++
 (require 'dap-gdb-lldb)
+(require 'dap-lldb)
+;; remeber to run dap-gdb-lldb-setup
 
 (setq split-height-threshold nil)
 (setq split-width-threshold 0)
