@@ -341,6 +341,7 @@
                               ("jpeg" . "sxiv")
                               ("png" . "sxiv")
                               ("svg" . "sxiv")
+                              ("ttf" . "sxiv")
                               ("mkv" . "mpv")
                               ("pdf" . "zathura")
                               ("pptx" . "zathura")
@@ -385,7 +386,7 @@ Remove expanded subdir of deleted dir, if any."
 (use-package flycheck)
 (use-package flycheck-haskell)
 (global-flycheck-mode)
-(setq flycheck-check-syntax-automatically '(mode-enabled save))
+;; (setq flycheck-check-syntax-automatically '(mode-enabled save))
 
 (use-package rainbow-mode)
 
@@ -467,7 +468,7 @@ Remove expanded subdir of deleted dir, if any."
            (org-todo "[ ]"))
           (t (message "org toggle")))))
 
-(define-key org-mode-map (kbd "C-c C-d") 'org-toggle-todo)
+;; (define-key org-mode-map (kbd "C-c C-d") 'org-toggle-todo)
 
 (define-key org-read-date-minibuffer-local-map (kbd "C-h") (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-day 1))))
 (define-key org-read-date-minibuffer-local-map (kbd "C-l") (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-day 1))))
@@ -491,7 +492,7 @@ Remove expanded subdir of deleted dir, if any."
        "m n"   '(org-store-link :which-key "Org store link")
        "m o"   '(org-set-property :which-key "Org set property")
        "m t"   '(org-todo :which-key "Org todo")
-       "m x"   '(org-toggle-checkbox :which-key "Org toggle checkbox")
+       "m x"   '(org-toggle-todo :which-key "Org toggle checkbox")
        "m B"   '(org-babel-tangle :which-key "Org babel tangle")
        "m I"   '(org-toggle-inline-images :which-key "Org toggle inline imager")
        "m T"   '(org-todo-list :which-key "Org todo list")
@@ -656,6 +657,7 @@ Remove expanded subdir of deleted dir, if any."
 "d" '(dap-debug :which-key "debug-mode")
 "b a" '(dap-breakpoint-add :which-key "add breakpoint")
 "b d" '(dap-breakpoint-delete :which-key "delete breakpoint")
+"h" '(dap-hydra :which-key "dap hydra")
 )
 
 (add-hook 'dap-stopped-hook
@@ -668,7 +670,9 @@ Remove expanded subdir of deleted dir, if any."
 ;; c/c++
 (require 'dap-gdb-lldb)
 (require 'dap-lldb)
+(require 'dap-cpptools)
 ;; remeber to run dap-gdb-lldb-setup
+;; remeber to run dap-cpptools-setup
 
 (setq split-height-threshold nil)
 (setq split-width-threshold 0)

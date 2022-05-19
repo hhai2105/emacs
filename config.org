@@ -548,6 +548,7 @@ instantly update dired
                               ("jpeg" . "sxiv")
                               ("png" . "sxiv")
                               ("svg" . "sxiv")
+                              ("ttf" . "sxiv")
                               ("mkv" . "mpv")
                               ("pdf" . "zathura")
                               ("pptx" . "zathura")
@@ -602,7 +603,7 @@ Remove expanded subdir of deleted dir, if any."
 (use-package flycheck)
 (use-package flycheck-haskell)
 (global-flycheck-mode)
-(setq flycheck-check-syntax-automatically '(mode-enabled save))
+;; (setq flycheck-check-syntax-automatically '(mode-enabled save))
 #+end_src
 
 #+RESULTS:
@@ -750,8 +751,7 @@ Org toggle todo
            (org-todo "[ ]"))
           (t (message "org toggle")))))
 
-(define-key org-mode-map (kbd "C-c C-d") 'org-toggle-todo)
-  
+;; (define-key org-mode-map (kbd "C-c C-d") 'org-toggle-todo)
 #+end_src
 *** Org calenda
 #+begin_src emacs-lisp
@@ -787,7 +787,7 @@ Org toggle todo
        "m n"   '(org-store-link :which-key "Org store link")
        "m o"   '(org-set-property :which-key "Org set property")
        "m t"   '(org-todo :which-key "Org todo")
-       "m x"   '(org-toggle-checkbox :which-key "Org toggle checkbox")
+       "m x"   '(org-toggle-todo :which-key "Org toggle checkbox")
        "m B"   '(org-babel-tangle :which-key "Org babel tangle")
        "m I"   '(org-toggle-inline-images :which-key "Org toggle inline imager")
        "m T"   '(org-todo-list :which-key "Org todo list")
@@ -1073,6 +1073,7 @@ DAP mode is a debugging package
 "d" '(dap-debug :which-key "debug-mode")
 "b a" '(dap-breakpoint-add :which-key "add breakpoint")
 "b d" '(dap-breakpoint-delete :which-key "delete breakpoint")
+"h" '(dap-hydra :which-key "dap hydra")
 )
 #+end_src
 
@@ -1095,7 +1096,9 @@ DAP mode is a debugging package
 ;; c/c++
 (require 'dap-gdb-lldb)
 (require 'dap-lldb)
+(require 'dap-cpptools)
 ;; remeber to run dap-gdb-lldb-setup
+;; remeber to run dap-cpptools-setup
 #+end_src
 
 * Configuration
