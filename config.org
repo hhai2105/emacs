@@ -280,16 +280,54 @@ color (),[],{} as pair
 
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-    :font "Noto Sans Mono 11"
-    :weight 'medium)
+    :font "JetBrains Mono Medium 13")
 (set-face-attribute 'variable-pitch nil
-	:font "Noto Sans Mono 11"
-    :weight 'medium)
+	:font "JetBrains Mono Medium 13")
 (set-face-attribute 'fixed-pitch nil
-    :font "Noto Sans Mono 11"
-    :weight 'medium)
+    :font "JetBrains Mono Medium 13")
 ;;(setq-default line-spacing 0.10)
-(add-to-list 'default-frame-alist '(font . "Noto Sans Mono 11"))
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 13"))
+(add-to-list 'default-frame-alist '(line-spacing . 0.2))
+#+end_src
+
+#+RESULTS:
+: ((font . JetBrains Mono SemiBold 13) (font . JetBrains Mono 13) (vertical-scroll-bars))
+
+** ligature.el
+support ligature for fonts such as fira code, Jetbrains Mono
+*** Installation 
+#+begin_src emacs-lisp
+(load
+(expand-file-name
+  "ligature.el"
+  user-emacs-directory))
+#+end_src
+*** setup
+#+begin_src emacs-lisp
+
+;; Enable the "www" ligature in every possible major mode
+(ligature-set-ligatures 't '("www"))
+;; Enable traditional ligature support in eww-mode, if the
+;; `variable-pitch' face supports it
+(ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+;; Enable all Cascadia Code ligatures in programming modes
+(ligature-set-ligatures 't '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                    ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                    "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                    "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                    "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                    "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                    "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                    "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                    ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                    "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                    "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                    "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                    "\\\\" "://"))
+;; Enables ligature checks globally in all buffers. You can also do it
+;; per mode with `ligature-mode'.
+(global-ligature-mode t)
+
 #+end_src
 
 *** Zooming in/out keybindings
@@ -299,6 +337,14 @@ color (),[],{} as pair
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+#+end_src
+
+** Pretty Code
+
+#+begin_src emacs-lisp
+(use-package pretty-mode)
+(global-pretty-mode 1)
+
 #+end_src
 
 ** Pretty Math Symbol
@@ -1100,6 +1146,22 @@ DAP mode is a debugging package
 ;; remeber to run dap-gdb-lldb-setup
 ;; remeber to run dap-cpptools-setup
 #+end_src
+
+** Tramp mode 
+*** Set default connection method
+#+begin_src emacs-lisp
+(setq tramp-default-method "ssh")
+#+end_src
+*** Shell prompt fix
+#+begin_src emacs-lisp
+(setq shell-prompt-pattern '"^[^#$%>\n]*~?[#$%>] *")
+#+end_src
+
+#+RESULTS:
+: ^[^#$%>
+: ]*~?[#$%>] *
+
+*** Set 
 
 * Configuration
 ** Windows control
