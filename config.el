@@ -160,7 +160,7 @@
 (setq scroll-conservatively 10000)
 
 (set-face-attribute 'default nil
-    :font "JetBrains Mono Medium 13")
+    :font "JetBrains  Mono Medium 13")
 (set-face-attribute 'variable-pitch nil
 	:font "JetBrains Mono Medium 13")
 (set-face-attribute 'fixed-pitch nil
@@ -169,41 +169,9 @@
 (add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 13"))
 (add-to-list 'default-frame-alist '(line-spacing . 0.2))
 
-(load
-(expand-file-name
-  "ligature.el"
-  user-emacs-directory))
-
-;; Enable the "www" ligature in every possible major mode
-(ligature-set-ligatures 't '("www"))
-;; Enable traditional ligature support in eww-mode, if the
-;; `variable-pitch' face supports it
-(ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-;; Enable all Cascadia Code ligatures in programming modes
-(ligature-set-ligatures 't '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-                                    ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-                                    "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-                                    "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-                                    "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-                                    "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-                                    "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-                                    "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-                                    ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-                                    "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-                                    "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-                                    "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                    "\\\\" "://"))
-;; Enables ligature checks globally in all buffers. You can also do it
-;; per mode with `ligature-mode'.
-(global-ligature-mode t)
-
-(global-set-key (kbd "C-=") 'text-scale-increase)
-(global-set-key (kbd "C--") 'text-scale-decrease)
-(global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
-(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
-
-(use-package pretty-mode)
-(global-pretty-mode 1)
+;;(no-leader
+;;"C-=" '(text-scale-increase :which-key "increase text size")
+;;"C--" '(text-scale-decrease :which-key "decrease text size"))
 
 (setq org-pretty-entities t)
 
@@ -612,7 +580,7 @@ Remove expanded subdir of deleted dir, if any."
 
 (load
 (expand-file-name
-  "workspaces.el"
+  "packages/workspaces.el"
   user-emacs-directory))
 
 (no-leader 
@@ -706,6 +674,17 @@ Remove expanded subdir of deleted dir, if any."
 (setq tramp-default-method "ssh")
 
 (setq shell-prompt-pattern '"^[^#$%>\n]*~?[#$%>] *")
+
+(use-package docker)
+(load
+(expand-file-name
+"packages/dockerfile-mode.el"
+user-emacs-directory))
+(use-package docker-compose-mode)
+
+(add-hook 'dockerfile-mode-hook
+      (lambda ()
+          (setq-local indent-line-function #'sh-indent-line)))
 
 (setq split-height-threshold nil)
 (setq split-width-threshold 0)

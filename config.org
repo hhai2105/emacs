@@ -262,7 +262,8 @@ remove emacs' default line wrap
 (hlinum-activate)
 #+end_src
 
-** Rainbow Delimiter
+** Rainbow
+Delimiter
 color (),[],{} as pair
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
@@ -280,7 +281,7 @@ color (),[],{} as pair
 
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-    :font "JetBrains Mono Medium 13")
+    :font "JetBrains  Mono Medium 13")
 (set-face-attribute 'variable-pitch nil
 	:font "JetBrains Mono Medium 13")
 (set-face-attribute 'fixed-pitch nil
@@ -293,58 +294,11 @@ color (),[],{} as pair
 #+RESULTS:
 : ((font . JetBrains Mono SemiBold 13) (font . JetBrains Mono 13) (vertical-scroll-bars))
 
-** ligature.el
-support ligature for fonts such as fira code, Jetbrains Mono
-*** Installation 
+** text scaling 
 #+begin_src emacs-lisp
-(load
-(expand-file-name
-  "ligature.el"
-  user-emacs-directory))
-#+end_src
-*** setup
-#+begin_src emacs-lisp
-
-;; Enable the "www" ligature in every possible major mode
-(ligature-set-ligatures 't '("www"))
-;; Enable traditional ligature support in eww-mode, if the
-;; `variable-pitch' face supports it
-(ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-;; Enable all Cascadia Code ligatures in programming modes
-(ligature-set-ligatures 't '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-                                    ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-                                    "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-                                    "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-                                    "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-                                    "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-                                    "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-                                    "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-                                    ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-                                    "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-                                    "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-                                    "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                    "\\\\" "://"))
-;; Enables ligature checks globally in all buffers. You can also do it
-;; per mode with `ligature-mode'.
-(global-ligature-mode t)
-
-#+end_src
-
-*** Zooming in/out keybindings
-
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-=") 'text-scale-increase)
-(global-set-key (kbd "C--") 'text-scale-decrease)
-(global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
-(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
-#+end_src
-
-** Pretty Code
-
-#+begin_src emacs-lisp
-(use-package pretty-mode)
-(global-pretty-mode 1)
-
+;;(no-leader
+;;"C-=" '(text-scale-increase :which-key "increase text size")
+;;"C--" '(text-scale-decrease :which-key "decrease text size"))
 #+end_src
 
 ** Pretty Math Symbol
@@ -997,7 +951,7 @@ A workspace implementation from doom emacs
 
 (load
 (expand-file-name
-  "workspaces.el"
+  "packages/workspaces.el"
   user-emacs-directory))
 
 
@@ -1162,6 +1116,28 @@ DAP mode is a debugging package
 : ]*~?[#$%>] *
 
 *** Set 
+
+** Docker mode
+#+begin_src emacs-lisp
+(use-package docker)
+(load
+(expand-file-name
+"packages/dockerfile-mode.el"
+user-emacs-directory))
+(use-package docker-compose-mode)
+#+end_src
+
+*** Fix Indentation
+
+#+begin_src emacs-lisp
+  (add-hook 'dockerfile-mode-hook
+        (lambda ()
+            (setq-local indent-line-function #'sh-indent-line)))
+#+end_src
+
+#+RESULTS:
+| lambda | nil | (setq-local indent-line-function #'sh-indent-line)                 |
+| lambda | nil | (set (make-local-variable 'indent-line-function) #'sh-indent-line) |
 
 * Configuration
 ** Windows control
