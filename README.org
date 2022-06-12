@@ -69,9 +69,6 @@
   - [[#all-the-icons][All The Icons]]
   - [[#emacs-everywhere][Emacs Everywhere]]
   - [[#sudo-edit][Sudo Edit]]
-  - [[#files][Files]]
-    - [[#keybindings][Keybindings]]
-    - [[#opening-specific-filefolder][Opening specific file/folder]]
   - [[#anzu][Anzu]]
   - [[#diff-highlight-git][Diff Highlight (git)]]
   - [[#org-mode][Org Mode]]
@@ -123,6 +120,12 @@
     - [[#set][Set]]
   - [[#docker-mode][Docker mode]]
     - [[#fix-indentation][Fix Indentation]]
+  - [[#calfw][Calfw]]
+    - [[#installation][Installation]]
+    - [[#delete-holidays-from-holidaysel][Delete holidays from holidays.el]]
+  - [[#files][Files]]
+    - [[#keybindings][Keybindings]]
+    - [[#file-shortcut][File Shortcut]]
 - [[#configuration][Configuration]]
   - [[#windows-control][Windows control]]
     - [[#split-buffer-side-by-side][Split buffer side by side]]
@@ -294,8 +297,9 @@ show absolute line numbers and highlight current line number
 disable line numbers for some modes
 #+begin_src emacs-lisp
 (dolist (mode '(term-mode-hook
-        eshell-mode-hook))
-    (add-hook mode (lambda() (display-line-numbers-mode 0))))
+cfw:calendar-mode-hook
+eshell-mode-hook))
+(add-hook mode (lambda() (display-line-numbers-mode 0))))
 
 #+end_src
 
@@ -420,9 +424,10 @@ color (),[],{} as pair
 	:font "JetBrains Mono Medium 13")
 (set-face-attribute 'fixed-pitch nil
     :font "JetBrains Mono Medium 13")
-;;(setq-default line-spacing 0.10)
+
+(setq-default line-spacing 0.10)
 (add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 13"))
-(add-to-list 'default-frame-alist '(line-spacing . 0.2))
+;; (add-to-list 'default-frame-alist '(line-spacing . 0.2))
 #+end_src
 
 #+RESULTS:
@@ -789,35 +794,6 @@ better pdf reader
 
 #+begin_src emacs-lisp
 (use-package sudo-edit)
-#+end_src
-
-** Files
-*** Keybindings
-
-#+begin_src emacs-lisp
-(space-leader
-    "."     '(find-file :which-key "Find file")
-    "f f"   '(find-file :which-key "Find file")
-    "f r"   '(counsel-recentf :which-key "Recent files")
-    "f s"   '(save-buffer :which-key "Save file")
-    "f u"   '(sudo-edit-find-file :which-key "Sudo find file")
-    "f y"   '(dt/show-and-copy-buffer-path :which-key "Yank file path")
-    "f C"   '(copy-file :which-key "Copy file")
-    "f D"   '(delete-file :which-key "Delete file")
-    "f R"   '(rename-file :which-key "Rename file")
-    "f S"   '(write-file :which-key "Save file as...")
-    "f U"   '(sudo-edit :which-key "Sudo edit file"))
-#+end_src
-
-*** Opening specific file/folder
-
-#+begin_src emacs-lisp
-(space-leader
-  "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Emacs Configuration")
-  "- e" '(lambda () (interactive)(find-file "~/.config/emacs/README.org") :which-key "Emacs Configuration")
-  "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
-  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2022/spring/") :which-key "current class folder")
-)
 #+end_src
 
 ** Anzu
@@ -1299,6 +1275,51 @@ user-emacs-directory))
 | lambda | nil | (setq-local indent-line-function #'sh-indent-line)                 |
 | lambda | nil | (set (make-local-variable 'indent-line-function) #'sh-indent-line) |
 
+** Calfw
+A calendar Utility app for Emacs
+*** Installation
+Download calfw package
+#+begin_src emacs-lisp
+(use-package calfw)
+(use-package calfw-ical)
+#+end_src
+
+*** Delete holidays from holidays.el
+Delete other holidays from emacs built-in holidays.el
+#+begin_src emacs-lisp
+(setq cfw:display-calendar-holidays nil)
+#+end_src
+
+** Files
+*** Keybindings
+
+#+begin_src emacs-lisp
+(space-leader
+    "."     '(find-file :which-key "Find file")
+    "f f"   '(find-file :which-key "Find file")
+    "f r"   '(counsel-recentf :which-key "Recent files")
+    "f s"   '(save-buffer :which-key "Save file")
+    "f u"   '(sudo-edit-find-file :which-key "Sudo find file")
+    "f y"   '(dt/show-and-copy-buffer-path :which-key "Yank file path")
+    "f C"   '(copy-file :which-key "Copy file")
+    "f D"   '(delete-file :which-key "Delete file")
+    "f R"   '(rename-file :which-key "Rename file")
+    "f S"   '(write-file :which-key "Save file as...")
+    "f U"   '(sudo-edit :which-key "Sudo edit file"))
+#+end_src
+
+*** File Shortcut
+
+#+begin_src emacs-lisp
+(space-leader
+  "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Emacs Configuration")
+  "- e" '(lambda () (interactive)(find-file "~/.config/emacs/README.org") :which-key "Emacs Configuration")
+  "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
+  "- c" '(open-calendar :which-key "calendar buffer")
+)
+#+end_src
+
+
 * Configuration
 ** Windows control
 *** Split buffer side by side
@@ -1357,7 +1378,7 @@ user-emacs-directory))
   "SPC"   '(counsel-M-x :which-key "M-x")
   "c c"   '(compile :which-key "Compile")
   "c C"   '(recompile :which-key "Recompile")
-  "h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :which-key "Reload emacs config")
+  "h r r" '((lambda () (interactive) (load-file (concat user-emacs-directory "init.el"))) :which-key "Reload emacs config")
   "h t t" '(load-theme :which-key "Reload emacs config")
   "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines"))
 #+end_src

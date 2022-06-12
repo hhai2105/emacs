@@ -12,3 +12,5 @@ transient
 workspaces
 org-roam.db
 recentf
+secrets/*
+url/*

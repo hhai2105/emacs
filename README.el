@@ -81,8 +81,9 @@
 ;; (setq display-line-numbers-type 'relative)
 
 (dolist (mode '(term-mode-hook
-        eshell-mode-hook))
-    (add-hook mode (lambda() (display-line-numbers-mode 0))))
+cfw:calendar-mode-hook
+eshell-mode-hook))
+(add-hook mode (lambda() (display-line-numbers-mode 0))))
 
 (set-default 'truncate-lines t)
 
@@ -165,9 +166,10 @@
 	:font "JetBrains Mono Medium 13")
 (set-face-attribute 'fixed-pitch nil
     :font "JetBrains Mono Medium 13")
-;;(setq-default line-spacing 0.10)
+
+(setq-default line-spacing 0.10)
 (add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 13"))
-(add-to-list 'default-frame-alist '(line-spacing . 0.2))
+;; (add-to-list 'default-frame-alist '(line-spacing . 0.2))
 
 ;;(no-leader
 ;;"C-=" '(text-scale-increase :which-key "increase text size")
@@ -403,26 +405,6 @@ Remove expanded subdir of deleted dir, if any."
 (use-package emacs-everywhere)
 
 (use-package sudo-edit)
-
-(space-leader
-    "."     '(find-file :which-key "Find file")
-    "f f"   '(find-file :which-key "Find file")
-    "f r"   '(counsel-recentf :which-key "Recent files")
-    "f s"   '(save-buffer :which-key "Save file")
-    "f u"   '(sudo-edit-find-file :which-key "Sudo find file")
-    "f y"   '(dt/show-and-copy-buffer-path :which-key "Yank file path")
-    "f C"   '(copy-file :which-key "Copy file")
-    "f D"   '(delete-file :which-key "Delete file")
-    "f R"   '(rename-file :which-key "Rename file")
-    "f S"   '(write-file :which-key "Save file as...")
-    "f U"   '(sudo-edit :which-key "Sudo edit file"))
-
-(space-leader
-  "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Emacs Configuration")
-  "- e" '(lambda () (interactive)(find-file "~/.config/emacs/README.org") :which-key "Emacs Configuration")
-  "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
-  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2022/spring/") :which-key "current class folder")
-)
 
 (use-package evil-anzu)
 (global-anzu-mode)
@@ -699,6 +681,31 @@ user-emacs-directory))
       (lambda ()
           (setq-local indent-line-function #'sh-indent-line)))
 
+(use-package calfw)
+(use-package calfw-ical)
+
+(setq cfw:display-calendar-holidays nil)
+
+(space-leader
+    "."     '(find-file :which-key "Find file")
+    "f f"   '(find-file :which-key "Find file")
+    "f r"   '(counsel-recentf :which-key "Recent files")
+    "f s"   '(save-buffer :which-key "Save file")
+    "f u"   '(sudo-edit-find-file :which-key "Sudo find file")
+    "f y"   '(dt/show-and-copy-buffer-path :which-key "Yank file path")
+    "f C"   '(copy-file :which-key "Copy file")
+    "f D"   '(delete-file :which-key "Delete file")
+    "f R"   '(rename-file :which-key "Rename file")
+    "f S"   '(write-file :which-key "Save file as...")
+    "f U"   '(sudo-edit :which-key "Sudo edit file"))
+
+(space-leader
+  "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Emacs Configuration")
+  "- e" '(lambda () (interactive)(find-file "~/.config/emacs/README.org") :which-key "Emacs Configuration")
+  "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
+  "- c" '(open-calendar :which-key "calendar buffer")
+)
+
 (setq split-height-threshold nil)
 (setq split-width-threshold 0)
 
@@ -741,7 +748,7 @@ user-emacs-directory))
   "SPC"   '(counsel-M-x :which-key "M-x")
   "c c"   '(compile :which-key "Compile")
   "c C"   '(recompile :which-key "Recompile")
-  "h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :which-key "Reload emacs config")
+  "h r r" '((lambda () (interactive) (load-file (concat user-emacs-directory "init.el"))) :which-key "Reload emacs config")
   "h t t" '(load-theme :which-key "Reload emacs config")
   "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines"))
 
