@@ -1,5 +1,139 @@
 #+title: GNU Emacs
 #+description: This is my Emacs Configuration
+* Table of Content
+:PROPERTIES:
+:TOC:      :include all
+:END:
+:CONTENTS:
+- [[#table-of-content][Table of Content]]
+- [[#general-configuration][General Configuration]]
+  - [[#package-installation][Package Installation]]
+    - [[#melpa-package][Melpa Package]]
+    - [[#user-package][User Package]]
+  - [[#always-ensure-package][Always ensure package]]
+  - [[#boot-up-optimization][Boot Up Optimization]]
+    - [[#reducing-the-frequency-of-garbage-collection][Reducing the frequency of garbage collection]]
+  - [[#backup-files][Backup Files]]
+    - [[#move-all-backup-files-to-a-designated-location-instead-of-within-the-same-folder][Move All Backup Files to a designated location instead of within the same folder]]
+    - [[#auto-save][Auto Save]]
+    - [[#recentf][Recentf]]
+  - [[#silence-ad-handle-redefinition][Silence ad-handle-redefinition]]
+  - [[#set-default-coding-system-to-utf-8][Set default coding system to utf-8]]
+  - [[#use-short-answer][Use Short answer]]
+- [[#user-interface-settings][User Interface Settings]]
+  - [[#make-esc-quit-promps][Make ESC quit promps]]
+  - [[#menu-bar][Menu Bar]]
+  - [[#theme][Theme]]
+  - [[#modeline][Modeline]]
+  - [[#line-numbers-and-truncated-lines][Line Numbers and Truncated Lines]]
+  - [[#truncate-lines][Truncate lines]]
+  - [[#indentation][Indentation]]
+    - [[#basic-setup][Basic setup]]
+    - [[#language-specific-tweaks][Language-specific tweaks]]
+    - [[#agressive-indentation][Agressive indentation]]
+  - [[#undo-tree][Undo Tree]]
+  - [[#line-highlighting][Line Highlighting]]
+  - [[#rainbow][Rainbow]]
+  - [[#scrolling][Scrolling]]
+  - [[#fonts][Fonts]]
+  - [[#text-scaling][text scaling]]
+  - [[#pretty-math-symbol][Pretty Math Symbol]]
+- [[#general-packages][General Packages]]
+  - [[#keybinding-packages][keybinding packages]]
+    - [[#key-chord][key-chord]]
+    - [[#evil-mode][Evil Mode]]
+    - [[#which-key][Which Key]]
+    - [[#general][General]]
+      - [[#set-space-and-c-spc-as-global-prefix][set space and C-SPC as global prefix]]
+      - [[#no-leader-key-maps][No leader key maps]]
+      - [[#dap-mode-key-maps][Dap Mode Key maps]]
+  - [[#auto-completion-engines][Auto Completion Engines]]
+    - [[#ivy][Ivy]]
+    - [[#ivy-rich][Ivy Rich]]
+    - [[#counsel][Counsel]]
+    - [[#company][Company]]
+    - [[#electric][Electric]]
+      - [[#indentation][Indentation]]
+      - [[#parenthesis][parenthesis]]
+  - [[#dashboard][Dashboard]]
+    - [[#configuration][Configuration]]
+    - [[#dashboard-in-emacsclient][Dashboard in Emacsclient]]
+  - [[#helm][Helm]]
+  - [[#perspective][Perspective]]
+  - [[#dired][Dired]]
+    - [[#dired-group-file-and-folder-together][Dired group file and folder together]]
+  - [[#flycheck][Flycheck]]
+  - [[#rainbow-mode][Rainbow mode]]
+  - [[#pdf][PDF]]
+  - [[#projectile][Projectile]]
+  - [[#all-the-icons][All The Icons]]
+  - [[#emacs-everywhere][Emacs Everywhere]]
+  - [[#sudo-edit][Sudo Edit]]
+  - [[#files][Files]]
+    - [[#keybindings][Keybindings]]
+    - [[#opening-specific-filefolder][Opening specific file/folder]]
+  - [[#anzu][Anzu]]
+  - [[#diff-highlight-git][Diff Highlight (git)]]
+  - [[#org-mode][Org Mode]]
+    - [[#configuration][Configuration]]
+    - [[#org-bullets][Org Bullets]]
+    - [[#org-todo-keywords][Org Todo keywords]]
+    - [[#org-todo-toggle][Org Todo toggle]]
+    - [[#org-calenda][Org calenda]]
+    - [[#generate-table-of-contents][Generate Table of Contents]]
+    - [[#keybindings][keybindings]]
+    - [[#latex-preview][Latex Preview]]
+    - [[#inline-image][Inline image]]
+    - [[#evil-mode][Evil Mode]]
+    - [[#org-make-toc][Org Make TOC]]
+  - [[#org-roam][Org Roam]]
+    - [[#setup][Setup]]
+    - [[#capture-templates][Capture templates]]
+    - [[#keybinding][Keybinding]]
+  - [[#mu4e][MU4E]]
+  - [[#yasnippet][Yasnippet]]
+    - [[#indent][Indent]]
+  - [[#latex][Latex]]
+  - [[#emojis][Emojis]]
+  - [[#atomic-chrome][Atomic Chrome]]
+  - [[#quickrun][Quickrun]]
+  - [[#eyebrowse][eyebrowse]]
+  - [[#workspace][Workspace]]
+    - [[#requirements][requirements]]
+    - [[#keymap][Keymap]]
+  - [[#language-support][Language Support]]
+    - [[#programming-languages][Programming Languages]]
+    - [[#html][html]]
+  - [[#lsp-mode][LSP mode]]
+    - [[#initialize-lsp-package][Initialize lsp package]]
+    - [[#setup-lsp-with-other-package][Setup lsp with other package]]
+    - [[#language-support][Language support]]
+      - [[#java][Java]]
+      - [[#cc][C/C++]]
+      - [[#python][Python]]
+      - [[#jsxjavascripttypescript][JSX/Javascript/Typescript]]
+      - [[#latex][Latex]]
+  - [[#dap-mode][DAP mode]]
+    - [[#installation][Installation]]
+    - [[#hooks][hooks]]
+    - [[#languages][Languages]]
+  - [[#tramp-mode][Tramp mode]]
+    - [[#set-default-connection-method][Set default connection method]]
+    - [[#shell-prompt-fix][Shell prompt fix]]
+    - [[#set][Set]]
+  - [[#docker-mode][Docker mode]]
+    - [[#fix-indentation][Fix Indentation]]
+- [[#configuration][Configuration]]
+  - [[#windows-control][Windows control]]
+    - [[#split-buffer-side-by-side][Split buffer side by side]]
+    - [[#keybindings][Keybindings]]
+  - [[#registers][Registers]]
+  - [[#general-keybindings][general Keybindings]]
+  - [[#copy-directory-to-keyring][Copy directory to keyring]]
+- [[#runtime-optimization][Runtime Optimization]]
+  - [[#lower-gc-threshold-gc-happens-more-frquqently-in-less-time][lower GC Threshold gc happens more frquqently in less time]]
+:END:
+
 * General Configuration
 ** Package Installation
 *** Melpa Package
@@ -485,6 +619,12 @@ display key functions
 (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 #+end_src
 
+** Helm
+
+#+begin_src emacs-lisp
+(use-package helm)
+#+end_src
+
 ** Perspective
 
 #+begin_src emacs-lisp
@@ -695,7 +835,6 @@ better pdf reader
 #+end_src
 
 ** Org Mode
-
 *** Configuration
 
 #+begin_src emacs-lisp
@@ -769,9 +908,8 @@ Org toggle todo
 *** Generate Table of Contents
 
 #+begin_src emacs-lisp
-(use-package toc-org
-    :commands toc-org-enable
-    :init (add-hook 'org-mode-hook 'toc-org-enable))
+(use-package org-make-toc)
+(add-hook 'org-mode-hook #'org-make-toc-mode)
 #+end_src
 
 *** keybindings
@@ -822,6 +960,14 @@ Enable evil keybindings for org mode
   (evil-org-agenda-set-keys))
 (add-hook 'org-mode-hook 'evil-org-mode)
 
+#+end_src
+
+*** Org Make TOC
+Automatically make table of content 
+#+begin_src emacs-lisp
+(use-package toc-org
+  :commands toc-org-enable
+  :init (add-hook 'org-mode-hook 'toc-org-enable))
 #+end_src
 
 ** Org Roam
@@ -1027,6 +1173,7 @@ Language server protocol turns emacs into an ide
 (lsp lsp-deferred)
 )
 (setq lsp-enable-indentation nil)
+(setq lsp-enable-on-type-formatting nil)
 #+end_src
 
 *** Setup lsp with other package
@@ -1050,6 +1197,12 @@ Language server protocol turns emacs into an ide
 (add-hook 'c-mode-hook 'lsp-deferred)
 #+end_src
 
+**** Python
+#+begin_src emacs-lisp
+(use-package lsp-pyright)
+(add-hook 'python-mode-hook 'lsp-deferred)
+#+end_src
+
 **** JSX/Javascript/Typescript
 
 #+begin_src emacs-lisp
@@ -1058,6 +1211,13 @@ Language server protocol turns emacs into an ide
 (add-hook 'typescript-mode-hook 'lsp-deferred)
 (add-hook 'ts-mode-hook 'lsp-deferred)
 (add-hook 'js-jsx-mode-hook 'lsp-deferred)
+#+end_src
+
+**** Latex
+#+begin_src emacs-lisp
+(use-package lsp-latex)  
+(use-package lsp-ltex)  
+(add-hook 'latex-mode-hook 'lsp-deferred)
 #+end_src
 
 ** DAP mode

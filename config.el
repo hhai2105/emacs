@@ -284,6 +284,8 @@
 
 (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 
+(use-package helm)
+
 (use-package perspective
 :bind
 ("C-x C-b" . persp-list-buffers)
@@ -474,9 +476,8 @@ Remove expanded subdir of deleted dir, if any."
 (define-key org-read-date-minibuffer-local-map (kbd "C-.") (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-month 1))))
 (define-key org-read-date-minibuffer-local-map (kbd "C-,") (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-month 1))))
 
-(use-package toc-org
-    :commands toc-org-enable
-    :init (add-hook 'org-mode-hook 'toc-org-enable))
+(use-package org-make-toc)
+(add-hook 'org-mode-hook #'org-make-toc-mode)
 
 (space-leader
        "m *"   '(org-ctrl-c-star :which-key "Org-ctrl-c-star")
@@ -509,6 +510,10 @@ Remove expanded subdir of deleted dir, if any."
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 (add-hook 'org-mode-hook 'evil-org-mode)
+
+(use-package toc-org
+  :commands toc-org-enable
+  :init (add-hook 'org-mode-hook 'toc-org-enable))
 
 (use-package org-roam
 :init
@@ -630,6 +635,7 @@ Remove expanded subdir of deleted dir, if any."
 (lsp lsp-deferred)
 )
 (setq lsp-enable-indentation nil)
+(setq lsp-enable-on-type-formatting nil)
 
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 (use-package lsp-ui :commands lsp-ui-mode)
@@ -640,11 +646,18 @@ Remove expanded subdir of deleted dir, if any."
 (add-hook 'c++-mode-hook 'lsp-deferred)
 (add-hook 'c-mode-hook 'lsp-deferred)
 
+(use-package lsp-pyright)
+(add-hook 'python-mode-hook 'lsp-deferred)
+
 (add-hook 'javascript-mode-hook 'lsp-deferred)
 (add-hook 'js-mode-hook 'lsp-deferred)
 (add-hook 'typescript-mode-hook 'lsp-deferred)
 (add-hook 'ts-mode-hook 'lsp-deferred)
 (add-hook 'js-jsx-mode-hook 'lsp-deferred)
+
+(use-package lsp-latex)  
+(use-package lsp-ltex)  
+(add-hook 'latex-mode-hook 'lsp-deferred)
 
 (use-package dap-mode)  
 (setq dap-auto-configure-features '(sessions locals controls tooltip))
