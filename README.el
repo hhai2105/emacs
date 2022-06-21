@@ -212,7 +212,7 @@ eshell-mode-hook))
     :states '(normal visual emacs)
     :keymaps 'override
     :prefix "SPC"
-    :global-prefix "C-SPC"
+    :global-prefix "SPC"
 )
 
 (general-create-definer no-leader
@@ -681,10 +681,161 @@ user-emacs-directory))
       (lambda ()
           (setq-local indent-line-function #'sh-indent-line)))
 
+(defun cfw:define-keymap (keymap-list)
+  "[internal] Key map definition utility.
+KEYMAP-LIST is a source list like ((key . command) ... )."
+  (let ((map (make-sparse-keymap)))
+    (mapc
+     (lambda (i)
+       (define-key map
+         (if (stringp (car i))
+             (read-kbd-macro (car i)) (car i))
+         (cdr i)))
+     keymap-list)
+    map))
+
+(defvar cfw:calendar-mode-map
+  (cfw:define-keymap
+   '(
+     ("<right>" . cfw:navi-next-day-command)
+     ("f"       . cfw:navi-next-day-command)
+     ("<left>"  . cfw:navi-previous-day-command)
+     ("b"       . cfw:navi-previous-day-command)
+     ("<down>"  . cfw:navi-next-week-command)
+     ("n"       . cfw:navi-next-week-command)
+     ("<up>"    . cfw:navi-previous-week-command)
+     ("p"       . cfw:navi-previous-week-command)
+
+     ;; Vi style
+     ("l" . cfw:navi-next-day-command)
+     ("h" . cfw:navi-previous-day-command)
+     ("j" . cfw:navi-next-week-command)
+     ("k" . cfw:navi-previous-week-command)
+     ("^" . cfw:navi-goto-week-begin-command)
+     ("$" . cfw:navi-goto-week-end-command)
+
+     ("<"   . cfw:navi-previous-month-command)
+     ("M-v" . cfw:navi-previous-month-command)
+     (">"   . cfw:navi-next-month-command)
+     ("C-v" . cfw:navi-next-month-command)
+     ("<prior>" . cfw:navi-previous-month-command)
+     ("<next>"  . cfw:navi-next-month-command)
+     ("<home>"  . cfw:navi-goto-first-date-command)
+     ("<end>"   . cfw:navi-goto-last-date-command)
+
+     ("g" . cfw:navi-goto-date-command)
+     ("t" . cfw:navi-goto-today-command)
+     ("." . cfw:navi-goto-today-command)
+
+     ("TAB"       . cfw:navi-next-item-command)
+     ("C-i"       . cfw:navi-next-item-command)
+     ("<backtab>"   . cfw:navi-prev-item-command)
+     ("S-TAB"       . cfw:navi-prev-item-command)
+
+     ("r"   . cfw:refresh-calendar-buffer)
+     ("RET" . cfw:show-details-command)
+
+     ("D" . cfw:change-view-day)
+     ("W" . cfw:change-view-week)
+     ("T" . cfw:change-view-two-weeks)
+     ("M" . cfw:change-view-month)
+
+     ([mouse-1] . cfw:navi-on-click)
+
+     ("q" . bury-buffer)
+     (":" . evil-ex)
+
+     ("0" . digit-argument)
+     ("1" . digit-argument)
+     ("2" . digit-argument)
+     ("3" . digit-argument)
+     ("4" . digit-argument)
+     ("5" . digit-argument)
+     ("6" . digit-argument)
+     ("7" . digit-argument)
+     ("8" . digit-argument)
+     ("9" . digit-argument)
+
+     )) "Default key map of calendar views."
+)
+(add-hook 'cfw:details-mode-hook
+          (lambda () (local-set-key (kbd "q") 'bury-buffer)))
+
 (use-package calfw)
 (use-package calfw-ical)
 
+;; set first day of weeks
+(setq calendar-week-start-day 1) ; 0:Sunday, 1:Monday
+;; delete holidays
 (setq cfw:display-calendar-holidays nil)
+
+;; (custom-set-faces
+;;  '(cfw:face-title ((t (:foreground "#ffffff" :weight bold :height 2.0 :inherit variable-pitch))))
+;;  '(cfw:face-header ((t (:foreground "#d0bf8f" :weight bold))))
+;;  `(cfw:face-sunday ((t :foreground "red" :background ,(face-attribute 'default :background) :weight bold)))
+;;  `(cfw:face-saturday ((t :foreground "cyan" :background ,(face-attribute 'default :background) :weight bold)))
+;;  '(cfw:face-holiday ((t :background "grey10" :foreground "#8c5353" :weight bold)))
+;;  `(cfw:face-grid ((t :foreground ,(face-attribute 'default :foreground))))
+;;  '(cfw:face-default-content ((t :foreground "#bfebbf")))
+;;  '(cfw:face-periods ((t :foreground "cyan")))
+;;  '(cfw:face-day-title ((t :background "grey10")))
+;;  '(cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
+;;  '(cfw:face-annotation ((t :foreground "RosyBrown" :inherit cfw:face-day-title)))
+;;  '(cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
+;;  '(cfw:face-today-title ((t :background "cyan" :weight bold)))
+;;  '(cfw:face-today ((t :background: "grey10" :weight bold)))
+;;  '(cfw:face-select ((t :background "#2f2f2f")))
+;;  '(cfw:face-toolbar ((t :foreground "Steelblue4" :background "Steelblue4")))
+;;  '(cfw:face-toolbar-button-off ((t :foreground "Gray10" :weight bold)))
+;;  '(cfw:face-toolbar-button-on ((t :foreground "Gray50" :weight bold)))
+;; )
+
+;; Default setting
+;; (setq cfw:fchar-junction ?+
+;;       cfw:fchar-vertical-line ?|
+;;       cfw:fchar-horizontal-line ?-
+;;       cfw:fchar-left-junction ?+
+;;       cfw:fchar-right-junction ?+
+;;       cfw:fchar-top-junction ?+
+;;       cfw:fchar-top-left-corner ?+
+;;       cfw:fchar-top-right-corner ?+ )
+
+;; Unicode characters
+;; (setq cfw:fchar-junction ?╋
+;;       cfw:fchar-vertical-line ?┃
+;;       cfw:fchar-horizontal-line ?━
+;;       cfw:fchar-left-junction ?┣
+;;       cfw:fchar-right-junction ?┫
+;;       cfw:fchar-top-junction ?┯
+;;       cfw:fchar-top-left-corner ?┏
+;;       cfw:fchar-top-right-corner ?┓)
+      
+;; Another unicode chars
+(setq cfw:fchar-junction ?╬
+      cfw:fchar-vertical-line ?║
+      cfw:fchar-horizontal-line ?═
+      cfw:fchar-left-junction ?╠
+      cfw:fchar-right-junction ?╣
+      cfw:fchar-top-junction ?╦
+      cfw:fchar-top-left-corner ?╔
+      cfw:fchar-top-right-corner ?╗)
+
+
+
+(load-file(
+concat 
+user-emacs-directory
+"secrets/calendar.el"
+))
+
+(defun open-calendar ()
+  (interactive)
+  (cfw:open-calendar-buffer
+   :contents-sources
+   (list
+    (cfw:ical-create-source "hhai2105" hhai-calendar "magenta1") ; google calendar ICS
+   )
+))
 
 (space-leader
     "."     '(find-file :which-key "Find file")
