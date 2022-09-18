@@ -62,6 +62,8 @@
   (remq 'process-kill-buffer-query-function
          kill-buffer-query-functions))
 
+(global-so-long-mode 1)
+
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (menu-bar-mode -1)
@@ -145,6 +147,25 @@ eshell-mode-hook))
 
 (use-package aggressive-indent)
 (global-aggressive-indent-mode)
+
+(add-to-list
+ 'aggressive-indent-dont-indent-if
+ '(and (derived-mode-p 'c++-mode)
+       (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
+                           (thing-at-point 'line)))))
+
+(dolist (command '(yank yank-pop))
+   (eval `(defadvice ,command (after indent-region activate)
+            (and (not current-prefix-arg)
+                 (member major-mode '(emacs-lisp-mode lisp-mode
+                                                      clojure-mode    scheme-mode
+                                                      haskell-mode    ruby-mode
+                                                      rspec-mode      python-mode
+                                                      c-mode          c++-mode
+                                                      objc-mode       latex-mode
+                                                      plain-tex-mode))
+                 (let ((mark-even-if-inactive transient-mark-mode))
+                   (indent-region (region-beginning) (region-end) nil))))))
 
 (use-package undo-fu)
 (use-package undo-fu-session)
@@ -641,6 +662,10 @@ Remove expanded subdir of deleted dir, if any."
 (use-package lsp-ltex)  
 (add-hook 'latex-mode-hook 'lsp-deferred)
 
+(use-package lsp-tailwindcss
+  :init
+  (setq lsp-tailwindcss-add-on-mode t))
+
 (use-package dap-mode)  
 (setq dap-auto-configure-features '(sessions locals controls tooltip))
 (no-leader
@@ -758,8 +783,6 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
 
      )) "Default key map of calendar views."
 )
-(add-hook 'cfw:details-mode-hook
-          (lambda () (local-set-key (kbd "q") 'bury-buffer)))
 
 (use-package calfw)
 (use-package calfw-ical)
@@ -854,8 +877,22 @@ user-emacs-directory
   "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Emacs Configuration")
   "- e" '(lambda () (interactive)(find-file "~/.config/emacs/README.org") :which-key "Emacs Configuration")
   "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
-  "- c" '(open-calendar :which-key "calendar buffer")
+  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2022/fall/") :which-key "Class Folder")
+  "- k" '(open-calendar :which-key "calendar buffer")
 )
+
+
+
+(use-package highlight-indent-guides)
+(add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+(setq highlight-indent-guides-method 'bitmap)
+(setq highlight-indent-guides-auto-odd-face-perc 50)
+(setq highlight-indent-guides-auto-even-face-perc 15)
+(setq highlight-indent-guides-auto-character-face-perc 15)
+(setq highlight-indent-guides-responsive 'stack)
+(setq highlight-indent-guides-auto-stack-odd-face-perc 50)
+(setq highlight-indent-guides-auto-stack-even-face-perc 15)
+(setq highlight-indent-guides-auto-stack-character-face-perc 15)
 
 (setq split-height-threshold nil)
 (setq split-width-threshold 0)
