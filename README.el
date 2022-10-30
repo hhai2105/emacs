@@ -182,14 +182,14 @@ eshell-mode-hook))
 (setq scroll-conservatively 10000)
 
 (set-face-attribute 'default nil
-    :font "JetBrains  Mono Medium 13")
+    :font "JetBrains  Mono Medium 15")
 (set-face-attribute 'variable-pitch nil
-	:font "JetBrains Mono Medium 13")
+	:font "JetBrains Mono Medium 15")
 (set-face-attribute 'fixed-pitch nil
-    :font "JetBrains Mono Medium 13")
+    :font "JetBrains Mono Medium 15")
 
 (setq-default line-spacing 0.10)
-(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 13"))
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 15"))
 ;; (add-to-list 'default-frame-alist '(line-spacing . 0.2))
 
 ;;(no-leader
@@ -499,6 +499,7 @@ Remove expanded subdir of deleted dir, if any."
        "m T"   '(org-todo-list :which-key "Org todo list")
        "o a"   '(org-agenda :which-key "Org agenda")
        "m s"   '(org-schedule :which-key "Org schedule")
+       "m s"   '(org-sort :which-key "Org sort")
        )
 
 (require 'org)
@@ -650,7 +651,7 @@ Remove expanded subdir of deleted dir, if any."
 (add-hook 'c-mode-hook 'lsp-deferred)
 
 (use-package lsp-pyright)
-(add-hook 'python-mode-hook 'lsp-deferred)
+(add-hook 'python-mode-hook 'lsp)
 
 (add-hook 'javascript-mode-hook 'lsp-deferred)
 (add-hook 'js-mode-hook 'lsp-deferred)
@@ -881,18 +882,30 @@ user-emacs-directory
   "- k" '(open-calendar :which-key "calendar buffer")
 )
 
-
+(use-package ein)
 
 (use-package highlight-indent-guides)
 (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
-(setq highlight-indent-guides-method 'bitmap)
-(setq highlight-indent-guides-auto-odd-face-perc 50)
-(setq highlight-indent-guides-auto-even-face-perc 15)
-(setq highlight-indent-guides-auto-character-face-perc 15)
+(setq highlight-indent-guides-method 'character)
+;; (setq highlight-indent-guides-auto-odd-face-perc 50)
+;; (setq highlight-indent-guides-auto-even-face-perc 50)
+;; (setq highlight-indent-guides-auto-character-face-perc 15)
 (setq highlight-indent-guides-responsive 'stack)
-(setq highlight-indent-guides-auto-stack-odd-face-perc 50)
-(setq highlight-indent-guides-auto-stack-even-face-perc 15)
-(setq highlight-indent-guides-auto-stack-character-face-perc 15)
+;; (setq highlight-indent-guides-auto-stack-odd-face-perc 50)
+;; (setq highlight-indent-guides-auto-stack-even-face-perc 50)
+;; (setq highlight-indent-guides-auto-stack-character-face-perc 15)
+
+(set-face-background 'highlight-indent-guides-odd-face "red")
+(set-face-background 'highlight-indent-guides-even-face "blue")
+(set-face-foreground 'highlight-indent-guides-character-face "white")
+(set-face-background 'highlight-indent-guides-odd-face "red")
+(set-face-background 'highlight-indent-guides-even-face "deep pink")
+(set-face-foreground 'highlight-indent-guides-character-face "peach puff")
+
+(no-leader
+       "C-="   '(text-scale-increase :which-key "Org-ctrl-c-star")
+       "C--"   '(text-scale-decrease :which-key "Org-ctrl-c-star")
+)
 
 (setq split-height-threshold nil)
 (setq split-width-threshold 0)
