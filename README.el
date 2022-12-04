@@ -26,44 +26,6 @@
 
   ;; Silence compiler warnings as they can be pretty disruptive (setq comp-async-report-warnings-errors nil)
 
-(setq backup-directory-alist '(("." . "~/.config/emacs/.saves/")))
-
-(setq auto-save-file-name-transforms
-`((".*" "~/.config/emacs/.saves" t)))
-
-(setq recentf-save-file (expand-file-name "~/.config/emacs/.saves/recentf"))
-
-(setq ad-redefinition-action 'accept)
-
-(prefer-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-;; backwards compatibility as default-buffer-file-coding-system
-;; is deprecated in 23.2.
-(if (boundp 'buffer-file-coding-system)
-    (setq-default buffer-file-coding-system 'utf-8)
-  (setq default-buffer-file-coding-system 'utf-8))
-
-;; Treat clipboard input as UTF-8 string first; compound text next, etc.
-(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
-
-(setq use-dialog-box nil)
-
-(setq use-short-answers t)
-(setq confirm-nonexistent-file-or-buffer nil)
-
-(setq ido-create-new-buffer 'always)
-
-(setq inhibit-startup-message t
-      inhibit-startup-echo-area-message t)
-
-(setq kill-buffer-query-functions
-  (remq 'process-kill-buffer-query-function
-         kill-buffer-query-functions))
-
-(global-so-long-mode 1)
-
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (menu-bar-mode -1)
@@ -100,10 +62,11 @@ eshell-mode-hook))
   (setq tab-width custom-tab-width))
 
 ;; Hooks to Enable Tabs
-(add-hook 'prog-mode-hook 'disable-tabs)
+(add-hook 'prog-mode-hook 'enable-tabs)
+(add-hook 'lisp-mode-hook 'enable-tabs)
+(add-hook 'emacs-lisp-mode-hook 'enable-tabs)
 ;; Hooks to Disable Tabs
-(add-hook 'lisp-mode-hook 'disable-tabs)
-(add-hook 'emacs-lisp-mode-hook 'disable-tabs)
+(add-hook 'python-mode-hook 'disable-tabs)
 
 ;; Making electric-indent behave sanely
 (setq-default electric-indent-inhibit t)
@@ -148,11 +111,11 @@ eshell-mode-hook))
 (use-package aggressive-indent)
 (global-aggressive-indent-mode)
 
-(add-to-list
- 'aggressive-indent-dont-indent-if
- '(and (derived-mode-p 'c++-mode)
-       (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
-                           (thing-at-point 'line)))))
+;; (add-to-list
+;;  'aggressive-indent-dont-indent-if
+;;  '(and (derived-mode-p 'c++-mode)
+;;        (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
+;;                            (thing-at-point 'line)))))
 
 (dolist (command '(yank yank-pop))
    (eval `(defadvice ,command (after indent-region activate)
@@ -182,14 +145,14 @@ eshell-mode-hook))
 (setq scroll-conservatively 10000)
 
 (set-face-attribute 'default nil
-    :font "JetBrains  Mono Medium 15")
+    :font "JetBrains  Mono Medium 13")
 (set-face-attribute 'variable-pitch nil
-	:font "JetBrains Mono Medium 15")
+	:font "JetBrains Mono Medium 13")
 (set-face-attribute 'fixed-pitch nil
-    :font "JetBrains Mono Medium 15")
+    :font "JetBrains Mono Medium 13")
 
 (setq-default line-spacing 0.10)
-(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 15"))
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 13"))
 ;; (add-to-list 'default-frame-alist '(line-spacing . 0.2))
 
 ;;(no-leader
@@ -410,6 +373,10 @@ Remove expanded subdir of deleted dir, if any."
 (global-flycheck-mode)
 ;; (setq flycheck-check-syntax-automatically '(mode-enabled save))
 
+(use-package flycheck
+  :config
+  (setq-default flycheck-disabled-checkers '(python-pylint)))
+
 (use-package rainbow-mode)
 
 (use-package pdf-tools
@@ -624,6 +591,8 @@ Remove expanded subdir of deleted dir, if any."
 
 (use-package haskell-mode)
 (use-package typescript-mode)
+(use-package go-mode)
+(use-package go-complete)
 
 (use-package ac-html)
 (use-package ac-html-angular)
@@ -895,17 +864,24 @@ user-emacs-directory
 ;; (setq highlight-indent-guides-auto-stack-even-face-perc 50)
 ;; (setq highlight-indent-guides-auto-stack-character-face-perc 15)
 
-(set-face-background 'highlight-indent-guides-odd-face "red")
-(set-face-background 'highlight-indent-guides-even-face "blue")
-(set-face-foreground 'highlight-indent-guides-character-face "white")
-(set-face-background 'highlight-indent-guides-odd-face "red")
-(set-face-background 'highlight-indent-guides-even-face "deep pink")
-(set-face-foreground 'highlight-indent-guides-character-face "peach puff")
-
 (no-leader
        "C-="   '(text-scale-increase :which-key "Org-ctrl-c-star")
        "C--"   '(text-scale-decrease :which-key "Org-ctrl-c-star")
 )
+
+(use-package dumb-jump)
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+(setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+
+(global-auto-revert-mode t)
+
+(setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
+
+(make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
+(setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
+auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-emacs-directory) t)))
+
+(use-package no-littering)
 
 (setq split-height-threshold nil)
 (setq split-width-threshold 0)
@@ -961,3 +937,5 @@ user-emacs-directory
 "y y" 'my/dired-copy-dirname-as-kill)
 
 (setq gc-cons-threshold (* 2 1000 1000))
+
+(setq warning-minimum-level :emergency)
