@@ -9,8 +9,10 @@ tramp
 persp-confs
 projects
 transient
+workspace
 workspaces
 org-roam.db
 recentf
 secrets/*
 url/*
+tmp/
