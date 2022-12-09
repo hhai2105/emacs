@@ -133,6 +133,9 @@
   - [[#highlight-indent][Highlight Indent]]
   - [[#text-scale][text scale]]
   - [[#dumb-jump][Dumb Jump]]
+  - [[#git-dired-modeline][Git Dired Modeline]]
+  - [[#write-room-mode][Write room mode]]
+  - [[#magit][Magit]]
 - [[#configuration][Configuration]]
   - [[#instantly-update-file-as-it-changes][instantly update file as it changes]]
   - [[#keep-folders-clean][Keep folders clean]]
@@ -248,6 +251,7 @@ disable line numbers for some modes
 #+begin_src emacs-lisp
 (dolist (mode '(term-mode-hook
 cfw:calendar-mode-hook
+org-mode-hook
 eshell-mode-hook))
 (add-hook mode (lambda() (display-line-numbers-mode 0))))
 
@@ -400,14 +404,14 @@ color (),[],{} as pair
 
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-    :font "JetBrains  Mono Medium 13")
+    :font "JetBrains  Mono Medium 11")
 (set-face-attribute 'variable-pitch nil
-	:font "JetBrains Mono Medium 13")
+	:font "JetBrains Mono Medium 11")
 (set-face-attribute 'fixed-pitch nil
-    :font "JetBrains Mono Medium 13")
+    :font "JetBrains Mono Medium 11")
 
 (setq-default line-spacing 0.10)
-(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 13"))
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 11"))
 ;; (add-to-list 'default-frame-alist '(line-spacing . 0.2))
 #+end_src
 
@@ -442,6 +446,7 @@ color (),[],{} as pair
       (setq evil-want-keybinding nil)
       (setq evil-vsplit-window-right t)
       (setq evil-split-window-below t)
+      (setq evil-respect-visual-line-mode t)
       (evil-mode))
   (use-package evil-collection
       :after evil
@@ -809,6 +814,7 @@ better pdf reader
     org-edit-src-content-indentation 0
     org-src-fontify-natively t
     org-confirm-babel-evaluate nil)
+(add-hook 'org-mode-hook 'visual-line-mode)
 #+end_src
 
 *** Org Bullets
@@ -1540,6 +1546,31 @@ user-emacs-directory
 (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
 #+end_src
 
+** Git Dired Modeline
+
+#+begin_src emacs-lisp
+(use-package git-ps1-mode)
+(git-ps1-mode)
+#+end_src
+
+** Write room mode
+#+begin_src emacs-lisp
+(use-package writeroom-mode)  
+(setq writeroom-width 0.7)  
+(setq writeroom-mode-line t)  
+(no-leader
+"s-," '(writeroom-decrease-width :which-key "decrease border width")
+"s-." '(writeroom-increase-width :which-key "increase border width")
+"s-/" '(writeroom-adjust-width   :which-key "adjust border width"))
+
+(add-hook 'org-mode-hook 'writeroom-mode)
+#+end_src
+
+** Magit
+#+begin_src emacs-lisp
+(use-package magit)  
+#+end_src
+
 * Configuration
 ** instantly update file as it changes
 
@@ -1624,7 +1655,7 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
   "c C"   '(recompile :which-key "Recompile")
   "h r r" '((lambda () (interactive) (load-file (concat user-emacs-directory "init.el"))) :which-key "Reload emacs config")
   "h t t" '(load-theme :which-key "Reload emacs config")
-  "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines"))
+  "t t"   '(visual-line-mode :which-key "toggle visual line mode"))
 #+end_src
 
 ** Copy directory to keyring

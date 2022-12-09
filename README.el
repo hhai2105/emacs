@@ -46,6 +46,7 @@
 
 (dolist (mode '(term-mode-hook
 cfw:calendar-mode-hook
+org-mode-hook
 eshell-mode-hook))
 (add-hook mode (lambda() (display-line-numbers-mode 0))))
 
@@ -145,14 +146,14 @@ eshell-mode-hook))
 (setq scroll-conservatively 10000)
 
 (set-face-attribute 'default nil
-    :font "JetBrains  Mono Medium 13")
+    :font "JetBrains  Mono Medium 11")
 (set-face-attribute 'variable-pitch nil
-	:font "JetBrains Mono Medium 13")
+	:font "JetBrains Mono Medium 11")
 (set-face-attribute 'fixed-pitch nil
-    :font "JetBrains Mono Medium 13")
+    :font "JetBrains Mono Medium 11")
 
 (setq-default line-spacing 0.10)
-(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 13"))
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 11"))
 ;; (add-to-list 'default-frame-alist '(line-spacing . 0.2))
 
 ;;(no-leader
@@ -169,6 +170,7 @@ eshell-mode-hook))
     (setq evil-want-keybinding nil)
     (setq evil-vsplit-window-right t)
     (setq evil-split-window-below t)
+    (setq evil-respect-visual-line-mode t)
     (evil-mode))
 (use-package evil-collection
     :after evil
@@ -407,6 +409,7 @@ Remove expanded subdir of deleted dir, if any."
     org-edit-src-content-indentation 0
     org-src-fontify-natively t
     org-confirm-babel-evaluate nil)
+(add-hook 'org-mode-hook 'visual-line-mode)
 
 (use-package org-bullets)
 (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
@@ -873,6 +876,21 @@ user-emacs-directory
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
 
+(use-package git-ps1-mode)
+(git-ps1-mode)
+
+(use-package writeroom-mode)  
+(setq writeroom-width 0.7)  
+(setq writeroom-mode-line t)  
+(no-leader
+"s-," '(writeroom-decrease-width :which-key "decrease border width")
+"s-." '(writeroom-increase-width :which-key "increase border width")
+"s-/" '(writeroom-adjust-width   :which-key "adjust border width"))
+
+(add-hook 'org-mode-hook 'writeroom-mode)
+
+(use-package magit)
+
 (global-auto-revert-mode t)
 
 (setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
@@ -927,7 +945,7 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
   "c C"   '(recompile :which-key "Recompile")
   "h r r" '((lambda () (interactive) (load-file (concat user-emacs-directory "init.el"))) :which-key "Reload emacs config")
   "h t t" '(load-theme :which-key "Reload emacs config")
-  "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines"))
+  "t t"   '(visual-line-mode :which-key "toggle visual line mode"))
 
 (defun my/dired-copy-dirname-as-kill ()
   "Copy the current directory into the kill ring."
