@@ -1567,8 +1567,12 @@ user-emacs-directory
 #+end_src
 
 ** Magit
+
 #+begin_src emacs-lisp
 (use-package magit)  
+(space-leader
+       "g g"   '(magit-status :which-key "Open Magit")
+)
 #+end_src
 
 * Configuration

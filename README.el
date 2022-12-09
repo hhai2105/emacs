@@ -889,7 +889,10 @@ user-emacs-directory
 
 (add-hook 'org-mode-hook 'writeroom-mode)
 
-(use-package magit)
+(use-package magit)  
+(space-leader
+       "g g"   '(magit-status :which-key "Open Magit")
+)
 
 (global-auto-revert-mode t)
 
