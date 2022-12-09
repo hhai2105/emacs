@@ -16,4 +16,5 @@ recentf
 secrets/*
 url/*
 tmp/
-eln-cache
+eln-cache/
+var/
