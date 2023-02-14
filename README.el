@@ -156,11 +156,12 @@ eshell-mode-hook))
 (add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 11"))
 ;; (add-to-list 'default-frame-alist '(line-spacing . 0.2))
 
-;;(no-leader
-;;"C-=" '(text-scale-increase :which-key "increase text size")
-;;"C--" '(text-scale-decrease :which-key "decrease text size"))
+(add-to-list 'auto-mode-alist '("\\.*rc$" . conf-unix-mode))
 
 (setq org-pretty-entities t)
+
+(set-frame-parameter nil 'alpha-background 80) ; For current frame
+(add-to-list 'default-frame-alist '(alpha-background . 80)) ; For all new frames henceforth
 
 (use-package key-chord)
 
@@ -203,6 +204,13 @@ eshell-mode-hook))
 
 (general-create-definer no-leader
     :states '(normal visual emacs)
+    :keymaps 'override
+    :prefix ""
+)
+
+
+(general-create-definer no-leader-global
+    :states '(normal insert visual emacs)
     :keymaps 'override
     :prefix ""
 )
@@ -332,6 +340,7 @@ eshell-mode-hook))
                               ("mkv" . "mpv")
                               ("pdf" . "zathura")
                               ("pptx" . "zathura")
+                              ("ipynb" . "code")
                               ("mp4" . "mpv")))
 
 (eval-after-load  "dired-x" '(defun dired-clean-up-after-deletion (fn)
@@ -622,8 +631,8 @@ Remove expanded subdir of deleted dir, if any."
 (add-hook 'c++-mode-hook 'lsp-deferred)
 (add-hook 'c-mode-hook 'lsp-deferred)
 
-(use-package lsp-pyright)
-(add-hook 'python-mode-hook 'lsp)
+(add-hook 'python-mode-hook 'lsp-deferred)
+(setq lsp-pylsp-plugins-flake8-config (concat user-emacs-directory ".flake8"))
 
 (add-hook 'javascript-mode-hook 'lsp-deferred)
 (add-hook 'js-mode-hook 'lsp-deferred)
@@ -850,7 +859,7 @@ user-emacs-directory
   "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Emacs Configuration")
   "- e" '(lambda () (interactive)(find-file "~/.config/emacs/README.org") :which-key "Emacs Configuration")
   "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
-  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2022/fall/") :which-key "Class Folder")
+  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2023/spring/") :which-key "Class Folder")
   "- k" '(open-calendar :which-key "calendar buffer")
 )
 
@@ -866,11 +875,6 @@ user-emacs-directory
 ;; (setq highlight-indent-guides-auto-stack-odd-face-perc 50)
 ;; (setq highlight-indent-guides-auto-stack-even-face-perc 50)
 ;; (setq highlight-indent-guides-auto-stack-character-face-perc 15)
-
-(no-leader
-       "C-="   '(text-scale-increase :which-key "Org-ctrl-c-star")
-       "C--"   '(text-scale-decrease :which-key "Org-ctrl-c-star")
-)
 
 (use-package dumb-jump)
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
@@ -893,6 +897,8 @@ user-emacs-directory
 (space-leader
        "g g"   '(magit-status :which-key "Open Magit")
 )
+
+(use-package math-preview)
 
 (global-auto-revert-mode t)
 
@@ -941,6 +947,10 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
        "r w"   '(window-configuration-to-register :which-key "Window configuration to register")
        "r +"   '(increment-register :which-key "Increment register")
        "r SPC" '(point-to-register :which-key "Point to register"))
+
+(no-leader-global
+"C-=" '(text-scale-increase :which-key "increase text size")
+"C--" '(text-scale-decrease :which-key "decrease text size"))
 
 (space-leader
   "SPC"   '(counsel-M-x :which-key "M-x")

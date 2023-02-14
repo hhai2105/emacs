@@ -31,8 +31,9 @@
   - [[#rainbow][Rainbow]]
   - [[#scrolling][Scrolling]]
   - [[#fonts][Fonts]]
-  - [[#text-scaling][text scaling]]
+  - [[#syntax-highlighting-for-config][Syntax Highlighting for config]]
   - [[#pretty-math-symbol][Pretty Math Symbol]]
+  - [[#transparency][Transparency]]
 - [[#general-packages][General Packages]]
   - [[#keybinding-packages][keybinding packages]]
     - [[#key-chord][key-chord]]
@@ -131,11 +132,11 @@
     - [[#file-shortcut][File Shortcut]]
   - [[#python-notebook][Python Notebook]]
   - [[#highlight-indent][Highlight Indent]]
-  - [[#text-scale][text scale]]
   - [[#dumb-jump][Dumb Jump]]
   - [[#git-dired-modeline][Git Dired Modeline]]
   - [[#write-room-mode][Write room mode]]
   - [[#magit][Magit]]
+  - [[#math-preview][Math Preview]]
 - [[#configuration][Configuration]]
   - [[#instantly-update-file-as-it-changes][instantly update file as it changes]]
   - [[#keep-folders-clean][Keep folders clean]]
@@ -146,6 +147,7 @@
     - [[#split-buffer-side-by-side][Split buffer side by side]]
     - [[#keybindings][Keybindings]]
   - [[#registers][Registers]]
+  - [[#text-scaling][text scaling]]
   - [[#general-keybindings][general Keybindings]]
   - [[#copy-directory-to-keyring][Copy directory to keyring]]
 - [[#runtime-optimization][Runtime Optimization]]
@@ -418,17 +420,23 @@ color (),[],{} as pair
 #+RESULTS:
 : ((font . JetBrains Mono SemiBold 13) (font . JetBrains Mono 13) (vertical-scroll-bars))
 
-** text scaling 
+** Syntax Highlighting for config
+
 #+begin_src emacs-lisp
-;;(no-leader
-;;"C-=" '(text-scale-increase :which-key "increase text size")
-;;"C--" '(text-scale-decrease :which-key "decrease text size"))
+(add-to-list 'auto-mode-alist '("\\.*rc$" . conf-unix-mode))
 #+end_src
 
 ** Pretty Math Symbol
 
 #+begin_src emacs-lisp
 (setq org-pretty-entities t)
+#+end_src
+
+** Transparency
+
+#+begin_src emacs-lisp
+(set-frame-parameter nil 'alpha-background 80) ; For current frame
+(add-to-list 'default-frame-alist '(alpha-background . 80)) ; For all new frames henceforth
 #+end_src
 
 * General Packages
@@ -506,6 +514,14 @@ display key functions
     :keymaps 'override
     :prefix ""
 )
+
+
+(general-create-definer no-leader-global
+    :states '(normal insert visual emacs)
+    :keymaps 'override
+    :prefix ""
+)
+
 #+end_src
 
 **** Dap Mode Key maps
@@ -687,6 +703,7 @@ instantly update dired
                               ("mkv" . "mpv")
                               ("pdf" . "zathura")
                               ("pptx" . "zathura")
+                              ("ipynb" . "code")
                               ("mp4" . "mpv")))
 #+end_src
 
@@ -1172,8 +1189,8 @@ Language server protocol turns emacs into an ide
 
 **** Python
 #+begin_src emacs-lisp
-(use-package lsp-pyright)
-(add-hook 'python-mode-hook 'lsp)
+(add-hook 'python-mode-hook 'lsp-deferred)
+(setq lsp-pylsp-plugins-flake8-config (concat user-emacs-directory ".flake8"))
 #+end_src
 
 **** JSX/Javascript/Typescript
@@ -1501,7 +1518,7 @@ user-emacs-directory
   "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Emacs Configuration")
   "- e" '(lambda () (interactive)(find-file "~/.config/emacs/README.org") :which-key "Emacs Configuration")
   "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
-  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2022/fall/") :which-key "Class Folder")
+  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2023/spring/") :which-key "Class Folder")
   "- k" '(open-calendar :which-key "calendar buffer")
 )
 #+end_src
@@ -1529,14 +1546,6 @@ user-emacs-directory
 #+RESULTS:
 | highlight-indent-guides-mode | rainbow-delimiters-mode | disable-tabs |
 
->
-** text scale
-#+begin_src emacs-lisp
-(no-leader
-       "C-="   '(text-scale-increase :which-key "Org-ctrl-c-star")
-       "C--"   '(text-scale-decrease :which-key "Org-ctrl-c-star")
-)  
-#+end_src
 
 ** Dumb Jump
 
@@ -1573,6 +1582,12 @@ user-emacs-directory
 (space-leader
        "g g"   '(magit-status :which-key "Open Magit")
 )
+#+end_src
+
+** Math Preview
+
+#+begin_src emacs-lisp
+(use-package math-preview)
 #+end_src
 
 * Configuration
@@ -1648,6 +1663,13 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
        "r w"   '(window-configuration-to-register :which-key "Window configuration to register")
        "r +"   '(increment-register :which-key "Increment register")
        "r SPC" '(point-to-register :which-key "Point to register"))
+#+end_src
+
+** text scaling 
+#+begin_src emacs-lisp
+(no-leader-global
+"C-=" '(text-scale-increase :which-key "increase text size")
+"C--" '(text-scale-decrease :which-key "decrease text size"))
 #+end_src
 
 ** general Keybindings
