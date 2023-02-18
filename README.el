@@ -4,8 +4,22 @@
 
 (unless (package-installed-p 'use-package) (package-install 'use-package))
 
-(require 'use-package-ensure)
-(setq use-package-always-ensure t)
+;; (require 'use-package-ensure)
+;; (setq use-package-always-ensure t)
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(setq straight-use-package-by-default t)
 
 ;; Using garbage magic hack.
 (use-package gcmh
@@ -827,20 +841,20 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
 
 
 
-(load-file(
-concat 
-user-emacs-directory
-"secrets/calendar.el"
-))
+;; (load-file(
+;; concat 
+;; user-emacs-directory
+;; "secrets/calendar.el"
+;; ))
 
-(defun open-calendar ()
-  (interactive)
-  (cfw:open-calendar-buffer
-   :contents-sources
-   (list
-    (cfw:ical-create-source "hhai2105" hhai-calendar "magenta1") ; google calendar ICS
-   )
-))
+;; (defun open-calendar ()
+;;   (interactive)
+;;   (cfw:open-calendar-buffer
+;;    :contents-sources
+;;    (list
+;;     (cfw:ical-create-source "hhai2105" hhai-calendar "magenta1") ; google calendar ICS
+;;    )
+;; ))
 
 (space-leader
     "."     '(find-file :which-key "Find file")
@@ -899,6 +913,18 @@ user-emacs-directory
 )
 
 (use-package math-preview)
+
+(use-package copilot
+  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+  :ensure t)
+(add-hook 'prog-mode-hook 'copilot-mode)
+(defun my/copilot-tab ()
+  (interactive)
+  (or (copilot-accept-completion)
+      (indent-for-tab-command)))
+(with-eval-after-load 'copilot
+  (evil-define-key 'insert copilot-mode-map
+    (kbd "<tab>") #'my/copilot-tab))
 
 (global-auto-revert-mode t)
 
