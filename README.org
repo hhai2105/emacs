@@ -10,7 +10,6 @@
   - [[#package-installation][Package Installation]]
     - [[#melpa-package][Melpa Package]]
     - [[#user-package][User Package]]
-  - [[#always-ensure-package][Always ensure package]]
   - [[#straightel][Straight.el]]
   - [[#boot-up-optimization][Boot Up Optimization]]
     - [[#reducing-the-frequency-of-garbage-collection][Reducing the frequency of garbage collection]]
@@ -19,6 +18,7 @@
   - [[#menu-bar][Menu Bar]]
   - [[#theme][Theme]]
   - [[#modeline][Modeline]]
+    - [[#change-modified-face-to-error-color][change modified face to error color]]
   - [[#line-numbers-and-truncated-lines][Line Numbers and Truncated Lines]]
   - [[#truncate-lines][Truncate lines]]
   - [[#indentation][Indentation]]
@@ -161,6 +161,7 @@
 ** Package Installation
 *** Melpa Package
 #+begin_src emacs-lisp (require 'package)
+(defvar native-comp-deferred-compilation-deny-list nil)
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
@@ -170,13 +171,6 @@
 
 #+begin_src emacs-lisp 
 (unless (package-installed-p 'use-package) (package-install 'use-package)) 
-#+end_src
-
-** Always ensure package
-
-#+begin_src emacs-lisp
-;; (require 'use-package-ensure)
-;; (setq use-package-always-ensure t)
 #+end_src
 
 ** Straight.el
@@ -254,7 +248,23 @@
 (use-package doom-modeline)
 (doom-modeline-mode 1)
 (setq find-file-visit-truename t)
+(setq doom-modeline-buffer-modification-icon t)
+(setq doom-modeline-major-mode-color-icon t)
+(setq doom-modeline-project-detection 'auto)
 #+end_src
+
+*** change modified face to error color
+
+#+begin_src emacs-lisp
+(defface modified-buffer
+  '((t (:inherit (error bold) :background unspecified)))
+  "Face used for the \\='unsaved\\=' symbol in the mode-line."
+  :group 'doom-modeline-faces)
+
+(custom-set-faces
+ '(doom-modeline-buffer-modified ((t :inherit modified-buffer))))
+#+end_src
+
 
 #+RESULTS:
 : ffip
@@ -1741,3 +1751,4 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
 #+begin_src emacs-lisp
 (setq warning-minimum-level :emergency)
 #+end_src
+

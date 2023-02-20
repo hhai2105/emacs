@@ -1,11 +1,9 @@
+(defvar native-comp-deferred-compilation-deny-list nil)
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
 
 (unless (package-installed-p 'use-package) (package-install 'use-package))
-
-;; (require 'use-package-ensure)
-;; (setq use-package-always-ensure t)
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -54,6 +52,17 @@
 (use-package doom-modeline)
 (doom-modeline-mode 1)
 (setq find-file-visit-truename t)
+(setq doom-modeline-buffer-modification-icon t)
+(setq doom-modeline-major-mode-color-icon t)
+(setq doom-modeline-project-detection 'auto)
+
+(defface modified-buffer
+  '((t (:inherit (error bold) :background unspecified)))
+  "Face used for the \\='unsaved\\=' symbol in the mode-line."
+  :group 'doom-modeline-faces)
+
+(custom-set-faces
+ '(doom-modeline-buffer-modified ((t :inherit modified-buffer))))
 
 (global-display-line-numbers-mode)
 ;; (setq display-line-numbers-type 'relative)
