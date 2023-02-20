@@ -19,6 +19,8 @@
   (load bootstrap-file nil 'nomessage))
 (setq straight-use-package-by-default t)
 
+(use-package org)
+
 ;; Using garbage magic hack.
 (use-package gcmh
     :config
@@ -891,13 +893,16 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
 (use-package highlight-indent-guides)
 (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
 (setq highlight-indent-guides-method 'character)
-;; (setq highlight-indent-guides-auto-odd-face-perc 50)
-;; (setq highlight-indent-guides-auto-even-face-perc 50)
-;; (setq highlight-indent-guides-auto-character-face-perc 15)
 (setq highlight-indent-guides-responsive 'stack)
-;; (setq highlight-indent-guides-auto-stack-odd-face-perc 50)
-;; (setq highlight-indent-guides-auto-stack-even-face-perc 50)
-;; (setq highlight-indent-guides-auto-stack-character-face-perc 15)
+(setq highlight-indent-guides-auto-enabled nil)
+
+(set-face-foreground 'highlight-indent-guides-character-face "dimgray")
+(set-face-foreground 'highlight-indent-guides-stack-character-face "gainsboro")
+(set-face-foreground 'highlight-indent-guides-top-character-face "white")
+
+;; (setq highlight-indent-guides-auto-character-face-perc 50)
+;; (setq highlight-indent-guides-auto-stack-character-face-perc 80)
+;; (setq highlight-indent-guides-auto-top-character-face-perc 100)
 
 (use-package dumb-jump)
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
