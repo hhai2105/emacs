@@ -36,6 +36,7 @@
   - [[#syntax-highlighting-for-config][Syntax Highlighting for config]]
   - [[#pretty-math-symbol][Pretty Math Symbol]]
   - [[#transparency][Transparency]]
+  - [[#delete-trailing-white-space-when-saving][Delete trailing white space when saving]]
 - [[#general-packages][General Packages]]
   - [[#keybinding-packages][keybinding packages]]
     - [[#key-chord][key-chord]]
@@ -140,6 +141,7 @@
   - [[#magit][Magit]]
   - [[#math-preview][Math Preview]]
   - [[#copilot][copilot]]
+  - [[#evil-easymotion][Evil easymotion]]
 - [[#configuration][Configuration]]
   - [[#instantly-update-file-as-it-changes][instantly update file as it changes]]
   - [[#keep-folders-clean][Keep folders clean]]
@@ -168,10 +170,10 @@
 (package-initialize)
 #+end_src
 
-*** User Package 
+*** User Package
 
-#+begin_src emacs-lisp 
-(unless (package-installed-p 'use-package) (package-install 'use-package)) 
+#+begin_src emacs-lisp
+(unless (package-installed-p 'use-package) (package-install 'use-package))
 #+end_src
 
 ** Straight.el
@@ -235,7 +237,7 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
-#+end_src 
+#+end_src
 
 ** Theme
 
@@ -285,7 +287,7 @@ show absolute line numbers and highlight current line number
 
 #+RESULTS:
 : t
-   
+
 disable line numbers for some modes
 #+begin_src emacs-lisp
 (dolist (mode '(term-mode-hook
@@ -474,6 +476,13 @@ color (),[],{} as pair
 #+begin_src emacs-lisp
 (set-frame-parameter nil 'alpha-background 80) ; For current frame
 (add-to-list 'default-frame-alist '(alpha-background . 80)) ; For all new frames henceforth
+#+end_src
+
+** Delete trailing white space when saving
+
+#+begin_src emacs-lisp
+(use-package ws-butler)
+(add-hook 'prog-mode-hook #'ws-butler-mode)
 #+end_src
 
 * General Packages
@@ -745,7 +754,7 @@ instantly update dired
 #+end_src
 
 #+begin_src emacs-lisp
- 
+
 (eval-after-load  "dired-x" '(defun dired-clean-up-after-deletion (fn)
   "My Clean up after a deleted file or directory FN.
 Remove expanded subdir of deleted dir, if any."
@@ -767,7 +776,7 @@ Remove expanded subdir of deleted dir, if any."
                  (save-excursion (kill-buffer (car buf-list)))
                  (setq buf-list (cdr buf-list)))))))
   ;; Anything else?
-  )) 
+  ))
 #+end_src
 
 *** Dired group file and folder together
@@ -776,14 +785,14 @@ Remove expanded subdir of deleted dir, if any."
   "Sort dired listings with directories first."
   (save-excursion
     (let (buffer-read-only)
-      (forward-line 2) ;; beyond dir. header 
+      (forward-line 2) ;; beyond dir. header
       (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
     (set-buffer-modified-p nil)))
 
 (defadvice dired-readin
   (after dired-after-updating-hook first () activate)
   "Sort dired listings with directories first before adding marks."
-  (mydired-sort)) 
+  (mydired-sort))
 #+end_src
 
 ** Flycheck
@@ -822,7 +831,7 @@ better pdf reader
 ** Projectile
 
 #+begin_src emacs-lisp
-(use-package projectile) 
+(use-package projectile)
 #+end_src
 
 ** All The Icons
@@ -882,7 +891,7 @@ collapsed all org bullets globally
 #+begin_src emacs-lisp
 (setq org-startup-folded t)
 #+end_src
-	
+
 *** Org Todo keywords
 
 #+begin_src emacs-lisp
@@ -944,7 +953,7 @@ Org toggle todo
        "m ."   '(counsel-org-goto :which-key "Counsel org goto")
        "m e"   '(org-export-dispatch :which-key "Org export dispatch")
        "m f"   '(org-footnote-new :which-key "Org footnote new")
-       "m h"   '(org-toggle-heading :which-key "Org toggle heading") 
+       "m h"   '(org-toggle-heading :which-key "Org toggle heading")
        "m i"   '(org-toggle-item :which-key "Org toggle item")
        "m n"   '(org-store-link :which-key "Org store link")
        "m o"   '(org-set-property :which-key "Org set property")
@@ -958,7 +967,7 @@ Org toggle todo
        "m s"   '(org-sort :which-key "Org sort")
        )
 #+end_src
-  
+
 *** Latex Preview
 
 #+begin_src emacs-lisp
@@ -988,7 +997,7 @@ Enable evil keybindings for org mode
 #+end_src
 
 *** Org Make TOC
-Automatically make table of content 
+Automatically make table of content
 #+begin_src emacs-lisp
 (use-package toc-org
   :commands toc-org-enable
@@ -1095,8 +1104,8 @@ eyebrowse is a global minor mode for Emacs that allows you to manage your window
 
 #+begin_src emacs-lisp
 ;; (use-package eyebrowse)
-;; (eyebrowse-mode t) 
-;; (eyebrowse-setup-opinionated-keys) 
+;; (eyebrowse-mode t)
+;; (eyebrowse-setup-opinionated-keys)
 #+end_src
 
 ** Workspace
@@ -1134,7 +1143,7 @@ A workspace implementation from doom emacs
 *** Keymap
 
 #+begin_src emacs-lisp
-(no-leader 
+(no-leader
 "M-0" '(+workspace/switch-to-9 :which-key "workspace 0")
 "M-1" '(+workspace/switch-to-0 :which-key "workspace 1")
 "M-2" '(+workspace/switch-to-1 :which-key "workspace 2")
@@ -1146,7 +1155,7 @@ A workspace implementation from doom emacs
 "M-8" '(+workspace/switch-to-7 :which-key "workspace 8")
 "M-9" '(+workspace/switch-to-8 :which-key "workspace 9")
 )
-(space-leader 
+(space-leader
 "TAB 0" '(+workspace/switch-to-9 :which-key "workspace 0")
 "TAB 1" '(+workspace/switch-to-0 :which-key "workspace 1")
 "TAB 2" '(+workspace/switch-to-1 :which-key "workspace 2")
@@ -1242,8 +1251,8 @@ Language server protocol turns emacs into an ide
 
 **** Latex
 #+begin_src emacs-lisp
-(use-package lsp-latex)  
-(use-package lsp-ltex)  
+(use-package lsp-latex)
+(use-package lsp-ltex)
 (add-hook 'latex-mode-hook 'lsp-deferred)
 #+end_src
 
@@ -1260,7 +1269,7 @@ DAP mode is a debugging package
 *** Installation
 
 #+begin_src emacs-lisp
-(use-package dap-mode)  
+(use-package dap-mode)
 (setq dap-auto-configure-features '(sessions locals controls tooltip))
 (no-leader
 "<f5>" '(dap-debug :which-key "debug mode"))
@@ -1286,7 +1295,7 @@ DAP mode is a debugging package
 #+begin_src emacs-lisp
 ;; java
 (require 'dap-java)
-;; python 
+;; python
 (require 'dap-python)
 ;; c/c++
 (require 'dap-gdb-lldb)
@@ -1296,7 +1305,7 @@ DAP mode is a debugging package
 ;; remeber to run dap-cpptools-setup
 #+end_src
 
-** Tramp mode 
+** Tramp mode
 *** Set default connection method
 #+begin_src emacs-lisp
 (setq tramp-default-method "ssh")
@@ -1310,7 +1319,7 @@ DAP mode is a debugging package
 : ^[^#$%>
 : ]*~?[#$%>] *
 
-*** Set 
+*** Set
 
 ** Docker mode
 #+begin_src emacs-lisp
@@ -1466,7 +1475,7 @@ Setup color
 
 #+RESULTS:
 
-**** Grid Frame 
+**** Grid Frame
 
 #+begin_src emacs-lisp
 ;; Default setting
@@ -1488,7 +1497,7 @@ Setup color
 ;;       cfw:fchar-top-junction ?┯
 ;;       cfw:fchar-top-left-corner ?┏
 ;;       cfw:fchar-top-right-corner ?┓)
-      
+
 ;; Another unicode chars
 (setq cfw:fchar-junction ?╬
       cfw:fchar-vertical-line ?║
@@ -1512,7 +1521,7 @@ customize keybindings for calfw
 **** Setup calfw calendars
 #+begin_src emacs-lisp
 ;; (load-file(
-;; concat 
+;; concat
 ;; user-emacs-directory
 ;; "secrets/calendar.el"
 ;; ))
@@ -1602,9 +1611,9 @@ customize keybindings for calfw
 
 ** Write room mode
 #+begin_src emacs-lisp
-(use-package writeroom-mode)  
-(setq writeroom-width 0.7)  
-(setq writeroom-mode-line t)  
+(use-package writeroom-mode)
+(setq writeroom-width 0.7)
+(setq writeroom-mode-line t)
 (no-leader
 "s-," '(writeroom-decrease-width :which-key "decrease border width")
 "s-." '(writeroom-increase-width :which-key "increase border width")
@@ -1616,7 +1625,7 @@ customize keybindings for calfw
 ** Magit
 
 #+begin_src emacs-lisp
-(use-package magit)  
+(use-package magit)
 (space-leader
        "g g"   '(magit-status :which-key "Open Magit")
 )
@@ -1643,6 +1652,16 @@ customize keybindings for calfw
   (evil-define-key 'insert copilot-mode-map
     (kbd "<tab>") #'my/copilot-tab))
 
+#+end_src
+
+** Evil easymotion
+
+#+begin_src emacs-lisp
+(use-package evil-easymotion
+  :straight (:host github :repo "PythonNut/evil-easymotion" :files ("dist" "*.el"))
+  :ensure t)
+
+(evilem-default-keybindings "SPC")
 #+end_src
 
 * Configuration
@@ -1681,7 +1700,7 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
 *** Keybindings
 #+begin_src emacs-lisp
 (winner-mode 1)
-(space-leader 
+(space-leader
        ;; Window splits
        "w c"   '(evil-window-delete :which-key "Close window")
        "w d"   '(evil-window-delete :which-key "Close window")
@@ -1720,7 +1739,7 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
        "r SPC" '(point-to-register :which-key "Point to register"))
 #+end_src
 
-** text scaling 
+** text scaling
 #+begin_src emacs-lisp
 (no-leader-global
 "C-=" '(text-scale-increase :which-key "increase text size")
@@ -1760,4 +1779,3 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
 #+begin_src emacs-lisp
 (setq warning-minimum-level :emergency)
 #+end_src
-

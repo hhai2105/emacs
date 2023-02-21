@@ -188,6 +188,9 @@ eshell-mode-hook))
 (set-frame-parameter nil 'alpha-background 80) ; For current frame
 (add-to-list 'default-frame-alist '(alpha-background . 80)) ; For all new frames henceforth
 
+(use-package ws-butler)
+(add-hook 'prog-mode-hook #'ws-butler-mode)
+
 (use-package key-chord)
 
 (use-package evil
@@ -395,7 +398,7 @@ Remove expanded subdir of deleted dir, if any."
   "Sort dired listings with directories first."
   (save-excursion
     (let (buffer-read-only)
-      (forward-line 2) ;; beyond dir. header 
+      (forward-line 2) ;; beyond dir. header
       (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
     (set-buffer-modified-p nil)))
 
@@ -492,7 +495,7 @@ Remove expanded subdir of deleted dir, if any."
        "m ."   '(counsel-org-goto :which-key "Counsel org goto")
        "m e"   '(org-export-dispatch :which-key "Org export dispatch")
        "m f"   '(org-footnote-new :which-key "Org footnote new")
-       "m h"   '(org-toggle-heading :which-key "Org toggle heading") 
+       "m h"   '(org-toggle-heading :which-key "Org toggle heading")
        "m i"   '(org-toggle-item :which-key "Org toggle item")
        "m n"   '(org-store-link :which-key "Org store link")
        "m o"   '(org-set-property :which-key "Org set property")
@@ -571,7 +574,7 @@ Remove expanded subdir of deleted dir, if any."
 )
 
 ;; (use-package eyebrowse)
-;; (eyebrowse-mode t) 
+;; (eyebrowse-mode t)
 ;; (eyebrowse-setup-opinionated-keys)
 
 (use-package persp-mode
@@ -596,7 +599,7 @@ Remove expanded subdir of deleted dir, if any."
   "packages/workspaces.el"
   user-emacs-directory))
 
-(no-leader 
+(no-leader
 "M-0" '(+workspace/switch-to-9 :which-key "workspace 0")
 "M-1" '(+workspace/switch-to-0 :which-key "workspace 1")
 "M-2" '(+workspace/switch-to-1 :which-key "workspace 2")
@@ -608,7 +611,7 @@ Remove expanded subdir of deleted dir, if any."
 "M-8" '(+workspace/switch-to-7 :which-key "workspace 8")
 "M-9" '(+workspace/switch-to-8 :which-key "workspace 9")
 )
-(space-leader 
+(space-leader
 "TAB 0" '(+workspace/switch-to-9 :which-key "workspace 0")
 "TAB 1" '(+workspace/switch-to-0 :which-key "workspace 1")
 "TAB 2" '(+workspace/switch-to-1 :which-key "workspace 2")
@@ -665,15 +668,15 @@ Remove expanded subdir of deleted dir, if any."
 (add-hook 'ts-mode-hook 'lsp-deferred)
 (add-hook 'js-jsx-mode-hook 'lsp-deferred)
 
-(use-package lsp-latex)  
-(use-package lsp-ltex)  
+(use-package lsp-latex)
+(use-package lsp-ltex)
 (add-hook 'latex-mode-hook 'lsp-deferred)
 
 (use-package lsp-tailwindcss
   :init
   (setq lsp-tailwindcss-add-on-mode t))
 
-(use-package dap-mode)  
+(use-package dap-mode)
 (setq dap-auto-configure-features '(sessions locals controls tooltip))
 (no-leader
 "<f5>" '(dap-debug :which-key "debug mode"))
@@ -689,7 +692,7 @@ Remove expanded subdir of deleted dir, if any."
 
 ;; java
 (require 'dap-java)
-;; python 
+;; python
 (require 'dap-python)
 ;; c/c++
 (require 'dap-gdb-lldb)
@@ -839,7 +842,7 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
 ;;       cfw:fchar-top-junction ?┯
 ;;       cfw:fchar-top-left-corner ?┏
 ;;       cfw:fchar-top-right-corner ?┓)
-      
+
 ;; Another unicode chars
 (setq cfw:fchar-junction ?╬
       cfw:fchar-vertical-line ?║
@@ -853,7 +856,7 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
 
 
 ;; (load-file(
-;; concat 
+;; concat
 ;; user-emacs-directory
 ;; "secrets/calendar.el"
 ;; ))
@@ -911,9 +914,9 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
 (use-package git-ps1-mode)
 (git-ps1-mode)
 
-(use-package writeroom-mode)  
-(setq writeroom-width 0.7)  
-(setq writeroom-mode-line t)  
+(use-package writeroom-mode)
+(setq writeroom-width 0.7)
+(setq writeroom-mode-line t)
 (no-leader
 "s-," '(writeroom-decrease-width :which-key "decrease border width")
 "s-." '(writeroom-increase-width :which-key "increase border width")
@@ -921,7 +924,7 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
 
 (add-hook 'org-mode-hook 'writeroom-mode)
 
-(use-package magit)  
+(use-package magit)
 (space-leader
        "g g"   '(magit-status :which-key "Open Magit")
 )
@@ -940,6 +943,12 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
   (evil-define-key 'insert copilot-mode-map
     (kbd "<tab>") #'my/copilot-tab))
 
+(use-package evil-easymotion
+  :straight (:host github :repo "PythonNut/evil-easymotion" :files ("dist" "*.el"))
+  :ensure t)
+
+(evilem-default-keybindings "SPC")
+
 (global-auto-revert-mode t)
 
 (setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
@@ -954,7 +963,7 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
 (setq split-width-threshold 0)
 
 (winner-mode 1)
-(space-leader 
+(space-leader
        ;; Window splits
        "w c"   '(evil-window-delete :which-key "Close window")
        "w d"   '(evil-window-delete :which-key "Close window")
