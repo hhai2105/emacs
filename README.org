@@ -1237,6 +1237,7 @@ Language server protocol turns emacs into an ide
 #+begin_src emacs-lisp
 (add-hook 'python-mode-hook 'lsp-deferred)
 (setq lsp-pylsp-plugins-flake8-config (concat user-emacs-directory ".flake8"))
+(setq lsp-pylsp-plugins-pydocstyle-enabled nil)
 #+end_src
 
 **** JSX/Javascript/Typescript

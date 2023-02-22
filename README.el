@@ -661,6 +661,7 @@ Remove expanded subdir of deleted dir, if any."
 
 (add-hook 'python-mode-hook 'lsp-deferred)
 (setq lsp-pylsp-plugins-flake8-config (concat user-emacs-directory ".flake8"))
+(setq lsp-pylsp-plugins-pydocstyle-enabled nil)
 
 (add-hook 'javascript-mode-hook 'lsp-deferred)
 (add-hook 'js-mode-hook 'lsp-deferred)
