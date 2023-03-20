@@ -37,6 +37,8 @@
   - [[#pretty-math-symbol][Pretty Math Symbol]]
   - [[#transparency][Transparency]]
   - [[#delete-trailing-white-space-when-saving][Delete trailing white space when saving]]
+  - [[#hide-m-from-file-with-windows-newline-character][Hide ^M from file with windows newline character]]
+  - [[#test][Test]]
 - [[#general-packages][General Packages]]
   - [[#keybinding-packages][keybinding packages]]
     - [[#key-chord][key-chord]]
@@ -485,6 +487,35 @@ color (),[],{} as pair
 (add-hook 'prog-mode-hook #'ws-butler-mode)
 #+end_src
 
+** Hide ^M from file with windows newline character
+
+#+begin_src emacs-lisp
+(defun remove-dos-eol ()
+  "Do not show ^M in files containing mixed UNIX and DOS line endings."
+  (interactive)
+  (setq buffer-display-table (make-display-table))
+  (aset buffer-display-table ?\^M []))
+(add-hook 'text-mode-hook 'remove-dos-eol)
+#+end_src
+
+** Test
+
+#+begin_src emacs-lisp
+(defun td/adapt-font-size (&optional frame)
+  (let* ((attrs (frame-monitor-attributes frame))
+         (size (alist-get 'mm-size attrs))
+         (geometry (alist-get 'geometry attrs))
+         (ppi (/ (caddr geometry) (/ (car size) 25.4))))
+    ;; (message "PPI: %s" ppi)
+    (if (> ppi 120)
+        (set-face-attribute 'default frame :height 150)
+      (set-face-attribute 'default frame :height 140))))
+
+(add-function :after after-focus-change-function #'td/adapt-font-size)
+(add-hook 'after-make-frame-functions #'td/adapt-font-size)
+
+#+end_src
+
 * General Packages
 ** keybinding packages
 *** key-chord
@@ -697,6 +728,7 @@ display key functions
 instantly update dired
 #+begin_src emacs-lisp
 (add-hook 'dired-mode-hook 'auto-revert-mode)
+(setq dired-mouse-drag-files 'link)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1075,6 +1107,9 @@ Template system for Emacs
 #+begin_src emacs-lisp
 (use-package auctex
 :defer t)
+(setq TeX-ignore-warnings
+      "LaTeX Warning: Command \\\\mark\\(both\\|right\\)  has changed."
+      TeX-suppress-ignored-warnings t)
 #+end_src
 
 ** Emojis
@@ -1644,7 +1679,7 @@ customize keybindings for calfw
 (use-package copilot
   :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
   :ensure t)
-(add-hook 'prog-mode-hook 'copilot-mode)
+;; (add-hook 'prog-mode-hook 'copilot-mode)
 (defun my/copilot-tab ()
   (interactive)
   (or (copilot-accept-completion)
@@ -1661,6 +1696,9 @@ customize keybindings for calfw
 (use-package evil-easymotion
   :straight (:host github :repo "PythonNut/evil-easymotion" :files ("dist" "*.el"))
   :ensure t)
+(space-leader
+    "t c" '(copilot-mode :which-key "toggle-copilot")
+)
 
 (evilem-default-keybindings "SPC")
 #+end_src

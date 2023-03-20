@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: template_math
-# key: template_math 
+# key: template_math
 # --
 \documentclass[letter]{amsart}
 \renewcommand{\thesubsection}{\Alph{subsection}}
@@ -19,9 +19,9 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,shapes,arrows}
 \usepackage[margin=1in]{geometry}
+\usepackage[shortlabels]{enumitem}
 \titleformat {\section}
     {\normalfont \Large \bfseries \centering}{\thesection}{1em}{}
-\usepackage{enumitem}
 \usepackage{mathrsfs}
 \usepackage{caption}
 \usepackage{hyperref}

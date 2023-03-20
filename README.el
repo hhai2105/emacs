@@ -191,6 +191,26 @@ eshell-mode-hook))
 (use-package ws-butler)
 (add-hook 'prog-mode-hook #'ws-butler-mode)
 
+(defun remove-dos-eol ()
+  "Do not show ^M in files containing mixed UNIX and DOS line endings."
+  (interactive)
+  (setq buffer-display-table (make-display-table))
+  (aset buffer-display-table ?\^M []))
+(add-hook 'text-mode-hook 'remove-dos-eol)
+
+(defun td/adapt-font-size (&optional frame)
+  (let* ((attrs (frame-monitor-attributes frame))
+         (size (alist-get 'mm-size attrs))
+         (geometry (alist-get 'geometry attrs))
+         (ppi (/ (caddr geometry) (/ (car size) 25.4))))
+    ;; (message "PPI: %s" ppi)
+    (if (> ppi 120)
+        (set-face-attribute 'default frame :height 150)
+      (set-face-attribute 'default frame :height 140))))
+
+(add-function :after after-focus-change-function #'td/adapt-font-size)
+(add-hook 'after-make-frame-functions #'td/adapt-font-size)
+
 (use-package key-chord)
 
 (use-package evil
@@ -318,6 +338,7 @@ eshell-mode-hook))
 )
 
 (add-hook 'dired-mode-hook 'auto-revert-mode)
+(setq dired-mouse-drag-files 'link)
 
 (use-package all-the-icons-dired
   :init (setq all-the-icons-dired-monochrome nil)
@@ -562,6 +583,9 @@ Remove expanded subdir of deleted dir, if any."
 
 (use-package auctex
 :defer t)
+(setq TeX-ignore-warnings
+      "LaTeX Warning: Command \\\\mark\\(both\\|right\\)  has changed."
+      TeX-suppress-ignored-warnings t)
 
 (use-package emojify)
 
@@ -935,7 +959,7 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
 (use-package copilot
   :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
   :ensure t)
-(add-hook 'prog-mode-hook 'copilot-mode)
+;; (add-hook 'prog-mode-hook 'copilot-mode)
 (defun my/copilot-tab ()
   (interactive)
   (or (copilot-accept-completion)
@@ -947,6 +971,9 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
 (use-package evil-easymotion
   :straight (:host github :repo "PythonNut/evil-easymotion" :files ("dist" "*.el"))
   :ensure t)
+(space-leader
+    "t c" '(copilot-mode :which-key "toggle-copilot")
+)
 
 (evilem-default-keybindings "SPC")
 

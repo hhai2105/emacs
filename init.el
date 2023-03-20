@@ -13,6 +13,7 @@
  '(global-aggressive-indent-mode t)
  '(global-hl-line-mode t)
  '(helm-minibuffer-history-key "M-p")
+ '(ignored-local-variable-values '((eval add-hook 'before-save-hook 'time-stamp)))
  '(package-selected-packages
    '(magit writeroom-mode git-ps1-mode no-littering aggressive-indent dumb-jump go-complete go-mode ein sql-indent highlight-indent-guides xah-fly-keys helm org-make-toc lsp-tailwindcss docker-compose-mode dockerfile-compose-mode dockerfile-mode pretty-mode tramp-theme eyebrowse persp-mode lsp-java lsp-ui lsp-ivy lsp-mode emojify pdf-tools peep-dired dired-open counsel ivy general which-key evil-collection doom-themes gcmh use-package spacemacs-theme org-roam evil-org svg-clock undo-fu-session undo-fu quickrun cuda-mode highlight-indentation markdown-mode flymake-eslint eslint-fix atomic-chrome ssh-agency ssh-deploy ssh-tunnels ssh leetcode ac-html-bootstrap ac-html-csswatcher ac-html-angular ac-html typescript-mode diff-hl evil-anzu phps-mode hlinum auctex-latexmk flycheck frontside-javascript flycheck-haskell openwith visual-fill-column org-noter-pdftools org-noter rainbow-mode perspective company emacs-everywhere smooth-scroll key-chord ivy-rich xwwp-follow-link-ivy dashboard sudo-edit rainbow-delimiters projectile auctex yasnippet org-bullets all-the-icons-dired ## doom-modeline doom-modelines evil))
  '(pixel-scroll-mode nil)
@@ -22,5 +23,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(doom-modeline-buffer-modified ((t :inherit modified-buffer)))
  '(whitespace-tab ((t (:foreground "#636363")))))
 (put 'dired-find-alternate-file 'disabled nil)
