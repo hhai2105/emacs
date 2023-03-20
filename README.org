@@ -508,8 +508,8 @@ color (),[],{} as pair
          (ppi (/ (caddr geometry) (/ (car size) 25.4))))
     ;; (message "PPI: %s" ppi)
     (if (> ppi 120)
-        (set-face-attribute 'default frame :height 150)
-      (set-face-attribute 'default frame :height 140))))
+        (set-face-attribute 'default frame :height 180)
+      (set-face-attribute 'default frame :height 110))))
 
 (add-function :after after-focus-change-function #'td/adapt-font-size)
 (add-hook 'after-make-frame-functions #'td/adapt-font-size)
