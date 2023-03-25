@@ -40,6 +40,8 @@
 
   ;; Silence compiler warnings as they can be pretty disruptive (setq comp-async-report-warnings-errors nil)
 
+(setq use-dialog-box nil)
+
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (menu-bar-mode -1)
@@ -134,8 +136,8 @@ eshell-mode-hook))
         (set (make-local-variable 'sgml-basic-offset) 2)
         (sgml-guess-indent)))
 
-(use-package aggressive-indent)
-(global-aggressive-indent-mode)
+;; (use-package aggressive-indent)
+;; (global-aggressive-indent-mode)
 
 ;; (add-to-list
 ;;  'aggressive-indent-dont-indent-if
@@ -171,14 +173,14 @@ eshell-mode-hook))
 (setq scroll-conservatively 10000)
 
 (set-face-attribute 'default nil
-    :font "JetBrains  Mono Medium 11")
+    :font "JetBrains  Mono Medium")
 (set-face-attribute 'variable-pitch nil
-	:font "JetBrains Mono Medium 11")
+	:font "JetBrains Mono Medium")
 (set-face-attribute 'fixed-pitch nil
-    :font "JetBrains Mono Medium 11")
+    :font "JetBrains Mono Medium")
 
 (setq-default line-spacing 0.10)
-(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 11"))
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium"))
 ;; (add-to-list 'default-frame-alist '(line-spacing . 0.2))
 
 (add-to-list 'auto-mode-alist '("\\.*rc$" . conf-unix-mode))
@@ -973,6 +975,7 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
   :ensure t)
 (space-leader
     "t c" '(copilot-mode :which-key "toggle-copilot")
+    "t f" '(flycheck-disable-checker :which-key "toggle-flycheck")
 )
 
 (evilem-default-keybindings "SPC")

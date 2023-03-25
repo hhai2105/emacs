@@ -14,6 +14,7 @@
   - [[#install-org][install org]]
   - [[#boot-up-optimization][Boot Up Optimization]]
     - [[#reducing-the-frequency-of-garbage-collection][Reducing the frequency of garbage collection]]
+  - [[#turn-off-dialog-box][Turn off dialog box]]
 - [[#user-interface-settings][User Interface Settings]]
   - [[#make-esc-quit-promps][Make ESC quit promps]]
   - [[#menu-bar][Menu Bar]]
@@ -226,6 +227,12 @@
   ;; Silence compiler warnings as they can be pretty disruptive (setq comp-async-report-warnings-errors nil)
 #+end_src
 
+** Turn off dialog box
+
+#+begin_src emacs-lisp
+(setq use-dialog-box nil)
+#+end_src
+
 * User Interface Settings
 ** Make ESC quit promps
 
@@ -380,8 +387,8 @@ remove emacs' default line wrap
 *** Agressive indentation
 
 #+begin_src emacs-lisp
-(use-package aggressive-indent)
-(global-aggressive-indent-mode)
+;; (use-package aggressive-indent)
+;; (global-aggressive-indent-mode)
 #+end_src
 
 **** Dont indent before adding ;
@@ -447,14 +454,14 @@ color (),[],{} as pair
 
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-    :font "JetBrains  Mono Medium 11")
+    :font "JetBrains  Mono Medium")
 (set-face-attribute 'variable-pitch nil
-	:font "JetBrains Mono Medium 11")
+	:font "JetBrains Mono Medium")
 (set-face-attribute 'fixed-pitch nil
-    :font "JetBrains Mono Medium 11")
+    :font "JetBrains Mono Medium")
 
 (setq-default line-spacing 0.10)
-(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium 11"))
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium"))
 ;; (add-to-list 'default-frame-alist '(line-spacing . 0.2))
 #+end_src
 
@@ -1698,6 +1705,7 @@ customize keybindings for calfw
   :ensure t)
 (space-leader
     "t c" '(copilot-mode :which-key "toggle-copilot")
+    "t f" '(flycheck-disable-checker :which-key "toggle-flycheck")
 )
 
 (evilem-default-keybindings "SPC")
