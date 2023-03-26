@@ -136,14 +136,14 @@ eshell-mode-hook))
         (set (make-local-variable 'sgml-basic-offset) 2)
         (sgml-guess-indent)))
 
-;; (use-package aggressive-indent)
-;; (global-aggressive-indent-mode)
+(use-package aggressive-indent)
+(global-aggressive-indent-mode)
 
-;; (add-to-list
-;;  'aggressive-indent-dont-indent-if
-;;  '(and (derived-mode-p 'c++-mode)
-;;        (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
-;;                            (thing-at-point 'line)))))
+(add-to-list
+ 'aggressive-indent-dont-indent-if
+ '(and (derived-mode-p 'c++-mode)
+       (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
+                           (thing-at-point 'line)))))
 
 (dolist (command '(yank yank-pop))
    (eval `(defadvice ,command (after indent-region activate)
@@ -200,18 +200,33 @@ eshell-mode-hook))
   (aset buffer-display-table ?\^M []))
 (add-hook 'text-mode-hook 'remove-dos-eol)
 
+;; (defun td/adapt-font-size (&optional frame)
+;;   (let* ((attrs (frame-monitor-attributes frame))
+;;          (size (alist-get 'mm-size attrs))
+;;          (geometry (alist-get 'geometry attrs))
+;;          (ppi (/ (caddr geometry) (/ (car size) 25.4))))
+;;     ;; (message "PPI: %s" ppi)
+;;     (if (> ppi 120)
+;;         (set-face-attribute 'default frame :height 180)
+;;       (set-face-attribute 'default frame :height 110))))
+
+;; (add-function :after after-focus-change-function #'td/adapt-font-size)
+;; (add-hook 'after-make-frame-functions #'td/adapt-font-size)
+
 (defun td/adapt-font-size (&optional frame)
-  (let* ((attrs (frame-monitor-attributes frame))
+  (let* ((frame (selected-frame))
+         (attrs (frame-monitor-attributes frame))
          (size (alist-get 'mm-size attrs))
          (geometry (alist-get 'geometry attrs))
          (ppi (/ (caddr geometry) (/ (car size) 25.4))))
-    ;; (message "PPI: %s" ppi)
     (if (> ppi 120)
         (set-face-attribute 'default frame :height 180)
-      (set-face-attribute 'default frame :height 110))))
+      (set-face-attribute 'default frame :height 130))))
 
 (add-function :after after-focus-change-function #'td/adapt-font-size)
 (add-hook 'after-make-frame-functions #'td/adapt-font-size)
+(add-hook 'window-setup-hook #'td/adapt-font-size)
+(add-hook 'focus-in-hook #'td/adapt-font-size)
 
 (use-package key-chord)
 
@@ -673,6 +688,8 @@ Remove expanded subdir of deleted dir, if any."
 :commands
 (lsp lsp-deferred)
 )
+
+(setq lsp-prefer-flymake nil) 
 (setq lsp-enable-indentation nil)
 (setq lsp-enable-on-type-formatting nil)
 
