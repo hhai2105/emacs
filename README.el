@@ -19,6 +19,29 @@
   (load bootstrap-file nil 'nomessage))
 (setq straight-use-package-by-default t)
 
+(defun org-id-uuid ()
+  "Return string with random (version 4) UUID."
+  (let ((rnd (md5 (format "%s%s%s%s%s%s%s"
+			  (random)
+			  (current-time)
+			  (user-uid)
+			  (emacs-pid)
+			  (user-full-name)
+			  user-mail-address
+			  (recent-keys)))))
+    (format "%s-%s-4%s-%s%s-%s"
+	    (substring rnd 0 8)
+	    (substring rnd 8 12)
+	    (substring rnd 13 16)
+	    (format "%x"
+		    (logior
+		     #b10000000
+		     (logand
+		      #b10111111
+		      (string-to-number
+		       (substring rnd 16 18) 16))))
+	    (substring rnd 18 20)
+	    (substring rnd 20 32))))
 (use-package org)
 
 ;; Using garbage magic hack.
@@ -51,7 +74,7 @@
 (use-package doom-themes)
 (setq doom-themes-enable-bold t
     doom-themes-enable-italics t)
-(load-theme 'doom-dracula t)
+(load-theme 'doom-outrun-electric t)
 
 (use-package doom-modeline)
 (doom-modeline-mode 1)
@@ -59,6 +82,11 @@
 (setq doom-modeline-buffer-modification-icon t)
 (setq doom-modeline-major-mode-color-icon t)
 (setq doom-modeline-project-detection 'auto)
+(setq inhibit-compacting-font-caches t)
+(setq doom-modeline-bar-width 4)
+(doom-modeline-def-modeline 'main
+'(bar matches buffer-info remote-host buffer-position parrot selection-info)
+'(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs)) ;
 
 (defface modified-buffer
   '((t (:inherit (error bold) :background unspecified)))
@@ -67,6 +95,10 @@
 
 (custom-set-faces
  '(doom-modeline-buffer-modified ((t :inherit modified-buffer))))
+
+(doom-modeline-def-modeline 'main
+'(bar matches buffer-info remote-host buffer-position parrot selection-info)
+'(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs "   ")) ; <-- added padding here
 
 (global-display-line-numbers-mode)
 ;; (setq display-line-numbers-type 'relative)
@@ -136,14 +168,14 @@ eshell-mode-hook))
         (set (make-local-variable 'sgml-basic-offset) 2)
         (sgml-guess-indent)))
 
-(use-package aggressive-indent)
-(global-aggressive-indent-mode)
+;; (use-package aggressive-indent)
+;; (global-aggressive-indent-mode)
 
-(add-to-list
- 'aggressive-indent-dont-indent-if
- '(and (derived-mode-p 'c++-mode)
-       (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
-                           (thing-at-point 'line)))))
+;; (add-to-list
+;;  'aggressive-indent-dont-indent-if
+;;  '(and (derived-mode-p 'c++-mode)
+;;        (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
+;;                            (thing-at-point 'line)))))
 
 (dolist (command '(yank yank-pop))
    (eval `(defadvice ,command (after indent-region activate)
@@ -187,8 +219,8 @@ eshell-mode-hook))
 
 (setq org-pretty-entities t)
 
-(set-frame-parameter nil 'alpha-background 80) ; For current frame
-(add-to-list 'default-frame-alist '(alpha-background . 80)) ; For all new frames henceforth
+(set-frame-parameter nil 'alpha-background 100) ; For current frame
+(add-to-list 'default-frame-alist '(alpha-background . 100)) ; For all new frames henceforth
 
 (use-package ws-butler)
 (add-hook 'prog-mode-hook #'ws-butler-mode)
@@ -200,19 +232,6 @@ eshell-mode-hook))
   (aset buffer-display-table ?\^M []))
 (add-hook 'text-mode-hook 'remove-dos-eol)
 
-;; (defun td/adapt-font-size (&optional frame)
-;;   (let* ((attrs (frame-monitor-attributes frame))
-;;          (size (alist-get 'mm-size attrs))
-;;          (geometry (alist-get 'geometry attrs))
-;;          (ppi (/ (caddr geometry) (/ (car size) 25.4))))
-;;     ;; (message "PPI: %s" ppi)
-;;     (if (> ppi 120)
-;;         (set-face-attribute 'default frame :height 180)
-;;       (set-face-attribute 'default frame :height 110))))
-
-;; (add-function :after after-focus-change-function #'td/adapt-font-size)
-;; (add-hook 'after-make-frame-functions #'td/adapt-font-size)
-
 (defun td/adapt-font-size (&optional frame)
   (let* ((frame (selected-frame))
          (attrs (frame-monitor-attributes frame))
@@ -221,7 +240,7 @@ eshell-mode-hook))
          (ppi (/ (caddr geometry) (/ (car size) 25.4))))
     (if (> ppi 120)
         (set-face-attribute 'default frame :height 180)
-      (set-face-attribute 'default frame :height 130))))
+      (set-face-attribute 'default frame :height 110))))
 
 (add-function :after after-focus-change-function #'td/adapt-font-size)
 (add-hook 'after-make-frame-functions #'td/adapt-font-size)
@@ -432,6 +451,8 @@ Remove expanded subdir of deleted dir, if any."
   ;; Anything else?
   ))
 
+(setq dired-listing-switches "-alh")
+
 (defun mydired-sort ()
   "Sort dired listings with directories first."
   (save-excursion
@@ -447,8 +468,8 @@ Remove expanded subdir of deleted dir, if any."
 
 (use-package flycheck)
 (use-package flycheck-haskell)
-(global-flycheck-mode)
-;; (setq flycheck-check-syntax-automatically '(mode-enabled save))
+;; (global-flycheck-mode)
+(setq flycheck-check-syntax-automatically '(mode-enabled save))
 
 (use-package flycheck
   :config
@@ -694,7 +715,13 @@ Remove expanded subdir of deleted dir, if any."
 (setq lsp-enable-on-type-formatting nil)
 
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-(use-package lsp-ui :commands lsp-ui-mode)
+
+(setq lsp-ui-doc-enable nil)
+(setq lsp-ui-doc-show-with-cursor nil)
+(setq lsp-ui-doc-show-with-mouse nil)
+(setq lsp-ui-sideline-enable nil)
+(setq lsp-signature-render-documentation nil)
+(setq lsp-lens-enable nil)
 
 (use-package lsp-java)
 (add-hook 'java-mode-hook 'lsp-deferred)
@@ -940,7 +967,7 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
 (use-package highlight-indent-guides)
 (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
 (setq highlight-indent-guides-method 'character)
-(setq highlight-indent-guides-responsive 'stack)
+(setq highlight-indent-guides-responsive 'nil)
 (setq highlight-indent-guides-auto-enabled nil)
 
 (set-face-foreground 'highlight-indent-guides-character-face "dimgray")
@@ -958,15 +985,15 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
 (use-package git-ps1-mode)
 (git-ps1-mode)
 
-(use-package writeroom-mode)
-(setq writeroom-width 0.7)
-(setq writeroom-mode-line t)
-(no-leader
-"s-," '(writeroom-decrease-width :which-key "decrease border width")
-"s-." '(writeroom-increase-width :which-key "increase border width")
-"s-/" '(writeroom-adjust-width   :which-key "adjust border width"))
+;; (use-package writeroom-mode)
+;; (setq writeroom-width 0.7)
+;; (setq writeroom-mode-line t)
+;; (no-leader
+;; "s-," '(writeroom-decrease-width :which-key "decrease border width")
+;; "s-." '(writeroom-increase-width :which-key "increase border width")
+;; "s-/" '(writeroom-adjust-width   :which-key "adjust border width"))
 
-(add-hook 'org-mode-hook 'writeroom-mode)
+;; (add-hook 'org-mode-hook 'writeroom-mode)
 
 (use-package magit)
 (space-leader
@@ -996,6 +1023,25 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
 )
 
 (evilem-default-keybindings "SPC")
+
+;; (use-package treesit-auto
+;;   :demand t
+;;   :config
+;;   (global-treesit-auto-mode))
+
+(use-package tree-sitter)
+(use-package tree-sitter-langs)
+(global-tree-sitter-mode)
+(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+
+(use-package docker)
+(load
+(expand-file-name
+"packages/markdown-dnd-images.el"
+user-emacs-directory))
+(setq dnd-save-directory "images")
+(setq dnd-view-inline t)
+(setq dnd-capture-source nil)
 
 (global-auto-revert-mode t)
 

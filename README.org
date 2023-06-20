@@ -19,8 +19,9 @@
   - [[#make-esc-quit-promps][Make ESC quit promps]]
   - [[#menu-bar][Menu Bar]]
   - [[#theme][Theme]]
-  - [[#modeline][Modeline]]
+  - [[#doom-modeline][Doom Modeline]]
     - [[#change-modified-face-to-error-color][change modified face to error color]]
+    - [[#fix-right-hand-side-cutoff][Fix right hand side cutoff]]
   - [[#line-numbers-and-truncated-lines][Line Numbers and Truncated Lines]]
   - [[#truncate-lines][Truncate lines]]
   - [[#indentation][Indentation]]
@@ -106,6 +107,7 @@
   - [[#lsp-mode][LSP mode]]
     - [[#initialize-lsp-package][Initialize lsp package]]
     - [[#setup-lsp-with-other-package][Setup lsp with other package]]
+    - [[#lsp-features][LSP features]]
     - [[#language-support][Language support]]
       - [[#java][Java]]
       - [[#cc][C/C++]]
@@ -145,6 +147,9 @@
   - [[#math-preview][Math Preview]]
   - [[#copilot][copilot]]
   - [[#evil-easymotion][Evil easymotion]]
+  - [[#treesit][Treesit]]
+  - [[#treesitter][Treesitter]]
+  - [[#markdown-drag-and-drop][Markdown drag and drop]]
 - [[#configuration][Configuration]]
   - [[#instantly-update-file-as-it-changes][instantly update file as it changes]]
   - [[#keep-folders-clean][Keep folders clean]]
@@ -200,6 +205,29 @@
 ** install org
 
 #+begin_src emacs-lisp
+(defun org-id-uuid ()
+  "Return string with random (version 4) UUID."
+  (let ((rnd (md5 (format "%s%s%s%s%s%s%s"
+			  (random)
+			  (current-time)
+			  (user-uid)
+			  (emacs-pid)
+			  (user-full-name)
+			  user-mail-address
+			  (recent-keys)))))
+    (format "%s-%s-4%s-%s%s-%s"
+	    (substring rnd 0 8)
+	    (substring rnd 8 12)
+	    (substring rnd 13 16)
+	    (format "%x"
+		    (logior
+		     #b10000000
+		     (logand
+		      #b10111111
+		      (string-to-number
+		       (substring rnd 16 18) 16))))
+	    (substring rnd 18 20)
+	    (substring rnd 20 32))))
 (use-package org)
 #+end_src
 
@@ -254,13 +282,13 @@
 (use-package doom-themes)
 (setq doom-themes-enable-bold t
     doom-themes-enable-italics t)
-(load-theme 'doom-dracula t)
+(load-theme 'doom-outrun-electric t)
 #+end_src
 
 #+RESULTS:
 : t
 
-** Modeline
+** Doom Modeline
 
 #+begin_src emacs-lisp
 (use-package doom-modeline)
@@ -269,6 +297,11 @@
 (setq doom-modeline-buffer-modification-icon t)
 (setq doom-modeline-major-mode-color-icon t)
 (setq doom-modeline-project-detection 'auto)
+(setq inhibit-compacting-font-caches t)
+(setq doom-modeline-bar-width 4)
+(doom-modeline-def-modeline 'main
+'(bar matches buffer-info remote-host buffer-position parrot selection-info)
+'(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs)) ;
 #+end_src
 
 *** change modified face to error color
@@ -286,6 +319,13 @@
 
 #+RESULTS:
 : ffip
+*** Fix right hand side cutoff
+
+#+begin_src emacs-lisp
+(doom-modeline-def-modeline 'main
+'(bar matches buffer-info remote-host buffer-position parrot selection-info)
+'(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs "   ")) ; <-- added padding here
+#+end_src
 
 ** Line Numbers and Truncated Lines
 show absolute line numbers and highlight current line number
@@ -304,7 +344,6 @@ cfw:calendar-mode-hook
 org-mode-hook
 eshell-mode-hook))
 (add-hook mode (lambda() (display-line-numbers-mode 0))))
-
 #+end_src
 
 ** Truncate lines
@@ -387,18 +426,18 @@ remove emacs' default line wrap
 *** Agressive indentation
 
 #+begin_src emacs-lisp
-(use-package aggressive-indent)
-(global-aggressive-indent-mode)
+;; (use-package aggressive-indent)
+;; (global-aggressive-indent-mode)
 #+end_src
 
 **** Dont indent before adding ;
 
 #+begin_src emacs-lisp
-(add-to-list
- 'aggressive-indent-dont-indent-if
- '(and (derived-mode-p 'c++-mode)
-       (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
-                           (thing-at-point 'line)))))
+;; (add-to-list
+;;  'aggressive-indent-dont-indent-if
+;;  '(and (derived-mode-p 'c++-mode)
+;;        (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
+;;                            (thing-at-point 'line)))))
 #+end_src
 
 *** Yank automatic indentation
@@ -483,9 +522,12 @@ color (),[],{} as pair
 ** Transparency
 
 #+begin_src emacs-lisp
-(set-frame-parameter nil 'alpha-background 80) ; For current frame
-(add-to-list 'default-frame-alist '(alpha-background . 80)) ; For all new frames henceforth
+(set-frame-parameter nil 'alpha-background 100) ; For current frame
+(add-to-list 'default-frame-alist '(alpha-background . 100)) ; For all new frames henceforth
 #+end_src
+
+#+RESULTS:
+: ((alpha-background . 100) (alpha-background . 80) (font . JetBrains Mono Medium) (vertical-scroll-bars))
 
 ** Delete trailing white space when saving
 
@@ -819,6 +861,10 @@ Remove expanded subdir of deleted dir, if any."
   ))
 #+end_src
 
+#+begin_src emacs-lisp
+(setq dired-listing-switches "-alh")
+#+end_src
+
 *** Dired group file and folder together
 #+begin_src emacs-lisp
  (defun mydired-sort ()
@@ -840,8 +886,8 @@ Remove expanded subdir of deleted dir, if any."
 #+begin_src emacs-lisp
 (use-package flycheck)
 (use-package flycheck-haskell)
-(global-flycheck-mode)
-;; (setq flycheck-check-syntax-automatically '(mode-enabled save))
+;; (global-flycheck-mode)
+(setq flycheck-check-syntax-automatically '(mode-enabled save))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1260,7 +1306,17 @@ Language server protocol turns emacs into an ide
 *** Setup lsp with other package
 #+begin_src emacs-lisp
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-(use-package lsp-ui :commands lsp-ui-mode)
+#+end_src
+
+*** LSP features
+
+#+begin_src emacs-lisp
+(setq lsp-ui-doc-enable nil)
+(setq lsp-ui-doc-show-with-cursor nil)
+(setq lsp-ui-doc-show-with-mouse nil)
+(setq lsp-ui-sideline-enable nil)
+(setq lsp-signature-render-documentation nil)
+(setq lsp-lens-enable nil)
 #+end_src
 
 *** Language support
@@ -1625,7 +1681,7 @@ customize keybindings for calfw
 (use-package highlight-indent-guides)
 (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
 (setq highlight-indent-guides-method 'character)
-(setq highlight-indent-guides-responsive 'stack)
+(setq highlight-indent-guides-responsive 'nil)
 (setq highlight-indent-guides-auto-enabled nil)
 
 (set-face-foreground 'highlight-indent-guides-character-face "dimgray")
@@ -1657,15 +1713,15 @@ customize keybindings for calfw
 
 ** Write room mode
 #+begin_src emacs-lisp
-(use-package writeroom-mode)
-(setq writeroom-width 0.7)
-(setq writeroom-mode-line t)
-(no-leader
-"s-," '(writeroom-decrease-width :which-key "decrease border width")
-"s-." '(writeroom-increase-width :which-key "increase border width")
-"s-/" '(writeroom-adjust-width   :which-key "adjust border width"))
+;; (use-package writeroom-mode)
+;; (setq writeroom-width 0.7)
+;; (setq writeroom-mode-line t)
+;; (no-leader
+;; "s-," '(writeroom-decrease-width :which-key "decrease border width")
+;; "s-." '(writeroom-increase-width :which-key "increase border width")
+;; "s-/" '(writeroom-adjust-width   :which-key "adjust border width"))
 
-(add-hook 'org-mode-hook 'writeroom-mode)
+;; (add-hook 'org-mode-hook 'writeroom-mode)
 #+end_src
 
 ** Magit
@@ -1712,6 +1768,38 @@ customize keybindings for calfw
 )
 
 (evilem-default-keybindings "SPC")
+#+end_src
+
+** Treesit
+run `treesit-auto-install-all`. Currently the implementation is not too good.
+
+#+begin_src emacs-lisp
+;; (use-package treesit-auto
+;;   :demand t
+;;   :config
+;;   (global-treesit-auto-mode))
+#+end_src
+
+** Treesitter
+
+#+begin_src emacs-lisp
+(use-package tree-sitter)
+(use-package tree-sitter-langs)
+(global-tree-sitter-mode)
+(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+#+end_src
+
+** Markdown drag and drop
+
+#+begin_src emacs-lisp
+(use-package docker)
+(load
+(expand-file-name
+"packages/markdown-dnd-images.el"
+user-emacs-directory))
+(setq dnd-save-directory "images")
+(setq dnd-view-inline t)
+(setq dnd-capture-source nil)
 #+end_src
 
 * Configuration
