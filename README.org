@@ -1666,7 +1666,9 @@ customize keybindings for calfw
 #+begin_src emacs-lisp
 (space-leader
     "."     '(find-file :which-key "Find file")
+    ">"     '(counsel-fzf :which-key "Find file recursively")
     "f f"   '(find-file :which-key "Find file")
+    "f r"   '(counsel-fzf :which-key "Find file recursively")
     "f r"   '(counsel-recentf :which-key "Recent files")
     "f s"   '(save-buffer :which-key "Save file")
     "f u"   '(sudo-edit-find-file :which-key "Sudo find file")
@@ -1912,7 +1914,11 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
   "c C"   '(recompile :which-key "Recompile")
   "h r r" '((lambda () (interactive) (load-file (concat user-emacs-directory "init.el"))) :which-key "Reload emacs config")
   "h t t" '(load-theme :which-key "Reload emacs config")
-  "t t"   '(visual-line-mode :which-key "toggle visual line mode"))
+  "t t"   '(visual-line-mode :which-key "toggle visual line mode")
+)
+(no-leader
+  "M-?"   '(counsel-rg :which-key "counsel ripgrep")
+)
 #+end_src
 
 ** Copy directory to keyring
