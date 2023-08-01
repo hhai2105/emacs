@@ -151,6 +151,7 @@
   - [[#treesit][Treesit]]
   - [[#treesitter][Treesitter]]
   - [[#markdown-drag-and-drop][Markdown drag and drop]]
+  - [[#counsel-rg-here][Counsel rg-here]]
 - [[#configuration][Configuration]]
   - [[#instantly-update-file-as-it-changes][instantly update file as it changes]]
   - [[#keep-folders-clean][Keep folders clean]]
@@ -523,14 +524,14 @@ color (),[],{} as pair
 ** Pretty Math Symbol
 
 #+begin_src emacs-lisp
-(setq org-pretty-entities t)
+;; (setq org-pretty-entities t)
 #+end_src
 
 ** Transparency
 
 #+begin_src emacs-lisp
-(set-frame-parameter nil 'alpha-background 100) ; For current frame
-(add-to-list 'default-frame-alist '(alpha-background . 100)) ; For all new frames henceforth
+(set-frame-parameter nil 'alpha-background 80) ; For current frame
+(add-to-list 'default-frame-alist '(alpha-background . 80)) ; For all new frames henceforth
 #+end_src
 
 #+RESULTS:
@@ -784,6 +785,7 @@ display key functions
 ** Dired
 instantly update dired
 #+begin_src emacs-lisp
+(add-hook 'dired-load-hook (function (lambda () (load "dired-x"))))
 (add-hook 'dired-mode-hook 'auto-revert-mode)
 (setq dired-mouse-drag-files 'link)
 #+end_src
@@ -1221,7 +1223,7 @@ A workspace implementation from doom emacs
         persp-switch-to-added-buffer nil
         persp-kill-foreign-buffer-behaviour 'kill
         persp-remove-buffers-from-nil-persp-behaviour nil
-        persp-auto-resume-time 1 ; Don't auto-load on startup
+        persp-auto-resume-time  0; Don't auto-load on startup
         persp-auto-save-opt (if noninteractive 0 1)) ; auto-save on kill
 )
 
@@ -1823,6 +1825,15 @@ user-emacs-directory))
 (setq dnd-capture-source nil)
 #+end_src
 
+** Counsel rg-here
+
+#+begin_src emacs-lisp
+(defun hn-counsel-rg-here ()
+(interactive)
+(counsel-rg nil default-directory)
+)
+#+end_src
+
 * Configuration
 ** instantly update file as it changes
 
@@ -1917,6 +1928,7 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
   "t t"   '(visual-line-mode :which-key "toggle visual line mode")
 )
 (no-leader
+  "M-/"   '(hn-counsel-rg-here :which-key "counsel ripgrep current directory")
   "M-?"   '(counsel-rg :which-key "counsel ripgrep")
 )
 #+end_src
