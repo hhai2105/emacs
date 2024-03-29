@@ -15,13 +15,13 @@
   - [[#boot-up-optimization][Boot Up Optimization]]
     - [[#reducing-the-frequency-of-garbage-collection][Reducing the frequency of garbage collection]]
   - [[#turn-off-dialog-box][Turn off dialog box]]
+  - [[#secrets][Secrets]]
 - [[#user-interface-settings][User Interface Settings]]
   - [[#make-esc-quit-promps][Make ESC quit promps]]
   - [[#menu-bar][Menu Bar]]
   - [[#theme][Theme]]
   - [[#doom-modeline][Doom Modeline]]
     - [[#change-modified-face-to-error-color][change modified face to error color]]
-    - [[#fix-right-hand-side-cutoff][Fix right hand side cutoff]]
   - [[#line-numbers-and-truncated-lines][Line Numbers and Truncated Lines]]
   - [[#truncate-lines][Truncate lines]]
   - [[#indentation][Indentation]]
@@ -116,6 +116,7 @@
       - [[#jsxjavascripttypescript][JSX/Javascript/Typescript]]
       - [[#latex][Latex]]
       - [[#tailwindcss][Tailwindcss]]
+      - [[#rust][Rust]]
   - [[#dap-mode][DAP mode]]
     - [[#installation][Installation]]
     - [[#hooks][hooks]]
@@ -126,21 +127,12 @@
     - [[#set][Set]]
   - [[#docker-mode][Docker mode]]
     - [[#fix-indentation][Fix Indentation]]
-  - [[#calfw][Calfw]]
-    - [[#prerequisite][Prerequisite]]
-    - [[#custom-keymap][Custom keymap]]
-    - [[#installation][Installation]]
-    - [[#configuration][Configuration]]
-      - [[#customization][Customization]]
-      - [[#color][Color]]
-      - [[#grid-frame][Grid Frame]]
-      - [[#keybindings][Keybindings]]
-      - [[#setup-calfw-calendars][Setup calfw calendars]]
   - [[#files][Files]]
     - [[#keybindings][Keybindings]]
     - [[#file-shortcut][File Shortcut]]
   - [[#python-notebook][Python Notebook]]
   - [[#highlight-indent][Highlight Indent]]
+  - [[#indent-bar][Indent bar]]
   - [[#dumb-jump][Dumb Jump]]
   - [[#git-dired-modeline][Git Dired Modeline]]
   - [[#write-room-mode][Write room mode]]
@@ -152,7 +144,20 @@
   - [[#treesitter][Treesitter]]
   - [[#markdown-drag-and-drop][Markdown drag and drop]]
   - [[#counsel-rg-here][Counsel rg-here]]
+  - [[#calfw][Calfw]]
+    - [[#prerequisite][Prerequisite]]
+    - [[#custom-keymap][Custom keymap]]
+    - [[#installation][Installation]]
+    - [[#configuration][Configuration]]
+      - [[#customization][Customization]]
+      - [[#color][Color]]
+      - [[#grid-frame][Grid Frame]]
+      - [[#keybindings][Keybindings]]
+      - [[#setup-calfw-calendars][Setup calfw calendars]]
+  - [[#todoist][Todoist]]
 - [[#configuration][Configuration]]
+  - [[#remove-file-lock][remove file lock]]
+  - [[#evil-shift-keep-selection][Evil Shift keep selection]]
   - [[#instantly-update-file-as-it-changes][instantly update file as it changes]]
   - [[#keep-folders-clean][Keep folders clean]]
     - [[#backup-files][Backup files]]
@@ -163,6 +168,7 @@
     - [[#keybindings][Keybindings]]
   - [[#registers][Registers]]
   - [[#text-scaling][text scaling]]
+  - [[#cursor][Cursor]]
   - [[#general-keybindings][general Keybindings]]
   - [[#copy-directory-to-keyring][Copy directory to keyring]]
 - [[#runtime-optimization][Runtime Optimization]]
@@ -230,7 +236,7 @@
 		       (substring rnd 16 18) 16))))
 	    (substring rnd 18 20)
 	    (substring rnd 20 32))))
-(use-package org)
+(use-package org :straight (:type built-in))
 #+end_src
 
 ** Boot Up Optimization
@@ -263,6 +269,18 @@
 (setq use-dialog-box nil)
 #+end_src
 
+** Secrets
+
+#+begin_src emacs-lisp
+(load-file
+ (expand-file-name
+  "secrets/secrets.el"
+  user-emacs-directory))
+#+end_src
+
+#+RESULTS:
+: t
+
 * User Interface Settings
 ** Make ESC quit promps
 
@@ -284,7 +302,7 @@
 (use-package doom-themes)
 (setq doom-themes-enable-bold t
     doom-themes-enable-italics t)
-(load-theme 'doom-dracula t)
+(load-theme 'doom-outrun-electric t)
 #+end_src
 
 #+RESULTS:
@@ -301,9 +319,6 @@
 (setq doom-modeline-project-detection 'auto)
 (setq inhibit-compacting-font-caches t)
 (setq doom-modeline-bar-width 4)
-(doom-modeline-def-modeline 'main
-'(bar matches buffer-info remote-host buffer-position parrot selection-info)
-'(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs)) ;
 #+end_src
 
 *** change modified face to error color
@@ -321,14 +336,6 @@
 
 #+RESULTS:
 : ffip
-*** Fix right hand side cutoff
-
-#+begin_src emacs-lisp
-(doom-modeline-def-modeline 'main
-'(bar matches buffer-info remote-host buffer-position parrot selection-info)
-'(misc-info minor-modes checker input-method buffer-encoding major-mode process vcs)) ; <-- added padding here
-#+end_src
-
 ** Line Numbers and Truncated Lines
 show absolute line numbers and highlight current line number
 #+begin_src emacs-lisp
@@ -530,8 +537,8 @@ color (),[],{} as pair
 ** Transparency
 
 #+begin_src emacs-lisp
-(set-frame-parameter nil 'alpha-background 80) ; For current frame
-(add-to-list 'default-frame-alist '(alpha-background . 80)) ; For all new frames henceforth
+(set-frame-parameter nil 'alpha-background 70) ; For current frame
+(add-to-list 'default-frame-alist '(alpha-background . 70)) ; For all new frames henceforth
 #+end_src
 
 #+RESULTS:
@@ -566,11 +573,11 @@ color (),[],{} as pair
          (ppi (/ (caddr geometry) (/ (car size) 25.4))))
     (if (> ppi 120)
         (set-face-attribute 'default frame :height 180)
-      (set-face-attribute 'default frame :height 110))))
+      (set-face-attribute 'default frame :height 130))))
 
 (add-function :after after-focus-change-function #'td/adapt-font-size)
 (add-hook 'after-make-frame-functions #'td/adapt-font-size)
-(add-hook 'window-setup-hook #'td/adapt-font-size)
+;; (add-hook 'window-setup-hook #'td/adapt-font-size)
 (add-hook 'focus-in-hook #'td/adapt-font-size)
 #+end_src
 
@@ -583,24 +590,30 @@ color (),[],{} as pair
 
 *** Evil Mode
   #+begin_src emacs-lisp
-  (use-package evil
-      :init
-      (setq evil-want-integration t)
-      (setq evil-want-keybinding nil)
-      (setq evil-vsplit-window-right t)
-      (setq evil-split-window-below t)
-      (setq evil-respect-visual-line-mode t)
-      (evil-mode))
-  (use-package evil-collection
-      :after evil
-      :config
-      (evil-collection-init))
-  (with-eval-after-load 'evil-maps
-  (define-key evil-motion-state-map (kbd "RET") nil))
+    (use-package evil
+        :init
+        (setq evil-want-integration t)
+        (setq evil-want-keybinding nil)
+        (setq evil-vsplit-window-right t)
+        (setq evil-split-window-below t)
+        (setq evil-respect-visual-line-mode t)
+        (setq-default evil-cross-lines t)
+        (evil-mode))
+    (use-package evil-collection
+        :after evil
+        :config
+        (evil-collection-init))
+    (with-eval-after-load 'evil-maps
+    (define-key evil-motion-state-map (kbd "RET") nil))
+    
+    (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+    (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+    (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+    (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
 
-  (use-package evil-numbers)
-  (define-key evil-normal-state-map (kbd "C-c +") 'evil-numbers/inc-at-pt)
-  (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt)
+    (use-package evil-numbers)
+    (define-key evil-normal-state-map (kbd "C-c +") 'evil-numbers/inc-at-pt)
+    (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt)
   #+end_src
 
   #+RESULTS:
@@ -668,7 +681,6 @@ display key functions
     :prefix "C-c d"
 )
 #+end_src
-
 ** Auto Completion Engines
 *** Ivy
 
@@ -841,6 +853,8 @@ instantly update dired
                               ("pdf" . "zathura")
                               ("pptx" . "zathura")
                               ("ipynb" . "code")
+                              ("r" . "rstudio")
+                              ("rmd" . "rstudio")
                               ("mp4" . "mpv")))
 #+end_src
 
@@ -1111,7 +1125,7 @@ Org Roam is a note taking tools for emacs
 :config
 (org-roam-setup)
 (org-roam-db-autosync-mode))
-(setq org-agenda-files '("~/orgfiles/roam/daily/"))
+;; (setq org-agenda-files '("~/orgfiles/roam/daily/"))
 #+end_src
 
 #+RESULTS:
@@ -1295,6 +1309,7 @@ A workspace implementation from doom emacs
 (use-package typescript-mode)
 (use-package go-mode)
 (use-package go-complete)
+(use-package rust-mode)
 #+end_src
 
 *** html
@@ -1387,6 +1402,12 @@ Language server protocol turns emacs into an ide
   (setq lsp-tailwindcss-add-on-mode t))
 #+end_src
 
+**** Rust
+
+#+begin_src emacs-lisp
+(add-hook 'rust-mode-hook 'lsp-deferred)
+#+end_src
+
 ** DAP mode
 DAP mode is a debugging package
 *** Installation
@@ -1465,6 +1486,196 @@ user-emacs-directory))
 #+RESULTS:
 | lambda | nil | (setq-local indent-line-function #'sh-indent-line)                 |
 | lambda | nil | (set (make-local-variable 'indent-line-function) #'sh-indent-line) |
+
+** Files
+*** Keybindings
+
+#+begin_src emacs-lisp
+(space-leader
+    "."     '(find-file :which-key "Find file")
+    ">"     '(counsel-fzf :which-key "Find file recursively")
+    "f f"   '(find-file :which-key "Find file")
+    "f r"   '(counsel-fzf :which-key "Find file recursively")
+    "f r"   '(counsel-recentf :which-key "Recent files")
+    "f s"   '(save-buffer :which-key "Save file")
+    "f u"   '(sudo-edit-find-file :which-key "Sudo find file")
+    "f y"   '(dt/show-and-copy-buffer-path :which-key "Yank file path")
+    "f C"   '(copy-file :which-key "Copy file")
+    "f D"   '(delete-file :which-key "Delete file")
+    "f R"   '(rename-file :which-key "Rename file")
+    "f S"   '(write-file :which-key "Save file as...")
+    "f U"   '(sudo-edit :which-key "Sudo edit file"))
+#+end_src
+
+*** File Shortcut
+
+#+begin_src emacs-lisp
+(space-leader
+  "- a" '(lambda () (interactive)(find-file "~/orgfiles/applied.org") :which-key "Emacs Configuration")
+  "- e" '(lambda () (interactive)(find-file "~/.config/emacs/README.org") :which-key "Emacs Configuration")
+  "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
+  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2024/spring/") :which-key "Class Folder")
+  "- k" '(open-calendar :which-key "calendar buffer")
+)
+#+end_src
+
+#+RESULTS:
+
+** Python Notebook
+#+begin_src emacs-lisp
+(use-package ein)
+#+end_src
+
+** Highlight Indent
+#+begin_src emacs-lisp
+;; (use-package highlight-indent-guides)
+;; (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+;; (setq highlight-indent-guides-method 'character)
+;; (setq highlight-indent-guides-responsive 'nil)
+;; (setq highlight-indent-guides-auto-enabled nil)
+
+;; (set-face-foreground 'highlight-indent-guides-character-face "dimgray")
+;; (set-face-foreground 'highlight-indent-guides-stack-character-face "gainsboro")
+;; (set-face-foreground 'highlight-indent-guides-top-character-face "white")
+
+;; (setq highlight-indent-guides-auto-character-face-perc 50)
+;; (setq highlight-indent-guides-auto-stack-character-face-perc 80)
+;; (setq highlight-indent-guides-auto-top-character-face-perc 100)
+#+end_src
+
+#+RESULTS:
+| highlight-indent-guides-mode | rainbow-delimiters-mode | disable-tabs |
+
+** Indent bar
+
+#+begin_src emacs-lisp
+(use-package indent-bars
+  :straight (:host github :repo "jdtsmith/indent-bars" :files ("dist" "*.el"))
+  :hook ((prog-mode) . indent-bars-mode)) ; or whichever modes you prefer
+(setq indent-bars-width-frac .2
+indent-bars-pad-frac .2
+indent-bars-pattern "." 
+indent-bars-display-on-blank-lines t
+indent-bars-starting-column 0
+indent-bars-color '(highlight :face-bg t :blend 0.8)
+indent-bars-prefer-character "|"
+)
+#+end_src
+
+** Dumb Jump
+
+#+begin_src emacs-lisp
+(use-package dumb-jump)
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+(setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+#+end_src
+
+** Git Dired Modeline
+
+#+begin_src emacs-lisp
+(use-package git-ps1-mode)
+(git-ps1-mode)
+#+end_src
+
+** Write room mode
+#+begin_src emacs-lisp
+;; (use-package writeroom-mode)
+;; (setq writeroom-width 0.7)
+;; (setq writeroom-mode-line t)
+;; (no-leader
+;; "s-," '(writeroom-decrease-width :which-key "decrease border width")
+;; "s-." '(writeroom-increase-width :which-key "increase border width")
+;; "s-/" '(writeroom-adjust-width   :which-key "adjust border width"))
+
+;; (add-hook 'org-mode-hook 'writeroom-mode)
+#+end_src
+
+** Magit
+
+#+begin_src emacs-lisp
+(use-package magit)
+(space-leader
+       "g g"   '(magit-status :which-key "Open Magit")
+)
+#+end_src
+
+** Math Preview
+
+#+begin_src emacs-lisp
+(use-package math-preview)
+#+end_src
+
+** copilot
+
+#+begin_src emacs-lisp
+(use-package copilot
+  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+  :ensure t)
+;; (add-hook 'prog-mode-hook 'copilot-mode)
+(defun my/copilot-tab ()
+  (interactive)
+  (or (copilot-accept-completion)
+      (indent-for-tab-command)))
+(with-eval-after-load 'copilot
+  (evil-define-key 'insert copilot-mode-map
+    (kbd "<tab>") #'my/copilot-tab))
+
+#+end_src
+
+** Evil easymotion
+
+#+begin_src emacs-lisp
+(use-package evil-easymotion
+  :straight (:host github :repo "PythonNut/evil-easymotion" :files ("dist" "*.el"))
+  :ensure t)
+(space-leader
+    "t c" '(copilot-mode :which-key "toggle-copilot")
+    "t f" '(flycheck-disable-checker :which-key "toggle-flycheck")
+)
+
+(evilem-default-keybindings "SPC")
+#+end_src
+
+** Treesit
+run `treesit-auto-install-all`. Currently the implementation is not too good.
+
+#+begin_src emacs-lisp
+;; (use-package treesit-auto
+;;   :demand t
+;;   :config
+;;   (global-treesit-auto-mode))
+#+end_src
+
+** Treesitter
+
+#+begin_src emacs-lisp
+(use-package tree-sitter)
+(use-package tree-sitter-langs)
+(global-tree-sitter-mode)
+(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+#+end_src
+
+** Markdown drag and drop
+
+#+begin_src emacs-lisp
+(use-package docker)
+(load
+(expand-file-name
+"packages/markdown-dnd-images.el"
+user-emacs-directory))
+(setq dnd-save-directory "images")
+(setq dnd-view-inline t)
+(setq dnd-capture-source nil)
+#+end_src
+
+** Counsel rg-here
+
+#+begin_src emacs-lisp
+(defun hn-counsel-rg-here ()
+(interactive)
+(counsel-rg nil default-directory)
+)
+#+end_src
 
 ** Calfw
 A calendar Utility app for Emacs
@@ -1643,198 +1854,67 @@ customize keybindings for calfw
 
 **** Setup calfw calendars
 #+begin_src emacs-lisp
-;; (load-file(
-;; concat
-;; user-emacs-directory
-;; "secrets/calendar.el"
-;; ))
-
-;; (defun open-calendar ()
-;;   (interactive)
-;;   (cfw:open-calendar-buffer
-;;    :contents-sources
-;;    (list
-;;     (cfw:ical-create-source "hhai2105" hhai-calendar "magenta1") ; google calendar ICS
-;;    )
-;; ))
+(defun open-calendar ()
+  (interactive)
+  (cfw:open-calendar-buffer
+   :contents-sources
+   (list
+    (cfw:ical-create-source "hhai2105" hhai2105-calendar "magenta1") ; google calendar ICS
+    (cfw:ical-create-source "todoist" hhai2105-todoist-calendar "red1") ; google calendar ICS
+    (cfw:ical-create-source "haihnguyen" haihnguyen-calendar "green1") ; google calendar ICS
+   )
+))
+(space-leader
+    "o c"   '(open-calendar :which-key "calendar")
+)
 #+end_src
 
 #+RESULTS:
 : open-calendar
 
-** Files
-*** Keybindings
+** Todoist
 
 #+begin_src emacs-lisp
+(use-package todoist)
 (space-leader
-    "."     '(find-file :which-key "Find file")
-    ">"     '(counsel-fzf :which-key "Find file recursively")
-    "f f"   '(find-file :which-key "Find file")
-    "f r"   '(counsel-fzf :which-key "Find file recursively")
-    "f r"   '(counsel-recentf :which-key "Recent files")
-    "f s"   '(save-buffer :which-key "Save file")
-    "f u"   '(sudo-edit-find-file :which-key "Sudo find file")
-    "f y"   '(dt/show-and-copy-buffer-path :which-key "Yank file path")
-    "f C"   '(copy-file :which-key "Copy file")
-    "f D"   '(delete-file :which-key "Delete file")
-    "f R"   '(rename-file :which-key "Rename file")
-    "f S"   '(write-file :which-key "Save file as...")
-    "f U"   '(sudo-edit :which-key "Sudo edit file"))
-#+end_src
-
-*** File Shortcut
-
-#+begin_src emacs-lisp
-(space-leader
-  "- a" '(lambda () (interactive)(find-file "~/orgfiles/agenda.org") :which-key "Emacs Configuration")
-  "- e" '(lambda () (interactive)(find-file "~/.config/emacs/README.org") :which-key "Emacs Configuration")
-  "- p" '(lambda () (interactive)(find-file "~/Documents/Projects") :which-key "Project Folder")
-  "- c" '(lambda () (interactive)(find-file "~/Documents/Class/2023/spring/") :which-key "Class Folder")
-  "- k" '(open-calendar :which-key "calendar buffer")
-)
-#+end_src
-
-** Python Notebook
-#+begin_src emacs-lisp
-(use-package ein)
-#+end_src
-
-** Highlight Indent
-#+begin_src emacs-lisp
-(use-package highlight-indent-guides)
-(add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
-(setq highlight-indent-guides-method 'character)
-(setq highlight-indent-guides-responsive 'nil)
-(setq highlight-indent-guides-auto-enabled nil)
-
-(set-face-foreground 'highlight-indent-guides-character-face "dimgray")
-(set-face-foreground 'highlight-indent-guides-stack-character-face "gainsboro")
-(set-face-foreground 'highlight-indent-guides-top-character-face "white")
-
-;; (setq highlight-indent-guides-auto-character-face-perc 50)
-;; (setq highlight-indent-guides-auto-stack-character-face-perc 80)
-;; (setq highlight-indent-guides-auto-top-character-face-perc 100)
-#+end_src
-
-#+RESULTS:
-| highlight-indent-guides-mode | rainbow-delimiters-mode | disable-tabs |
-
-** Dumb Jump
-
-#+begin_src emacs-lisp
-(use-package dumb-jump)
-(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-(setq xref-show-definitions-function #'xref-show-definitions-completing-read)
-#+end_src
-
-** Git Dired Modeline
-
-#+begin_src emacs-lisp
-(use-package git-ps1-mode)
-(git-ps1-mode)
-#+end_src
-
-** Write room mode
-#+begin_src emacs-lisp
-;; (use-package writeroom-mode)
-;; (setq writeroom-width 0.7)
-;; (setq writeroom-mode-line t)
-;; (no-leader
-;; "s-," '(writeroom-decrease-width :which-key "decrease border width")
-;; "s-." '(writeroom-increase-width :which-key "increase border width")
-;; "s-/" '(writeroom-adjust-width   :which-key "adjust border width"))
-
-;; (add-hook 'org-mode-hook 'writeroom-mode)
-#+end_src
-
-** Magit
-
-#+begin_src emacs-lisp
-(use-package magit)
-(space-leader
-       "g g"   '(magit-status :which-key "Open Magit")
-)
-#+end_src
-
-** Math Preview
-
-#+begin_src emacs-lisp
-(use-package math-preview)
-#+end_src
-
-** copilot
-
-#+begin_src emacs-lisp
-(use-package copilot
-  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
-  :ensure t)
-;; (add-hook 'prog-mode-hook 'copilot-mode)
-(defun my/copilot-tab ()
-  (interactive)
-  (or (copilot-accept-completion)
-      (indent-for-tab-command)))
-(with-eval-after-load 'copilot
-  (evil-define-key 'insert copilot-mode-map
-    (kbd "<tab>") #'my/copilot-tab))
-
-#+end_src
-
-** Evil easymotion
-
-#+begin_src emacs-lisp
-(use-package evil-easymotion
-  :straight (:host github :repo "PythonNut/evil-easymotion" :files ("dist" "*.el"))
-  :ensure t)
-(space-leader
-    "t c" '(copilot-mode :which-key "toggle-copilot")
-    "t f" '(flycheck-disable-checker :which-key "toggle-flycheck")
-)
-
-(evilem-default-keybindings "SPC")
-#+end_src
-
-** Treesit
-run `treesit-auto-install-all`. Currently the implementation is not too good.
-
-#+begin_src emacs-lisp
-;; (use-package treesit-auto
-;;   :demand t
-;;   :config
-;;   (global-treesit-auto-mode))
-#+end_src
-
-** Treesitter
-
-#+begin_src emacs-lisp
-(use-package tree-sitter)
-(use-package tree-sitter-langs)
-(global-tree-sitter-mode)
-(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-#+end_src
-
-** Markdown drag and drop
-
-#+begin_src emacs-lisp
-(use-package docker)
-(load
-(expand-file-name
-"packages/markdown-dnd-images.el"
-user-emacs-directory))
-(setq dnd-save-directory "images")
-(setq dnd-view-inline t)
-(setq dnd-capture-source nil)
-#+end_src
-
-** Counsel rg-here
-
-#+begin_src emacs-lisp
-(defun hn-counsel-rg-here ()
-(interactive)
-(counsel-rg nil default-directory)
+    "o t t"   '(todoist :which-key "todoist")
+    "o t d"   '(todoist-delete-task :which-key "todoist delete task")
+    "o t u"   '(todoist-update-task :which-key "todoist update task")
+    "o t c"   '(todoist-close-task :which-key "todoist close task")
+    "o t q"   '(todoist-quick-new-task :which-key "todoist new quick task")
+    "o t n"   '(todoist-new-task :which-key "todoist new task")
 )
 #+end_src
 
 * Configuration
+** remove file lock
+
+#+begin_src emacs-lisp
+(setq create-lockfiles nil)
+#+end_src
+
+** Evil Shift keep selection
+
+#+begin_src emacs-lisp
+; Overload shifts so that they don't lose the selection
+(define-key evil-visual-state-map (kbd ">") 'hn623t/evil-shift-right-visual)
+(define-key evil-visual-state-map (kbd "<") 'hn623t/evil-shift-left-visual)
+(define-key evil-visual-state-map [tab] 'hn623t/evil-shift-right-visual)
+(define-key evil-visual-state-map [S-tab] 'hn623t/evil-shift-left-visual)
+
+(defun hn623t/evil-shift-left-visual ()
+  (interactive)
+  (evil-shift-left (region-beginning) (region-end))
+  (evil-normal-state)
+  (evil-visual-restore))
+
+(defun hn623t/evil-shift-right-visual ()
+  (interactive)
+  (evil-shift-right (region-beginning) (region-end))
+  (evil-normal-state)
+  (evil-visual-restore))
+#+end_src
+
 ** instantly update file as it changes
 
 #+begin_src emacs-lisp
@@ -1892,6 +1972,8 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
        "w <right>" '(winner-redo :which-key "Winner redo"))
 #+end_src
 
+#+RESULTS:
+
 ** Registers
 
 #+begin_src emacs-lisp
@@ -1914,6 +1996,12 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
 (no-leader-global
 "C-=" '(text-scale-increase :which-key "increase text size")
 "C--" '(text-scale-decrease :which-key "decrease text size"))
+#+end_src
+
+** Cursor
+
+#+begin_src emacs-lisp
+(setq visible-cursor nil)
 #+end_src
 
 ** general Keybindings
