@@ -11,7 +11,6 @@
     - [[#melpa-package][Melpa Package]]
     - [[#user-package][User Package]]
   - [[#straightel][Straight.el]]
-  - [[#install-org][install org]]
   - [[#boot-up-optimization][Boot Up Optimization]]
     - [[#reducing-the-frequency-of-garbage-collection][Reducing the frequency of garbage collection]]
   - [[#turn-off-dialog-box][Turn off dialog box]]
@@ -87,18 +86,12 @@
     - [[#inline-image][Inline image]]
     - [[#evil-mode][Evil Mode]]
     - [[#org-make-toc][Org Make TOC]]
-  - [[#org-roam][Org Roam]]
-    - [[#setup][Setup]]
-    - [[#capture-templates][Capture templates]]
-    - [[#keybinding][Keybinding]]
-  - [[#mu4e][MU4E]]
   - [[#yasnippet][Yasnippet]]
     - [[#indent][Indent]]
   - [[#latex][Latex]]
   - [[#emojis][Emojis]]
   - [[#atomic-chrome][Atomic Chrome]]
   - [[#quickrun][Quickrun]]
-  - [[#eyebrowse][eyebrowse]]
   - [[#workspace][Workspace]]
     - [[#requirements][requirements]]
     - [[#keymap][Keymap]]
@@ -208,35 +201,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 (setq straight-use-package-by-default t)
-#+end_src
-
-** install org
-
-#+begin_src emacs-lisp
-(defun org-id-uuid ()
-  "Return string with random (version 4) UUID."
-  (let ((rnd (md5 (format "%s%s%s%s%s%s%s"
-			  (random)
-			  (current-time)
-			  (user-uid)
-			  (emacs-pid)
-			  (user-full-name)
-			  user-mail-address
-			  (recent-keys)))))
-    (format "%s-%s-4%s-%s%s-%s"
-	    (substring rnd 0 8)
-	    (substring rnd 8 12)
-	    (substring rnd 13 16)
-	    (format "%x"
-		    (logior
-		     #b10000000
-		     (logand
-		      #b10111111
-		      (string-to-number
-		       (substring rnd 16 18) 16))))
-	    (substring rnd 18 20)
-	    (substring rnd 20 32))))
-(use-package org :straight (:type built-in))
 #+end_src
 
 ** Boot Up Optimization
@@ -1113,59 +1077,6 @@ Automatically make table of content
   :init (add-hook 'org-mode-hook 'toc-org-enable))
 #+end_src
 
-** Org Roam
-*** Setup
-Org Roam is a note taking tools for emacs
-#+begin_src emacs-lisp
-(use-package org-roam
-:init
-(setq org-roam-v2-ack t)
-:custom
-(org-roam-directory "~/orgfiles/roam")
-:config
-(org-roam-setup)
-(org-roam-db-autosync-mode))
-;; (setq org-agenda-files '("~/orgfiles/roam/daily/"))
-#+end_src
-
-#+RESULTS:
-: t
-
-*** Capture templates
-#+begin_src emacs-lisp
-(setq org-roam-dailies-capture-templates
-'(("d" "default" entry "* TODO %<%I:%M %p>: %? \nSCHEDULED: \<%<%Y-%m-%d  %a>\> "
-:if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n")))
-)
-
-#+end_src
-
-#+RESULTS:
-| d | default | entry | * [ ] %<%I:%M %p>: %? |
-
-
-*** Keybinding
-#+begin_src emacs-lisp
-(space-leader
-"n f" '(org-roam-node-find :which-key "find node")
-"n i" '(org-roam-node-insert :which-key "insert node")
-"n l" '(org-roam-buffer-toggle :which-key "toggle buffer")
-"n d n" '(org-roam-dailies-capture-today :which-keyh "capture today")
-"n d T" '(org-roam-dailies-capture-tomorrow :which-keyh "capture tomorrow")
-"n d Y" '(org-roam-dailies-capture-yesterday :which-keyh "capture yesterday")
-"n d c" '(org-roam-dailies-goto-today :which-keyh "go to today")
-"n d t" '(org-roam-dailies-goto-tomorrow :which-keyh "go to tomorrow")
-"n d y" '(org-roam-dailies-goto-yesterday :which-keyh "go to yesterday")
-)
-#+end_src
-
-** MU4E
-MU4E is an emacs email client
-
-#+begin_src emacs-lisp
-
-#+end_src
-
 ** Yasnippet
 Template system for Emacs
 #+begin_src emacs-lisp
@@ -1209,15 +1120,6 @@ Let you run code in current buffer quickly
 (space-leader
        "x x"   '(quickrun :which-key "quickrun")
 )
-#+end_src
-
-** eyebrowse
-eyebrowse is a global minor mode for Emacs that allows you to manage your window configurations in a simple manner, just like tiling window managers like i3wm with their workspaces do. It displays their current state in the modeline by default. The behaviour is modeled after ranger, a file manager written in Python.
-
-#+begin_src emacs-lisp
-;; (use-package eyebrowse)
-;; (eyebrowse-mode t)
-;; (eyebrowse-setup-opinionated-keys)
 #+end_src
 
 ** Workspace
@@ -1310,6 +1212,7 @@ A workspace implementation from doom emacs
 (use-package go-mode)
 (use-package go-complete)
 (use-package rust-mode)
+(use-package yuck-mode)
 #+end_src
 
 *** html
