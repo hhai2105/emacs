@@ -110,6 +110,7 @@
       - [[#latex][Latex]]
       - [[#tailwindcss][Tailwindcss]]
       - [[#rust][Rust]]
+      - [[#rust][Rust]]
   - [[#dap-mode][DAP mode]]
     - [[#installation][Installation]]
     - [[#hooks][hooks]]
@@ -136,7 +137,6 @@
   - [[#treesit][Treesit]]
   - [[#treesitter][Treesitter]]
   - [[#markdown-drag-and-drop][Markdown drag and drop]]
-  - [[#counsel-rg-here][Counsel rg-here]]
 - [[#configuration][Configuration]]
   - [[#remove-file-lock][remove file lock]]
   - [[#evil-shift-keep-selection][Evil Shift keep selection]]
@@ -461,19 +461,19 @@ color (),[],{} as pair
 
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-    :font "JetBrains  Mono Medium")
+    :font "JetBrainsMono Nerd Font")
 (set-face-attribute 'variable-pitch nil
-	:font "JetBrains Mono Medium")
+	:font "JetBrainsMono Nerd Font")
 (set-face-attribute 'fixed-pitch nil
-    :font "JetBrains Mono Medium")
+    :font "JetBrainsMono Nerd Font")
 
 (setq-default line-spacing 0.10)
-(add-to-list 'default-frame-alist '(font . "JetBrains Mono Medium"))
+(add-to-list 'default-frame-alist '(font . "JetBrainsMono Nerd Font"))
 ;; (add-to-list 'default-frame-alist '(line-spacing . 0.2))
 #+end_src
 
 #+RESULTS:
-: ((font . JetBrains Mono SemiBold 13) (font . JetBrains Mono 13) (vertical-scroll-bars))
+: ((font . JetBrainsMono Nerd Font) (alpha-background . 70) (font . JetBrains Mono Regular Nerd Font) (vertical-scroll-bars))
 
 ** Syntax Highlighting for config
 
@@ -530,8 +530,6 @@ color (),[],{} as pair
 
 (add-function :after after-focus-change-function #'td/adapt-font-size)
 (add-hook 'after-make-frame-functions #'td/adapt-font-size)
-;; (add-hook 'window-setup-hook #'td/adapt-font-size)
-(add-hook 'focus-in-hook #'td/adapt-font-size)
 #+end_src
 
 * General Packages
@@ -783,7 +781,11 @@ instantly update dired
 :states '(normal, visual)
 :keymaps 'dired-mode-map
 "h" 'dired-up-directory
+"-" 'dired-up-directory
 "l" 'dired-find-file)
+
+(no-leader
+    "-" '(dired-jump :which-key "Open dired"))
 
 (general-define-key
 :states '(normal, visual)
@@ -940,6 +942,30 @@ better pdf reader
     org-src-fontify-natively t
     org-confirm-babel-evaluate nil)
 (add-hook 'org-mode-hook 'visual-line-mode)
+(defun org-id-uuid ()
+  "Return string with random (version 4) UUID."
+  (let ((rnd (md5 (format "%s%s%s%s%s%s%s"
+			  (random)
+			  (current-time)
+			  (user-uid)
+			  (emacs-pid)
+			  (user-full-name)
+			  user-mail-address
+			  (recent-keys)))))
+    (format "%s-%s-4%s-%s%s-%s"
+	    (substring rnd 0 8)
+	    (substring rnd 8 12)
+	    (substring rnd 13 16)
+	    (format "%x"
+		    (logior
+		     #b10000000
+		     (logand
+		      #b10111111
+		      (string-to-number
+		       (substring rnd 16 18) 16))))
+	    (substring rnd 18 20)
+	    (substring rnd 20 32))))
+(use-package org :straight (:type built-in))
 #+end_src
 
 *** Org Bullets
@@ -1300,6 +1326,12 @@ Language server protocol turns emacs into an ide
 (add-hook 'rust-mode-hook 'lsp-deferred)
 #+end_src
 
+**** Rust
+
+#+begin_src emacs-lisp
+(use-package lua-mode)
+#+end_src
+
 ** DAP mode
 DAP mode is a debugging package
 *** Installation
@@ -1636,6 +1668,7 @@ auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves" user-
 (space-leader
        ;; Window splits
        "w c"   '(evil-window-delete :which-key "Close window")
+       "w q"   '(evil-window-delete :which-key "Close window")
        "w d"   '(evil-window-delete :which-key "Close window")
        "w o"   '(delete-other-windows :which-key "Delete other windows")
        "w n"   '(evil-window-new :which-key "New window")
