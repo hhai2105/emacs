@@ -1,3 +1,4 @@
+
 #+title: GNU Emacs
 #+description: This is my Emacs Configuration
 * Table of Content
@@ -448,14 +449,14 @@ color (),[],{} as pair
 
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-    :font "JetBrainsMono Nerd Font 9")
+    :font "JetBrainsMono Nerd Font 8")
 (set-face-attribute 'variable-pitch nil
-	:font "JetBrainsMono Nerd Font 9")
+	:font "JetBrainsMono Nerd Font 8")
 (set-face-attribute 'fixed-pitch nil
-    :font "JetBrainsMono Nerd Font 9")
+    :font "JetBrainsMono Nerd Font 8")
 
 (setq-default line-spacing 0.10)
-(add-to-list 'default-frame-alist '(font . "JetBrainsMono Nerd Font 9"))
+(add-to-list 'default-frame-alist '(font . "JetBrainsMono Nerd Font 8"))
 ;; (add-to-list 'default-frame-alist '(line-spacing . 0.2))
 #+end_src
 
@@ -487,8 +488,6 @@ color (),[],{} as pair
 ** Delete trailing white space when saving
 
 #+begin_src emacs-lisp
-(use-package ws-butler)
-(add-hook 'prog-mode-hook #'ws-butler-mode)
 #+end_src
 
 ** Hide ^M from file with windows newline character
@@ -1254,7 +1253,9 @@ Language server protocol turns emacs into an ide
 **** C/C++
 
 #+begin_src emacs-lisp
+(use-package cmake-mode)
 (add-hook 'c++-mode-hook 'lsp-deferred)
+(add-hook 'cmake-mode-hook 'lsp-deferred)
 (add-hook 'c-mode-hook 'lsp-deferred)
 #+end_src
 
