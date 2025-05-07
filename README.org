@@ -1,163 +1,6 @@
 
 #+title: GNU Emacs
 #+description: This is my Emacs Configuration
-* Table of Content
-:PROPERTIES:
-:TOC:      :include all
-:END:
-:CONTENTS:
-- [[#table-of-content][Table of Content]]
-- [[#general-configuration][General Configuration]]
-  - [[#package-installation][Package Installation]]
-    - [[#melpa-package][Melpa Package]]
-    - [[#user-package][User Package]]
-  - [[#straightel][Straight.el]]
-  - [[#boot-up-optimization][Boot Up Optimization]]
-    - [[#reducing-the-frequency-of-garbage-collection][Reducing the frequency of garbage collection]]
-  - [[#turn-off-dialog-box][Turn off dialog box]]
-- [[#user-interface-settings][User Interface Settings]]
-  - [[#make-esc-quit-promps][Make ESC quit promps]]
-  - [[#menu-bar][Menu Bar]]
-  - [[#theme][Theme]]
-  - [[#doom-modeline][Doom Modeline]]
-    - [[#change-modified-face-to-error-color][change modified face to error color]]
-  - [[#line-numbers-and-truncated-lines][Line Numbers and Truncated Lines]]
-  - [[#truncate-lines][Truncate lines]]
-  - [[#indentation][Indentation]]
-    - [[#basic-setup][Basic setup]]
-    - [[#language-specific-tweaks][Language-specific tweaks]]
-    - [[#electric-indent][Electric indent]]
-    - [[#agressive-indentation][Agressive indentation]]
-      - [[#dont-indent-before-adding-][Dont indent before adding ;]]
-    - [[#yank-automatic-indentation][Yank automatic indentation]]
-  - [[#undo-tree][Undo Tree]]
-  - [[#line-highlighting][Line Highlighting]]
-  - [[#rainbow][Rainbow]]
-  - [[#scrolling][Scrolling]]
-  - [[#fonts][Fonts]]
-  - [[#syntax-highlighting-for-config][Syntax Highlighting for config]]
-  - [[#pretty-math-symbol][Pretty Math Symbol]]
-  - [[#transparency][Transparency]]
-  - [[#delete-trailing-white-space-when-saving][Delete trailing white space when saving]]
-  - [[#hide-m-from-file-with-windows-newline-character][Hide ^M from file with windows newline character]]
-- [[#general-packages][General Packages]]
-  - [[#keybinding-packages][keybinding packages]]
-    - [[#key-chord][key-chord]]
-    - [[#evil-mode][Evil Mode]]
-    - [[#which-key][Which Key]]
-    - [[#general][General]]
-      - [[#set-space-and-c-spc-as-global-prefix][set space and C-SPC as global prefix]]
-      - [[#no-leader-key-maps][No leader key maps]]
-      - [[#dap-mode-key-maps][Dap Mode Key maps]]
-  - [[#auto-completion-engines][Auto Completion Engines]]
-    - [[#ivy][Ivy]]
-    - [[#ivy-rich][Ivy Rich]]
-    - [[#counsel][Counsel]]
-    - [[#company][Company]]
-    - [[#electric][Electric]]
-      - [[#indentation][Indentation]]
-      - [[#parenthesis][parenthesis]]
-  - [[#dashboard][Dashboard]]
-    - [[#configuration][Configuration]]
-    - [[#dashboard-in-emacsclient][Dashboard in Emacsclient]]
-  - [[#helm][Helm]]
-  - [[#perspective][Perspective]]
-  - [[#dired][Dired]]
-    - [[#dired-group-file-and-folder-together][Dired group file and folder together]]
-  - [[#flycheck][Flycheck]]
-  - [[#rainbow-mode][Rainbow mode]]
-  - [[#pdf][PDF]]
-  - [[#projectile][Projectile]]
-  - [[#all-the-icons][All The Icons]]
-  - [[#emacs-everywhere][Emacs Everywhere]]
-  - [[#sudo-edit][Sudo Edit]]
-  - [[#anzu][Anzu]]
-  - [[#diff-highlight-git][Diff Highlight (git)]]
-  - [[#org-mode][Org Mode]]
-    - [[#configuration][Configuration]]
-    - [[#org-bullets][Org Bullets]]
-    - [[#org-todo-keywords][Org Todo keywords]]
-    - [[#org-todo-toggle][Org Todo toggle]]
-    - [[#org-calenda][Org calenda]]
-    - [[#generate-table-of-contents][Generate Table of Contents]]
-    - [[#keybindings][keybindings]]
-    - [[#latex-preview][Latex Preview]]
-    - [[#inline-image][Inline image]]
-    - [[#evil-mode][Evil Mode]]
-    - [[#org-make-toc][Org Make TOC]]
-  - [[#yasnippet][Yasnippet]]
-    - [[#indent][Indent]]
-  - [[#latex][Latex]]
-  - [[#emojis][Emojis]]
-  - [[#atomic-chrome][Atomic Chrome]]
-  - [[#quickrun][Quickrun]]
-  - [[#workspace][Workspace]]
-    - [[#requirements][requirements]]
-    - [[#keymap][Keymap]]
-  - [[#language-support][Language Support]]
-    - [[#programming-languages][Programming Languages]]
-    - [[#html][html]]
-  - [[#lsp-mode][LSP mode]]
-    - [[#initialize-lsp-package][Initialize lsp package]]
-    - [[#setup-lsp-with-other-package][Setup lsp with other package]]
-    - [[#lsp-features][LSP features]]
-    - [[#language-support][Language support]]
-      - [[#java][Java]]
-      - [[#cc][C/C++]]
-      - [[#python][Python]]
-      - [[#jsxjavascripttypescript][JSX/Javascript/Typescript]]
-      - [[#latex][Latex]]
-      - [[#tailwindcss][Tailwindcss]]
-      - [[#rust][Rust]]
-      - [[#rust][Rust]]
-  - [[#dap-mode][DAP mode]]
-    - [[#installation][Installation]]
-    - [[#hooks][hooks]]
-    - [[#languages][Languages]]
-  - [[#tramp-mode][Tramp mode]]
-    - [[#set-default-connection-method][Set default connection method]]
-    - [[#shell-prompt-fix][Shell prompt fix]]
-    - [[#set][Set]]
-  - [[#docker-mode][Docker mode]]
-    - [[#fix-indentation][Fix Indentation]]
-  - [[#files][Files]]
-    - [[#keybindings][Keybindings]]
-    - [[#file-shortcut][File Shortcut]]
-  - [[#python-notebook][Python Notebook]]
-  - [[#highlight-indent][Highlight Indent]]
-  - [[#indent-bar][Indent bar]]
-  - [[#dumb-jump][Dumb Jump]]
-  - [[#git-dired-modeline][Git Dired Modeline]]
-  - [[#write-room-mode][Write room mode]]
-  - [[#magit][Magit]]
-  - [[#math-preview][Math Preview]]
-  - [[#copilot][copilot]]
-  - [[#evil-easymotion][Evil easymotion]]
-  - [[#treesit][Treesit]]
-  - [[#treesitter][Treesitter]]
-  - [[#markdown-drag-and-drop][Markdown drag and drop]]
-  - [[#counsel-rg-here][Counsel rg-here]]
-- [[#configuration][Configuration]]
-  - [[#remove-file-lock][remove file lock]]
-  - [[#evil-shift-keep-selection][Evil Shift keep selection]]
-  - [[#instantly-update-file-as-it-changes][instantly update file as it changes]]
-  - [[#keep-folders-clean][Keep folders clean]]
-    - [[#backup-files][Backup files]]
-    - [[#auto-save-files][Auto Save files]]
-    - [[#no-littering][No littering]]
-  - [[#windows-control][Windows control]]
-    - [[#split-buffer-side-by-side][Split buffer side by side]]
-    - [[#keybindings][Keybindings]]
-  - [[#registers][Registers]]
-  - [[#text-scaling][text scaling]]
-  - [[#cursor][Cursor]]
-  - [[#general-keybindings][general Keybindings]]
-  - [[#copy-directory-to-keyring][Copy directory to keyring]]
-- [[#runtime-optimization][Runtime Optimization]]
-  - [[#lower-gc-threshold-gc-happens-more-frquqently-in-less-time][lower GC Threshold gc happens more frquqently in less time]]
-- [[#silence-warning-due-to-emacs-2905][Silence warning due to emacs 29.0.5]]
-:END:
-
 * General Configuration
 ** Package Installation
 *** Melpa Package
@@ -601,6 +444,13 @@ display key functions
     :prefix "C-c d"
 )
 #+end_src
+
+**** comment using M-/
+#+begin_src emacs-lisp
+(no-leader
+    "C-/" '(comment-line :which-key "comment line"))
+#+end_src
+
 ** Auto Completion Engines
 *** Ivy
 
@@ -1110,27 +960,27 @@ Let you run code in current buffer quickly
 A workspace implementation from doom emacs
 *** requirements
 #+begin_src emacs-lisp
-(use-package persp-mode
-  :init
-  (add-hook 'after-init-hook #'persp-mode)
-  :config
-  (setq persp-autokill-buffer-on-remove 'kill-weak
-        persp-reset-windows-on-nil-window-conf nil
-        persp-nil-hidden t
-        persp-auto-save-fname "autosave"
-        persp-save-dir (concat user-emacs-directory "workspaces/")
-        persp-set-last-persp-for-new-frames t
-        persp-switch-to-added-buffer nil
-        persp-kill-foreign-buffer-behaviour 'kill
-        persp-remove-buffers-from-nil-persp-behaviour nil
-        persp-auto-resume-time  0; Don't auto-load on startup
-        persp-auto-save-opt (if noninteractive 0 1)) ; auto-save on kill
-)
+;; (use-package persp-mode
+;;   :init
+;;   (add-hook 'after-init-hook #'persp-mode)
+;;   :config
+;;   (setq persp-autokill-buffer-on-remove 'kill-weak
+;;         persp-reset-windows-on-nil-window-conf nil
+;;         persp-nil-hidden t
+;;         persp-auto-save-fname "autosave"
+;;         persp-save-dir (concat user-emacs-directory "workspaces/")
+;;         persp-set-last-persp-for-new-frames t
+;;         persp-switch-to-added-buffer nil
+;;         persp-kill-foreign-buffer-behaviour 'kill
+;;         persp-remove-buffers-from-nil-persp-behaviour nil
+;;         persp-auto-resume-time  0; Don't auto-load on startup
+;;         persp-auto-save-opt (if noninteractive 0 1)) ; auto-save on kill
+;; )
 
-(load
-(expand-file-name
-  "packages/workspaces.el"
-  user-emacs-directory))
+;; (load
+;; (expand-file-name
+;;   "packages/workspaces.el"
+;;   user-emacs-directory))
 
 
 #+end_src
@@ -1141,47 +991,47 @@ A workspace implementation from doom emacs
 *** Keymap
 
 #+begin_src emacs-lisp
-(no-leader
-"M-0"   '(+workspace/switch-to-9  :which-key "workspace 0")
-"M-1"   '(+workspace/switch-to-0  :which-key "workspace 1")
-"M-2"   '(+workspace/switch-to-1  :which-key "workspace 2")
-"M-3"   '(+workspace/switch-to-2  :which-key "workspace 3")
-"M-4"   '(+workspace/switch-to-3  :which-key "workspace 4")
-"M-5"   '(+workspace/switch-to-4  :which-key "workspace 5")
-"M-6"   '(+workspace/switch-to-5  :which-key "workspace 6")
-"M-7"   '(+workspace/switch-to-6  :which-key "workspace 7")
-"M-8"   '(+workspace/switch-to-7  :which-key "workspace 8")
-"M-9"   '(+workspace/switch-to-8  :which-key "workspace 9")
-"M-t"   '(+workspace/new          :which-key "workspace 9")
-"M-n"   '(+workspace/new          :which-key "workspace 9")
-"M-w"   '(+workspace/delete       :which-key "workspace 9")
-"M-r"   '(+workspace/rename       :which-key "workspace 9")
-"M-TAB" '(+workspace/display      :which-key "workspace 9")
-"M-h"   '(+workspace/switch-left  :which-key "workspace 9")
-"M-l"   '(+workspace/switch-right :which-key "workspace 9")
-"M-H"   '(+workspace/swap-left    :which-key "workspace 9")
-"M-L"   '(+workspace/swap-right   :which-key "workspace 9")
-)
-(space-leader
-"TAB 0" '(+workspace/switch-to-9 :which-key "workspace 0")
-"TAB 1" '(+workspace/switch-to-0 :which-key "workspace 1")
-"TAB 2" '(+workspace/switch-to-1 :which-key "workspace 2")
-"TAB 3" '(+workspace/switch-to-2 :which-key "workspace 3")
-"TAB 4" '(+workspace/switch-to-3 :which-key "workspace 4")
-"TAB 5" '(+workspace/switch-to-4 :which-key "workspace 5")
-"TAB 6" '(+workspace/switch-to-5 :which-key "workspace 6")
-"TAB 7" '(+workspace/switch-to-6 :which-key "workspace 7")
-"TAB 8" '(+workspace/switch-to-7 :which-key "workspace 8")
-"TAB 9" '(+workspace/switch-to-8 :which-key "workspace 9")
-"TAB n" '(+workspace/new :which-key "new workspace")
-"TAB w" '(+workspace/delete :which-key "delete workspace")
-"TAB r" '(+workspace/rename :which-key "rename workspace")
-"TAB TAB" '(+workspace/display :which-key "display workspaces")
-"TAB h"   '(+workspace/switch-left  :which-key "workspace 9")
-"TAB l"   '(+workspace/switch-right :which-key "workspace 9")
-"TAB H"   '(+workspace/swap-left    :which-key "workspace 9")
-"TAB L"   '(+workspace/swap-right   :which-key "workspace 9")
-)
+;; (no-leader
+;; "M-0"   '(+workspace/switch-to-9  :which-key "workspace 0")
+;; "M-1"   '(+workspace/switch-to-0  :which-key "workspace 1")
+;; "M-2"   '(+workspace/switch-to-1  :which-key "workspace 2")
+;; "M-3"   '(+workspace/switch-to-2  :which-key "workspace 3")
+;; "M-4"   '(+workspace/switch-to-3  :which-key "workspace 4")
+;; "M-5"   '(+workspace/switch-to-4  :which-key "workspace 5")
+;; "M-6"   '(+workspace/switch-to-5  :which-key "workspace 6")
+;; "M-7"   '(+workspace/switch-to-6  :which-key "workspace 7")
+;; "M-8"   '(+workspace/switch-to-7  :which-key "workspace 8")
+;; "M-9"   '(+workspace/switch-to-8  :which-key "workspace 9")
+;; "M-t"   '(+workspace/new          :which-key "workspace 9")
+;; "M-n"   '(+workspace/new          :which-key "workspace 9")
+;; "M-w"   '(+workspace/delete       :which-key "workspace 9")
+;; "M-r"   '(+workspace/rename       :which-key "workspace 9")
+;; "M-TAB" '(+workspace/display      :which-key "workspace 9")
+;; "M-h"   '(+workspace/switch-left  :which-key "workspace 9")
+;; "M-l"   '(+workspace/switch-right :which-key "workspace 9")
+;; "M-H"   '(+workspace/swap-left    :which-key "workspace 9")
+;; "M-L"   '(+workspace/swap-right   :which-key "workspace 9")
+;; )
+;; (space-leader
+;; "TAB 0" '(+workspace/switch-to-9 :which-key "workspace 0")
+;; "TAB 1" '(+workspace/switch-to-0 :which-key "workspace 1")
+;; "TAB 2" '(+workspace/switch-to-1 :which-key "workspace 2")
+;; "TAB 3" '(+workspace/switch-to-2 :which-key "workspace 3")
+;; "TAB 4" '(+workspace/switch-to-3 :which-key "workspace 4")
+;; "TAB 5" '(+workspace/switch-to-4 :which-key "workspace 5")
+;; "TAB 6" '(+workspace/switch-to-5 :which-key "workspace 6")
+;; "TAB 7" '(+workspace/switch-to-6 :which-key "workspace 7")
+;; "TAB 8" '(+workspace/switch-to-7 :which-key "workspace 8")
+;; "TAB 9" '(+workspace/switch-to-8 :which-key "workspace 9")
+;; "TAB n" '(+workspace/new :which-key "new workspace")
+;; "TAB w" '(+workspace/delete :which-key "delete workspace")
+;; "TAB r" '(+workspace/rename :which-key "rename workspace")
+;; "TAB TAB" '(+workspace/display :which-key "display workspaces")
+;; "TAB h"   '(+workspace/switch-left  :which-key "workspace 9")
+;; "TAB l"   '(+workspace/switch-right :which-key "workspace 9")
+;; "TAB H"   '(+workspace/swap-left    :which-key "workspace 9")
+;; "TAB L"   '(+workspace/swap-right   :which-key "workspace 9")
+;; )
 
 #+end_src
 
@@ -1517,20 +1367,6 @@ indent-bars-prefer-character "|"
 
 #+end_src
 
-** Evil easymotion
-
-#+begin_src emacs-lisp
-(use-package evil-easymotion
-  :straight (:host github :repo "PythonNut/evil-easymotion" :files ("dist" "*.el"))
-  :ensure t)
-(space-leader
-    "t c" '(copilot-mode :which-key "toggle-copilot")
-    "t f" '(flycheck-disable-checker :which-key "toggle-flycheck")
-)
-
-(evilem-default-keybindings "SPC")
-#+end_src
-
 ** Treesit
 run `treesit-auto-install-all`. Currently the implementation is not too good.
 
@@ -1548,6 +1384,33 @@ run `treesit-auto-install-all`. Currently the implementation is not too good.
 (use-package tree-sitter-langs)
 (global-tree-sitter-mode)
 (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+#+end_src
+
+** Harpoon
+
+#+begin_src emacs-lisp
+(use-package harpoon)
+(space-leader
+  "a"   '(harpoon-add-file :which-key "harpoon add file")
+  )
+(no-leader
+  "C-e"   '(harpoon-toggle-quick-menu :which-key "harpoon quick menu")
+  "C-S-e"   '(harpoon-toggle-file :which-key "harpoon editable file")
+  )
+
+(no-leader
+"C-0"   '(harpoon-go-to-9  :which-key "workspace 0")
+"C-1"   '(harpoon-go-to-0  :which-key "workspace 1")
+"C-2"   '(harpoon-go-to-1  :which-key "workspace 2")
+"C-3"   '(harpoon-go-to-2  :which-key "workspace 3")
+"C-4"   '(harpoon-go-to-3  :which-key "workspace 4")
+"C-5"   '(harpoon-go-to-4  :which-key "workspace 5")
+"C-6"   '(harpoon-go-to-5  :which-key "workspace 6")
+"C-7"   '(harpoon-go-to-6  :which-key "workspace 7")
+"C-8"   '(harpoon-go-to-7  :which-key "workspace 8")
+"C-9"   '(harpoon-go-to-8  :which-key "workspace 9")
+)
+
 #+end_src
 
 ** Markdown drag and drop
@@ -1599,6 +1462,12 @@ user-emacs-directory))
   (evil-shift-right (region-beginning) (region-end))
   (evil-normal-state)
   (evil-visual-restore))
+
+(no-leader
+  "M-o"   '(evil-jump-backward :which-key "evil jump backward")
+  "M-r"   '(evil-redo :which-key "evil redo")
+  )
+ 
 #+end_src
 
 ** instantly update file as it changes
